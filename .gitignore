@@ -1,0 +1,4 @@
+node_modules/
+.doodley/
+dist/
+.DS_Store
