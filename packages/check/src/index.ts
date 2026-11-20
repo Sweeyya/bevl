@@ -10,38 +10,11 @@
 
 export const VERSION = "0.1.0";
 
-/** A finding in the check report */
-export interface Finding {
-  rule: string;
-  severity: "error" | "warn" | "info";
-  viewport: "desktop" | "phone";
-  section?: string;
-  message: string;
-  fix: string;
-  evidence?: {
-    screenshot?: string;
-    data?: Record<string, unknown>;
-  };
-}
+export type { CheckOptions } from "./checker.js";
+export { runCheck } from "./checker.js";
+export { EXIT_CODES } from "./exit-codes.js";
+export { formatReport } from "./format.js";
 
-/** The full check report written to .doodley/reports/<runId>/report.json */
-export interface Report {
-  runId: string;
-  tool: { name: string; version: string };
-  project: string;
-  seed: number;
-  renderer: { desktop: string; phone: string };
-  score: number;
-  passed: boolean;
-  groups: Record<string, { score: number; weight: number }>;
-  findings: Finding[];
-  artifacts: string[];
-}
+export type { Finding, GroupResult, Report, Severity } from "./report.js";
 
-/** Exit codes for the check CLI */
-export const EXIT_CODES = {
-  PASSED: 0,
-  ERRORS_FOUND: 1,
-  BAD_USAGE: 2,
-  ENV_PROBLEM: 3,
-} as const;
+export type { Rule, RuleContext } from "./rule.js";

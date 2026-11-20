@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "The checker. Runs the site in a browser, tests every design rule and budget, and writes a scored report.",
   "type": "module",
+  "bin": {
+    "doodley-check": "./dist/bin/check.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -23,7 +26,12 @@
     "clean": "rm -rf dist"
   },
   "devDependencies": {
+    "@types/node": "^26.6.6",
+    "ajv": "8.17.1",
     "typescript": "7.0.2",
     "vitest": "5.1.0"
+  },
+  "dependencies": {
+    "playwright": "1.49.1"
   }
 }
