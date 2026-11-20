@@ -1,16 +1,23 @@
-# CI runs on every PR and every push to main.
-# Jobs run in parallel. A PR cannot merge until all pass.
+# CI — fast checks that run on every PR and push to main.
+# Jobs run in parallel. A PR cannot merge until ci-passed passes.
 #
-# Good patterns used here (learned from Vite, tRPC, R3F):
-#   - permissions: {} — zero trust. No action can write to the repo unless explicitly allowed.
+# This workflow only covers: lint, typecheck, unit tests, build.
+# Slower test types live in their own workflows with paths: filters
+# so they only run when the files they care about actually change:
+#   fixtures.yml  — broken fixture tests    (packages/check, fixtures/)
+#   visual.yml    — screenshot tests        (packages/core, effects, examples/)
+#   perf.yml      — Lighthouse CI           (runtime packages, examples/)
+#   nightly.yml   — determinism + golden    (scheduled, or workflow_dispatch)
+#
+# Patterns used here (learned from Vite, tRPC, Biome):
+#   - permissions: {} zero trust; each job grants only what it needs.
 #   - Actions pinned to full commit SHA, not a floating tag like @v4.
-#     A tag can be silently moved to a malicious commit. A SHA cannot.
-#   - cancel-in-progress: true — if you push a new commit, the old run stops immediately.
-#   - timeout-minutes on every job — a frozen browser test can't eat 6 hours of free minutes.
-#   - Parallel jobs — lint, typecheck, test, build all run at the same time.
-#   - Skip jobs when only docs/markdown changed.
+#   - cancel-in-progress: true so a new push stops the stale run.
+#   - timeout-minutes on every job.
+#   - Parallel jobs — all four run at the same time.
+#   - Docs-only skip — a README typo fix doesn't run the test suite.
 #   - --frozen-lockfile — no surprise upgrades during install.
-#   - Composite setup action (.github/setup/action.yml) — setup code written once, used everywhere.
+#   - Composite setup action (.github/setup/action.yml) — written once, used everywhere.
 
 name: CI
 
