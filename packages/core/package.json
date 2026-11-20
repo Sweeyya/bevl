@@ -21,7 +21,21 @@
     "clean": "rm -rf dist"
   },
   "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@types/three": "0.169.0",
     "typescript": "7.0.2",
     "vitest": "5.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "three": ">=0.160"
+  },
+  "dependencies": {
+    "@react-three/drei": "9.117.3",
+    "@react-three/fiber": "8.17.10",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "three": "0.169.0"
   }
 }
