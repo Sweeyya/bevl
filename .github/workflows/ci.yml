@@ -1,42 +1,161 @@
+# CI runs on every PR and every push to main.
+# Jobs run in parallel. A PR cannot merge until all pass.
+#
+# Good patterns used here (learned from Vite, tRPC, R3F):
+#   - permissions: {} — zero trust. No action can write to the repo unless explicitly allowed.
+#   - Actions pinned to full commit SHA, not a floating tag like @v4.
+#     A tag can be silently moved to a malicious commit. A SHA cannot.
+#   - cancel-in-progress: true — if you push a new commit, the old run stops immediately.
+#   - timeout-minutes on every job — a frozen browser test can't eat 6 hours of free minutes.
+#   - Parallel jobs — lint, typecheck, test, build all run at the same time.
+#   - Skip jobs when only docs/markdown changed.
+#   - --frozen-lockfile — no surprise upgrades during install.
+#   - Composite setup action (.github/setup/action.yml) — setup code written once, used everywhere.
+
 name: CI
 
 on:
   pull_request:
-    branches: [main]
   push:
     branches: [main]
 
+# Zero trust: no action gets any permission unless this workflow explicitly grants it.
+permissions: {}
+
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event.number || github.sha }}
   cancel-in-progress: true
 
 jobs:
-  ci:
-    name: Lint, typecheck, test, build
+  # ── Skip check ───────────────────────────────��────────────────────────────
+  # If the PR only touches docs/markdown, skip the expensive jobs.
+  changed:
+    name: Check changed files
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      skip: ${{ steps.filter.outputs.docs_only }}
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          version: 12.20.0
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - name: Detect docs-only changes
+        id: filter
+        shell: bash
+        run: |
+          # On a PR, compare against the base. On a push to main, compare against the previous commit.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE=${{ github.event.pull_request.base.sha }}
+          else
+            BASE=${{ github.event.before }}
+          fi
+          CHANGED=$(git diff --name-only "$BASE" HEAD 2>/dev/null || echo "unknown")
+          echo "Changed files: $CHANGED"
+          # If every changed file is under docs/, *.md, or .github (but not workflow files), skip.
+          if echo "$CHANGED" | grep -qvE '^(docs/|\.github/(?!workflows/).*|.*\.md$|CHANGELOG)'; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "docs_only=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ── Lint ──────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    needs: changed
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          node-version: 22
-          cache: pnpm
+          persist-credentials: false
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - uses: ./.github/setup
 
       - name: Lint
         run: pnpm lint:ci
 
+  # ── Typecheck ─────────────────────────────────────────────────────────────
+  typecheck:
+    name: Typecheck
+    needs: changed
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Test
+  # ── Test ──────────────────────────────────────────────────────────────────
+  test:
+    name: Test
+    needs: changed
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Unit tests
         run: pnpm test
+
+  # ── Build ─────────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    needs: changed
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
 
       - name: Build
         run: pnpm build
+
+  # ── All passed (required status check) ───────────────────────────────────
+  # This is the one job you set as "required" in GitHub branch protection.
+  # It passes if all jobs passed OR if the skip was triggered.
+  # This way you don't need to add every individual job to branch protection.
+  ci-passed:
+    name: CI passed
+    needs: [lint, typecheck, test, build]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Check all jobs passed
+        shell: bash
+        run: |
+          results="${{ join(needs.*.result, ' ') }}"
+          echo "Job results: $results"
+          for result in $results; do
+            if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+              echo "A required job failed: $result"
+              exit 1
+            fi
+          done
+          echo "All jobs passed or were skipped."
