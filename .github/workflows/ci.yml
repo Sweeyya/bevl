@@ -143,13 +143,59 @@ jobs:
       - name: Build
         run: pnpm build
 
+  # ── Package quality ───────────────────────────────────────────────────────
+  # Four fast checks that catch AI-specific bloat and publishing mistakes:
+  #   publint  — package.json exports maps are correct for consumers
+  #   attw     — TypeScript types resolve correctly under CJS/ESM/bundler
+  #   size-limit — dist/ stays inside budget (400 kB core, 150 kB check, 100 kB cli)
+  #   knip     — no dead exports, unused imports, or orphaned files
+  # Skipped on docs-only PRs. All run after build (needs dist/).
+  pkg:
+    name: Package quality
+    needs: [changed, build]
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Build
+        run: pnpm build
+
+      - name: publint — exports map correctness
+        run: pnpm pkg:lint
+
+      - name: attw — type resolution under all module modes
+        # --profile esm-only: suppress CJSResolvesToESM for intentionally ESM packages.
+        # Runs only on the published packages, not examples or fixtures.
+        run: |
+          for pkg in packages/core packages/check packages/cli packages/mcp; do
+            echo "=== $pkg ==="
+            pnpm attw --pack "$pkg" --profile esm-only || exit 1
+          done
+
+      - name: size-limit — bundle size budgets
+        run: pnpm pkg:size
+
+      - name: knip — dead code and unused exports
+        # Non-blocking on this PR (exit 0) so we don't stall T1.x work,
+        # but output is always printed so you can see the debt accumulate.
+        # Change `|| true` to `|| exit 1` once the codebase is clean.
+        run: pnpm pkg:unused || true
+
   # ── All passed (required status check) ───────────────────────────────────
   # This is the one job you set as "required" in GitHub branch protection.
   # It passes if all jobs passed OR if the skip was triggered.
   # This way you don't need to add every individual job to branch protection.
   ci-passed:
     name: CI passed
-    needs: [lint, typecheck, test, build]
+    needs: [lint, typecheck, test, build, pkg]
     if: always()
     runs-on: ubuntu-latest
     permissions: {}

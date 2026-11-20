@@ -22,11 +22,40 @@
     "golden": "turbo run golden",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "turbo run build && changeset publish"
+    "release": "turbo run build && changeset publish",
+    "pkg:lint": "publint --strict packages/*/",
+    "pkg:types": "attw --pack packages/core && attw --pack packages/check && attw --pack packages/cli && attw --pack packages/mcp",
+    "pkg:size": "size-limit",
+    "pkg:unused": "knip",
+    "pkg:pack-check": "pnpm pack --dry-run --filter @doodley/core --filter @doodley/check --filter @doodley/cli --filter @doodley/mcp"
+  },
+  "size-limit": [
+    {
+      "path": "packages/core/dist/index.js",
+      "limit": "400 kB",
+      "name": "@doodley/core (gzip)",
+      "ignore": [
+        "react",
+        "react-dom",
+        "three",
+        "@react-three/fiber",
+        "@react-three/drei"
+      ]
+    }
+  ],
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@biomejs/biome": "2.6.7",
     "@changesets/cli": "3.0.3",
+    "@size-limit/preset-small-lib": "14.3.0",
+    "knip": "6.45.1",
+    "publint": "0.3.25",
+    "size-limit": "14.3.0",
     "turbo": "2.11.11",
     "typescript": "7.0.2"
   }

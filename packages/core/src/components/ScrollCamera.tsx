@@ -9,7 +9,7 @@
 
 import { useFrame, useThree } from "@react-three/fiber";
 import { useContext, useRef } from "react";
-import { CameraPath, clampStep, enforceNoRoll } from "../camera/path.js";
+import { clampStep, enforceNoRoll } from "../camera/path.js";
 import { DoodleyContext } from "../context.js";
 import type { Pose } from "../contract.js";
 import { DESIGN_RULES } from "../index.js";
@@ -72,6 +72,3 @@ export function ScrollCamera(): null {
 
   return null;
 }
-
-// Re-export CameraPath so callers don't need a separate import
-export { CameraPath };
