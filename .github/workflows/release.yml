@@ -1,41 +1,46 @@
+# Release workflow.
+# Runs only on pushes to main (i.e. after a PR merges).
+# Uses changesets/action to either:
+#   (a) open a "Release packages" PR that bumps versions + updates CHANGELOG, or
+#   (b) publish to npm if that PR is what just merged.
+#
+# npm trusted publishing with provenance means no npm token is stored here.
+# See RELEASING.md for the one-time manual setup required before first publish.
+
 name: Release
 
 on:
   push:
     branches: [main]
 
+# Needs write access to open the release PR and push the version bump commit.
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write # for npm provenance
+
 concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: true
+  group: release-${{ github.workflow }}
+  cancel-in-progress: false # never cancel a release mid-flight
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 12.20.0
+      - uses: ./.github/setup
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-          registry-url: https://registry.npmjs.org
+      - name: Build before publishing
+        run: pnpm build
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Create release PR or publish
-        uses: changesets/action@v1
+      - name: Create release PR or publish to npm
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
           publish: pnpm release
           title: "Release packages"
