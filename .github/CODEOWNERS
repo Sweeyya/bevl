@@ -1,0 +1,16 @@
+# Default owner for everything
+* @Sweeyya
+
+# Package ownership (fill in as team grows)
+/packages/core/ @Sweeyya
+/packages/tokens/ @Sweeyya
+/packages/a11y/ @Sweeyya
+/packages/optimizer/ @Sweeyya
+/packages/effects/ @Sweeyya
+/packages/mascot/ @Sweeyya
+/packages/check/ @Sweeyya
+/packages/mcp/ @Sweeyya
+/packages/cli/ @Sweeyya
+
+# CI and release — always requires a review
+/.github/ @Sweeyya
