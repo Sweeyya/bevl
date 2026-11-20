@@ -1,4 +1,25 @@
+# Dependencies
 node_modules/
-.doodley/
+.pnpm-store/
+
+# Build output
 dist/
+*.tsbuildinfo
+
+# Turbo
+.turbo/
+
+# Test output
+coverage/
+.doodley/reports/
+playwright-report/
+test-results/
+
+# Misc
 .DS_Store
+*.log
+.env
+.env.local
+
+# Lighthouse CI
+.lighthouseci/

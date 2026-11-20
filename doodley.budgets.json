@@ -1,0 +1,23 @@
+{
+  "$schema": "./doodley.budgets.schema.json",
+  "comment": "Default performance budgets. Override per-project in doodley.json. See TESTING.md §6 for how these numbers were chosen.",
+  "trianglesDesktop": 500000,
+  "trianglesPhone": 150000,
+  "drawCallsDesktop": 200,
+  "drawCallsPhone": 80,
+  "textureMbDesktop": 64,
+  "textureMbPhone": 24,
+  "modelMb": 8,
+  "jsKb": 400,
+  "readyMsDesktop": 3000,
+  "readyMsPhone": 5000,
+  "maxStepMeters": 1.5,
+  "maxTurnPerStepDeg": 15,
+  "lighthouse": {
+    "comment": "Lighthouse CI phone profile. See .github/workflows/perf.yml.",
+    "lcp": 2500,
+    "cls": 0.1,
+    "tbt": 300,
+    "performanceScore": 0.8
+  }
+}

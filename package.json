@@ -1,0 +1,33 @@
+{
+  "name": "doodley-root",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@12.20.0",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=12.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "test:fixtures": "turbo run test:fixtures",
+    "test:visual": "turbo run test:visual",
+    "test:perf": "turbo run test:perf",
+    "test:determinism": "turbo run test:determinism",
+    "check:examples": "turbo run check:examples",
+    "lint": "biome check --write .",
+    "lint:ci": "biome ci .",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean",
+    "golden": "turbo run golden",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "turbo run build && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.7",
+    "@changesets/cli": "3.0.3",
+    "turbo": "2.11.11",
+    "typescript": "7.0.2"
+  }
+}

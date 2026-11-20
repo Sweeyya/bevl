@@ -1,0 +1,43 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig.json", "package.json"],
+      "outputs": ["dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig.json", "../../tsconfig.base.json"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "test/**", "tsconfig.json"],
+      "env": ["CI"]
+    },
+    "test:fixtures": {
+      "dependsOn": ["build"],
+      "inputs": ["src/**", "../../fixtures/**"]
+    },
+    "test:visual": {
+      "dependsOn": ["build"],
+      "inputs": ["src/**", "../../examples/**", "../../fixtures/visual/**"]
+    },
+    "test:perf": {
+      "dependsOn": ["build"]
+    },
+    "test:determinism": {
+      "dependsOn": ["build"]
+    },
+    "check:examples": {
+      "dependsOn": ["build"]
+    },
+    "golden": {
+      "dependsOn": ["build"]
+    },
+    "clean": {
+      "cache": false
+    }
+  }
+}
