@@ -14,6 +14,8 @@ export interface DoodleyContextValue {
   sections: SectionConfig[];
   /** Camera waypoint path computed from section anchors */
   cameraPath: CameraPath;
+  /** World-space distance between sections along Z */
+  sectionSpacing: number;
 }
 
 export const DoodleyContext = createContext<DoodleyContextValue | null>(null);

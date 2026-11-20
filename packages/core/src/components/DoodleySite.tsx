@@ -1,12 +1,3 @@
-/**
- * DoodleySite is the root component for a Doodley 3D site.
- *
- * - Wraps an R3F <Canvas> with frameloop="demand".
- * - Sets up a scroll listener that updates scroll progress (0-1) in a ref.
- * - Renders <ScrollCamera> to drive the camera from the path.
- * - Provides DoodleyContext to all children.
- */
-
 import { Canvas } from "@react-three/fiber";
 import type { ReactNode } from "react";
 import { useCallback, useRef, useState } from "react";
@@ -20,77 +11,96 @@ interface DoodleySiteProps {
   children?: ReactNode;
 }
 
-/** Identity quaternion — camera looks down -Z with no rotation */
 const IDENTITY_QUAT: Quat = { x: 0, y: 0, z: 0, w: 1 };
 
-/**
- * Builds camera poses from section anchors. Sections without an explicit
- * anchor are evenly spaced. The camera moves along a simple z-axis path
- * with configurable spacing.
- */
+// Sections are placed at z = 0, -10, -20, ...
+// Camera is placed 6 units in front of each section (z = +6, -4, -14, ...)
+const SECTION_SPACING = 10;
+const CAMERA_OFFSET_Z = 6;
+
 function buildCameraPath(config: DoodleyConfig): CameraPath {
-  const sections = config.sections;
-  const n = sections.length;
-
-  // Compute anchors: evenly spaced if not provided
-  const anchors = sections.map((s, i) => s.anchor ?? i / Math.max(1, n - 1));
-
-  // Space sections along the z-axis: each section at z = -anchor * (n-1) * 5
-  const poses: Pose[] = anchors.map((anchor) => ({
-    position: { x: 0, y: 0, z: anchor * (n - 1) * -5 },
+  const poses: Pose[] = config.sections.map((_, i) => ({
+    position: { x: 0, y: 0, z: -i * SECTION_SPACING + CAMERA_OFFSET_Z },
     quaternion: IDENTITY_QUAT,
   }));
-
-  // Always have at least one pose
   if (poses.length === 0) {
-    poses.push({ position: { x: 0, y: 0, z: 0 }, quaternion: IDENTITY_QUAT });
+    poses.push({ position: { x: 0, y: 0, z: CAMERA_OFFSET_Z }, quaternion: IDENTITY_QUAT });
   }
-
   return new CameraPath(poses);
 }
 
 export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element {
   const [scrollProgress, setScrollProgress] = useState(0);
   const cameraPathRef = useRef<CameraPath>(buildCameraPath(config));
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
 
-  const handleScroll = useCallback(() => {
-    const el = document.documentElement;
+  const handleScroll = useCallback((e: Event) => {
+    const el = e.currentTarget as HTMLDivElement;
     const max = el.scrollHeight - el.clientHeight;
-    if (max <= 0) {
-      setScrollProgress(0);
-      return;
-    }
-    setScrollProgress(Math.min(1, Math.max(0, el.scrollTop / max)));
+    setScrollProgress(max <= 0 ? 0 : Math.min(1, Math.max(0, el.scrollTop / max)));
   }, []);
 
-  // Attach scroll listener on mount
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const listenerRef = useRef(false);
   const attachRef = useCallback(
     (el: HTMLDivElement | null) => {
-      containerRef.current = el;
-      if (el && !listenerRef.current) {
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        listenerRef.current = true;
+      if (scrollerRef.current) {
+        scrollerRef.current.removeEventListener("scroll", handleScroll);
       }
+      scrollerRef.current = el;
+      if (el) el.addEventListener("scroll", handleScroll, { passive: true });
     },
     [handleScroll],
   );
 
   return (
-    <div ref={attachRef} style={{ width: "100%", height: "100%", position: "relative" }}>
-      <DoodleyContext.Provider
-        value={{
-          scrollProgress,
-          sections: config.sections,
-          cameraPath: cameraPathRef.current,
-        }}
+    <DoodleyContext.Provider
+      value={{
+        scrollProgress,
+        sections: config.sections,
+        cameraPath: cameraPathRef.current,
+        sectionSpacing: SECTION_SPACING,
+      }}
+    >
+      <div
+        ref={attachRef}
+        style={{ width: "100vw", height: "100vh", overflow: "auto", position: "relative" }}
       >
-        <Canvas frameloop="demand" style={{ position: "fixed", inset: 0 }}>
+        <Canvas
+          frameloop="demand"
+          camera={{ position: [0, 0, CAMERA_OFFSET_Z], fov: 60 }}
+          style={{ position: "fixed", inset: 0, zIndex: 0, background: "#111" }}
+        >
           <ScrollCamera />
           {children}
         </Canvas>
-      </DoodleyContext.Provider>
-    </div>
+
+        {/* Hidden HTML anchors for the checker */}
+        {config.sections.map((s) => (
+          <div
+            key={s.id}
+            id={`section-${s.id}`}
+            data-doodley-section={s.id}
+            data-doodley-title={s.title}
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              width: 1,
+              height: 1,
+              overflow: "hidden",
+              opacity: 0,
+              pointerEvents: "none",
+            }}
+          />
+        ))}
+
+        {/* Scroll spacer: one viewport per section. Must accept pointer events so the container scrolls. */}
+        <div
+          style={{
+            height: `${config.sections.length * 100}vh`,
+            position: "relative",
+            zIndex: 1,
+          }}
+        />
+      </div>
+    </DoodleyContext.Provider>
   );
 }
