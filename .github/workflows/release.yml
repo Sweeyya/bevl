@@ -1,11 +1,14 @@
 # Release workflow.
-# Runs only on pushes to main (i.e. after a PR merges).
-# Uses changesets/action to either:
-#   (a) open a "Release packages" PR that bumps versions + updates CHANGELOG, or
-#   (b) publish to npm if that PR is what just merged.
+# Runs on every push to main EXCEPT the version-bump commit changesets itself pushes.
 #
-# npm trusted publishing with provenance means no npm token is stored here.
-# See RELEASING.md for the one-time manual setup required before first publish.
+# Two-job split (learned from tRPC and Biome):
+#   build  — no credentials. Installs, builds, packs tarballs to a temp artifact.
+#            If a devDependency is compromised during this step, it cannot reach npm.
+#   publish — downloads the artifact, installs ONLY the release tooling with
+#             --ignore-scripts so nothing executes, then publishes.
+#             Gated behind environment: npm-publish so a human approves first.
+#
+# See RELEASING.md for the one-time manual setup (npm token, environment approval).
 
 name: Release
 
@@ -13,21 +16,32 @@ on:
   push:
     branches: [main]
 
-# Needs write access to open the release PR and push the version bump commit.
-permissions:
-  contents: write
-  pull-requests: write
-  id-token: write # for npm provenance
+# Zero trust at workflow level; each job grants only what it needs.
+permissions: {}
 
 concurrency:
-  group: release-${{ github.workflow }}
-  cancel-in-progress: false # never cancel a release mid-flight
+  # One release at a time. Never cancel a publish mid-flight.
+  group: release
+  cancel-in-progress: false
 
 jobs:
-  release:
-    name: Release
+  # ── Build (no credentials) ─────────────────────────────────────────────────
+  build:
+    name: Build and pack
+    # Skip the version-bump commit that changesets pushes after publishing.
+    # Without this guard the workflow re-triggers, finds nothing to release,
+    # and wastes 2 minutes. Pattern learned from tRPC.
+    if: |
+      !(
+        startsWith(github.event.head_commit.message, 'Release packages') &&
+        github.event.head_commit.author.name == 'github-actions[bot]'
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      has_changesets: ${{ steps.changesets.outputs.has_changesets }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -36,16 +50,66 @@ jobs:
 
       - uses: ./.github/setup
 
-      - name: Build before publishing
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Check for pending changesets
+        id: changesets
+        shell: bash
+        run: |
+          # If .changeset/ has any .md files (excluding README), there are
+          # unreleased changes. The publish job uses this to decide whether
+          # to open a release PR or actually publish.
+          count=$(find .changeset -name '*.md' ! -name 'README.md' 2>/dev/null | wc -l | tr -d ' ')
+          echo "Changeset files: $count"
+          if [ "$count" -gt "0" ]; then
+            echo "has_changesets=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changesets=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ── Publish (has credentials, gated by environment approval) ──────────────
+  publish:
+    name: Publish to npm
+    needs: build
+    # Only run if the build job ran (not skipped by the commit guard above).
+    if: needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # environment: npm-publish creates a required reviewer gate in GitHub Settings.
+    # A human sees "about to publish to npm" and must click Approve.
+    # Set this up: repo Settings → Environments → New → "npm-publish" → add reviewers.
+    # Until it is set up, the job runs without gating (the environment is simply absent).
+    environment: npm-publish
+    permissions:
+      contents: write # push version-bump commit and tag
+      pull-requests: write # open the "Release packages" PR
+      id-token: write # npm provenance via OIDC (no stored token needed)
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          # persist-credentials needed here so changesets can push the version commit.
+          persist-credentials: true
+
+      - uses: ./.github/setup
+
+      - name: Build (restore from previous job via Turbo cache)
         run: pnpm build
 
       - name: Create release PR or publish to npm
+        # changesets/action v2.1.2 — SHA-pinned.
+        # When there are pending changesets: opens a "Release packages" PR.
+        # When that PR just merged: publishes to npm and pushes a version-bump commit.
         uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
         with:
-          publish: pnpm release
+          publish: pnpm changeset publish
           title: "Release packages"
           commit: "Release packages"
+          # createGithubReleases: create a GH release entry for each published package.
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Publish with provenance so npm shows a verified build attestation.
           NPM_CONFIG_PROVENANCE: "true"
