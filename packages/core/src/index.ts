@@ -47,3 +47,5 @@ export { Section } from "./components/Section.js";
 // Context
 export type { DoodleyContextValue } from "./context.js";
 export { DoodleyContext } from "./context.js";
+// Seeded random (use instead of Math.random in runtime code paths)
+export { makeRand } from "./rand.js";
