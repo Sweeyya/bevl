@@ -37,3 +37,13 @@ export const DESIGN_RULES = {
   /** Text meshes must not hold more than this many characters (body copy belongs in HTML) */
   MAX_TEXT_MESH_CHARS: 40,
 } as const;
+
+// Camera path math (pure TypeScript, no browser dependency)
+export { CameraPath, clampStep, enforceNoRoll } from "./camera/path.js";
+// React components
+export { DoodleySite } from "./components/DoodleySite.js";
+export { ScrollCamera } from "./components/ScrollCamera.js";
+export { Section } from "./components/Section.js";
+// Context
+export type { DoodleyContextValue } from "./context.js";
+export { DoodleyContext } from "./context.js";
