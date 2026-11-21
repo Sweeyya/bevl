@@ -25,10 +25,12 @@
   },
   "dependencies": {
     "@doodley/check": "workspace:*",
+    "@doodley/optimizer": "workspace:*",
     "@doodley/tokens": "workspace:*",
-    "@doodley/optimizer": "workspace:*"
+    "commander": "15.1.0"
   },
   "devDependencies": {
+    "@types/node": "22.10.1",
     "typescript": "7.0.2",
     "vitest": "5.1.0"
   }

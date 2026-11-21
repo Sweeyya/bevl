@@ -25,10 +25,13 @@
   },
   "dependencies": {
     "@doodley/check": "workspace:*",
+    "@doodley/optimizer": "workspace:*",
     "@doodley/tokens": "workspace:*",
-    "@doodley/optimizer": "workspace:*"
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "zod": "4.6.7"
   },
   "devDependencies": {
+    "@types/node": "22.10.1",
     "typescript": "7.0.2",
     "vitest": "5.1.0"
   }
