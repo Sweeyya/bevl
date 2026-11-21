@@ -53,7 +53,7 @@ const STYLES = {
   } as React.CSSProperties,
 };
 
-export function DoodleyA11y({ config }: Props): JSX.Element {
+export function DoodleyA11y({ config }: Props): JSX.Element | null {
   const ctx = useContext(DoodleyContext);
   const reducedMotion = useReducedMotion();
   const sections = config.sections;
@@ -82,7 +82,7 @@ export function DoodleyA11y({ config }: Props): JSX.Element {
     target.focus();
   }
 
-  if (!ctx) return <></>;
+  if (!ctx) return null;
 
   return (
     <>
