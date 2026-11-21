@@ -38,91 +38,11 @@ function buildCameraPath(config: DoodleyConfig): CameraPath {
 function parseTestParams(): { testMode: boolean; seed: number } {
   if (typeof window === "undefined") return { testMode: false, seed: 1 };
   const p = new URLSearchParams(window.location.search);
-  const testMode = p.has("doodley-test");
-  const seed = Number(p.get("seed") ?? "1") || 1;
-  return { testMode, seed };
+  return { testMode: p.has("doodley-test"), seed: Number(p.get("seed") ?? "1") || 1 };
 }
 
-/** Installed inside the Canvas so it can call useThree for the advance fn and stats */
-function BridgeInstaller({
-  bridgeStateRef,
-  scrollProgress,
-  sections,
-  cameraPath,
-}: {
-  bridgeStateRef: React.MutableRefObject<BridgeState>;
-  scrollProgress: number;
-  sections: DoodleyConfig["sections"];
-  cameraPath: CameraPath;
-}): null {
-  const { camera, gl, advance } = useThree();
-  const eventsRef = useRef<import("../contract.js").DoodleyEvent[]>([]);
-  const resolveReadyRef = useRef<(() => void) | null>(null);
-
-  useEffect(() => {
-    const state = bridgeStateRef.current;
-    state.advance = (ms) => advance(ms / 1000);
-    state.getCamera = (): CameraState => ({
-      position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
-      quaternion: {
-        x: camera.quaternion.x,
-        y: camera.quaternion.y,
-        z: camera.quaternion.z,
-        w: camera.quaternion.w,
-      },
-      up: { x: camera.up.x, y: camera.up.y, z: camera.up.z },
-      fov: "fov" in camera ? (camera as { fov: number }).fov : 60,
-      sectionId: null,
-    });
-    state.getStats = (): SceneStats => {
-      const info = gl.info;
-      const textures = info.memory?.textures ?? 0;
-      return {
-        triangles: info.render?.triangles ?? 0,
-        drawCalls: info.render?.calls ?? 0,
-        geometries: info.memory?.geometries ?? 0,
-        textures,
-        textureMbEstimate: textures * 4,
-      };
-    };
-    state.getMaterials = () => [];
-    state.getTextMeshes = () => [];
-    state.getMascot = () => null;
-    state.getEvents = () => eventsRef.current;
-    state.pushEvent = (e) => eventsRef.current.push(e);
-    state.getSections = (): SectionState[] =>
-      sections.map((s, i) => ({
-        id: s.id,
-        index: i,
-        anchor: i / Math.max(1, sections.length - 1),
-        cameraPose: cameraPath.lerp(i / Math.max(1, sections.length - 1)),
-        domId: `section-${s.id}`,
-      }));
-    state.getScroll = () => scrollProgress;
-
-    if (resolveReadyRef.current === null) {
-      resolveReadyRef.current = state.resolveReady;
-      // Resolve ready after fonts load (or immediately if already loaded)
-      if (document.fonts) {
-        document.fonts.ready.then(() => state.resolveReady()).catch(() => state.resolveReady());
-      } else {
-        state.resolveReady();
-      }
-    }
-  });
-
-  return null;
-}
-
-export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element {
-  const { testMode } = parseTestParams();
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const cameraPathRef = useRef<CameraPath>(buildCameraPath(config));
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
-
-  // Bridge state — only used in test mode
-  const bridgeStateRef = useRef<BridgeState>({
-    resolveReady: () => {},
+function makeBridgeState(): BridgeState {
+  return {
     advance: () => {},
     getSections: () => [],
     getCamera: () => ({
@@ -145,11 +65,101 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
     getMascot: () => null,
     getEvents: () => [],
     pushEvent: () => {},
+    resolveReady: () => {},
+  };
+}
+
+/** Lives inside the Canvas — wires useThree state into the bridge and renders the first frame */
+function BridgeInstaller({
+  bridgeStateRef,
+  scrollProgress,
+  sections,
+  cameraPath,
+}: {
+  bridgeStateRef: React.MutableRefObject<BridgeState>;
+  scrollProgress: number;
+  sections: DoodleyConfig["sections"];
+  cameraPath: CameraPath;
+}): null {
+  const { camera, gl, advance } = useThree();
+  const eventsRef = useRef<import("../contract.js").DoodleyEvent[]>([]);
+  const initialFrameDone = useRef(false);
+
+  // Wire live getters on every render so they always reflect current state
+  const state = bridgeStateRef.current;
+  state.advance = (ms) => advance(ms / 1000);
+  state.getCamera = (): CameraState => ({
+    position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
+    quaternion: {
+      x: camera.quaternion.x,
+      y: camera.quaternion.y,
+      z: camera.quaternion.z,
+      w: camera.quaternion.w,
+    },
+    up: { x: camera.up.x, y: camera.up.y, z: camera.up.z },
+    fov: "fov" in camera ? (camera as { fov: number }).fov : 60,
+    sectionId: null,
   });
+  state.getStats = (): SceneStats => {
+    const info = gl.info;
+    const textures = info.memory?.textures ?? 0;
+    return {
+      triangles: info.render?.triangles ?? 0,
+      drawCalls: info.render?.calls ?? 0,
+      geometries: info.memory?.geometries ?? 0,
+      textures,
+      textureMbEstimate: textures * 4,
+    };
+  };
+  state.getMaterials = () => [];
+  state.getTextMeshes = () => [];
+  state.getMascot = () => null;
+  state.getEvents = () => eventsRef.current;
+  state.pushEvent = (e) => eventsRef.current.push(e);
+  state.getSections = (): SectionState[] =>
+    sections.map((s, i) => ({
+      id: s.id,
+      index: i,
+      anchor: i / Math.max(1, sections.length - 1),
+      cameraPose: cameraPath.lerp(i / Math.max(1, sections.length - 1)),
+      domId: `section-${s.id}`,
+    }));
+  state.getScroll = () => scrollProgress;
+
+  useEffect(() => {
+    // Render the first frame so the canvas isn't black in test mode
+    if (!initialFrameDone.current) {
+      initialFrameDone.current = true;
+      advance(0);
+    }
+    // Resolve ready after fonts load
+    const resolve = () => state.resolveReady();
+    if (document.fonts) {
+      document.fonts.ready.then(resolve).catch(resolve);
+    } else {
+      resolve();
+    }
+  }, [advance, state]);
+
+  return null;
+}
+
+export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element {
+  const { testMode } = parseTestParams();
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const cameraPathRef = useRef<CameraPath>(buildCameraPath(config));
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+
+  // Create bridge state once; install the bridge synchronously so window.__doodley
+  // is available as soon as the component mounts (before any useEffect runs).
+  const bridgeStateRef = useRef<BridgeState | null>(null);
+  if (bridgeStateRef.current === null) {
+    bridgeStateRef.current = makeBridgeState();
+    if (testMode) installBridge(bridgeStateRef.current);
+  }
 
   useEffect(() => {
     if (!testMode) return;
-    installBridge(bridgeStateRef.current);
     return () => removeBridge();
   }, [testMode]);
 
@@ -189,7 +199,7 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
           <ScrollCamera />
           {testMode && (
             <BridgeInstaller
-              bridgeStateRef={bridgeStateRef}
+              bridgeStateRef={bridgeStateRef as React.MutableRefObject<BridgeState>}
               scrollProgress={scrollProgress}
               sections={config.sections}
               cameraPath={cameraPathRef.current}

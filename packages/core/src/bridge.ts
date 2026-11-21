@@ -15,9 +15,8 @@ import type {
   TextMeshState,
 } from "./contract.js";
 
-/** Mutable bridge state updated by DoodleySite and ScrollCamera */
+/** Mutable refs updated by BridgeInstaller after the canvas mounts */
 export interface BridgeState {
-  resolveReady: () => void;
   advance: (ms: number) => void;
   getSections: () => SectionState[];
   getCamera: () => CameraState;
@@ -28,6 +27,7 @@ export interface BridgeState {
   getMascot: () => MascotState | null;
   getEvents: () => DoodleyEvent[];
   pushEvent: (e: DoodleyEvent) => void;
+  resolveReady: () => void;
 }
 
 const FRAME_MS = 1000 / 60;
@@ -36,9 +36,14 @@ export function installBridge(state: BridgeState): void {
   let time = 0;
   let frame = 0;
 
+  let _resolve = () => {};
   const ready = new Promise<void>((resolve) => {
+    _resolve = resolve;
+    // Override resolveReady so BridgeInstaller can call it once fonts are loaded
     state.resolveReady = resolve;
   });
+  // Also set it now so if it's called before the promise body runs (unlikely but safe)
+  state.resolveReady = _resolve;
 
   const bridge: DoodleyBridge = {
     ready,
