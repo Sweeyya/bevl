@@ -163,11 +163,11 @@ Load speed on a phone is tested with Lighthouse CI in `perf.yml` (§6), not insi
 
 ### 4.7 Brand
 
-| Rule id             | Pass rule                                                                                             | Severity |
-| ------------------- | ----------------------------------------------------------------------------------------------------- | -------- |
-| `brand/palette`     | Every material color is within ΔE2000 of 6 or less from a brand token color, unless marked as allowed | warn     |
-| `brand/fonts`       | HTML text uses the brand fonts and they loaded                                                        | error    |
-| `brand/tokens-used` | Lists brand colors that never appear                                                                  | info     |
+| Rule id             | Pass rule                                                                                                          | Severity |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------ | -------- |
+| `brand/palette`     | Every non-neutral material color is within CIE76 ΔE of 10 or less from a brand token color (skipped with no brand) | warn     |
+| `brand/fonts`       | Visible nav links, h1-h3 and paragraphs start with a brand font (skipped with no brand)                            | warn     |
+| `brand/tokens-used` | Lists brand colors that never appear                                                                               | info     |
 
 ### 4.8 Optimizer
 

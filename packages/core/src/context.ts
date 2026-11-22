@@ -6,7 +6,7 @@
 import { createContext } from "react";
 import type { Placement } from "./choreography/layout.js";
 import type { Choreography } from "./choreography/types.js";
-import type { SectionConfig } from "./contract.js";
+import type { BrandTokens, SectionConfig } from "./contract.js";
 
 export interface DoodleyContextValue {
   /** Displayed progress in [0, 1]; equals the input target in test mode */
@@ -21,6 +21,8 @@ export interface DoodleyContextValue {
   choreography: Choreography;
   /** Placement for each section, indexed by section order */
   sectionPositions: Placement[];
+  /** Brand tokens given to DoodleySite, if any */
+  brand: BrandTokens | null;
 }
 
 export const DoodleyContext = createContext<DoodleyContextValue | null>(null);

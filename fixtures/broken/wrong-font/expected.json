@@ -1,0 +1,4 @@
+{
+  "mustFail": ["brand/fonts"],
+  "mayAlsoFail": []
+}
