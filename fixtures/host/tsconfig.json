@@ -11,5 +11,5 @@
       "*": ["./node_modules/*", "./node_modules/@types/*"]
     }
   },
-  "include": ["src/**/*", "vite.config.ts", "../broken/**/*"]
+  "include": ["src/**/*", "vite.config.ts", "../broken/**/*", "../e2e/**/*"]
 }

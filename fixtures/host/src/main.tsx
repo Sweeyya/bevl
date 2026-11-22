@@ -4,7 +4,10 @@ import { createRoot } from "react-dom/client";
 import type { Fixture, Head } from "./fixture.js";
 import { good } from "./good.js";
 
-const loaders = import.meta.glob<{ fixture: Fixture }>("../../broken/*/fixture.tsx");
+const loaders = import.meta.glob<{ fixture: Fixture }>([
+  "../../broken/*/fixture.tsx",
+  "../../e2e/*/fixture.tsx",
+]);
 
 function applyHead({ title, description }: Head): void {
   document.title = title ?? "";
@@ -19,7 +22,8 @@ function applyHead({ title, description }: Head): void {
 
 async function loadFixture(name: string | null): Promise<Fixture> {
   if (!name || name === "good") return good;
-  const loader = loaders[`../../broken/${name}/fixture.tsx`];
+  const loader =
+    loaders[`../../broken/${name}/fixture.tsx`] ?? loaders[`../../e2e/${name}/fixture.tsx`];
   if (!loader) throw new Error(`Unknown fixture "${name}"`);
   return (await loader()).fixture;
 }
