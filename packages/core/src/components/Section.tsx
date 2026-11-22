@@ -6,10 +6,12 @@ import { DoodleyContext } from "../context.js";
 interface SectionProps {
   id: string;
   title: string;
+  /** Real HTML for this section, rendered over the canvas in the DOM (not inside the 3D scene). */
+  html?: ReactNode;
   children?: ReactNode;
 }
 
-export function Section({ id, title, children }: SectionProps): JSX.Element {
+export function Section({ id, title, html, children }: SectionProps): JSX.Element {
   const ctx = useContext(DoodleyContext);
   const ref = useRef<Group>(null);
 
@@ -21,6 +23,13 @@ export function Section({ id, title, children }: SectionProps): JSX.Element {
   useLayoutEffect(() => {
     if (ref.current && lookAt) ref.current.lookAt(lookAt[0], lookAt[1], lookAt[2]);
   }, [lookAt]);
+
+  const registerHtml = ctx?.registerHtml;
+  useLayoutEffect(() => {
+    if (!registerHtml || html === undefined) return;
+    registerHtml(id, html);
+    return () => registerHtml(id, null);
+  }, [registerHtml, id, html]);
 
   return (
     <group

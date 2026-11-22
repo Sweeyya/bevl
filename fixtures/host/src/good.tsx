@@ -24,13 +24,35 @@ export const head = {
   description: "A three-section baseline site used by the broken fixtures.",
 };
 
+export const sectionHtml: Record<string, JSX.Element> = {
+  hero: (
+    <>
+      <h1>Fixture baseline</h1>
+      <p>A small three-section site with real text in the page.</p>
+    </>
+  ),
+  features: (
+    <>
+      <h2>Features</h2>
+      <p>Every section keeps its words as HTML so people and search engines can read them.</p>
+    </>
+  ),
+  contact: (
+    <>
+      <h2>Contact</h2>
+      <p>Say hello and we will answer soon.</p>
+      <a href="mailto:hello@example.com">hello@example.com</a>
+    </>
+  ),
+};
+
 const COLORS = ["#e63946", "#2a9d8f", "#457b9d"];
 
 export function Scene(): JSX.Element {
   return (
     <>
       {config.sections.map((s, i) => (
-        <Section key={s.id} id={s.id} title={s.title}>
+        <Section key={s.id} id={s.id} title={s.title} html={sectionHtml[s.id]}>
           <mesh>
             <boxGeometry args={[2, 2, 2]} />
             <meshStandardMaterial color={COLORS[i] ?? "#ffffff"} />

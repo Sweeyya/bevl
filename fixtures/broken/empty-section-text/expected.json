@@ -1,0 +1,4 @@
+{
+  "mustFail": ["html/section-text"],
+  "mayAlsoFail": []
+}

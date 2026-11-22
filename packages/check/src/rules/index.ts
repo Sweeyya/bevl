@@ -5,6 +5,7 @@ import fonts from "./brand/fonts.js";
 import palette from "./brand/palette.js";
 import drawCalls from "./budgets/draw-calls.js";
 import triangles from "./budgets/triangles.js";
+import headings from "./html/headings.js";
 import sectionText from "./html/section-text.js";
 import consoleErrors from "./load/console-errors.js";
 import ready from "./load/ready.js";
@@ -37,6 +38,7 @@ const rules: Rule[] = [
   deterministic,
   motionAllowances,
   sectionText,
+  headings,
   title,
   metaDescription,
   keyboard,

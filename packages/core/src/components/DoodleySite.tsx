@@ -1,6 +1,6 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fontStack, resolveBrand } from "../brand.js";
 import type { BridgeState } from "../bridge.js";
 import { exposeBridge, installBridge, removeBridge } from "../bridge.js";
@@ -23,6 +23,7 @@ import { resolveInputs } from "../input/resolve.js";
 import { useProgressInput } from "../input/useProgressInput.js";
 import { collectMaterials } from "../materials.js";
 import { isTestModeAllowed } from "../testmode.js";
+import { HtmlLayer, HtmlLayerDriver } from "./HtmlLayer.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
 interface DoodleySiteProps {
@@ -198,6 +199,16 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
     snap: choreography.snap,
     testMode,
   });
+  const htmlLayerRef = useRef<HTMLDivElement>(null);
+  const [htmlContent, setHtmlContent] = useState(() => new Map<string, ReactNode>());
+  const registerHtml = useCallback((id: string, node: ReactNode | null) => {
+    setHtmlContent((prev) => {
+      const next = new Map(prev);
+      if (node === null) next.delete(id);
+      else next.set(id, node);
+      return next;
+    });
+  }, []);
   const nativeScroll = resolveInputs(choreography.input, isCoarsePointer()).includes("scroll");
 
   const initialPose = cameraPoseAt(choreography, 0);
@@ -224,6 +235,7 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
         choreography,
         sectionPositions: positions,
         brand: brand ?? null,
+        registerHtml,
       }}
     >
       <div
@@ -253,6 +265,7 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
           style={{ position: "fixed", inset: 0, zIndex: 0, background: tokens.colors.background }}
         >
           <ScrollCamera />
+          <HtmlLayerDriver layer={htmlLayerRef} />
           {testMode && (
             <BridgeInstaller
               bridgeStateRef={bridgeStateRef as React.MutableRefObject<BridgeState>}
@@ -263,23 +276,7 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
           {children}
         </Canvas>
 
-        {config.sections.map((s) => (
-          <div
-            key={s.id}
-            id={`section-${s.id}`}
-            data-doodley-section={s.id}
-            data-doodley-title={s.title}
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              width: 1,
-              height: 1,
-              overflow: "hidden",
-              opacity: 0,
-              pointerEvents: "none",
-            }}
-          />
-        ))}
+        <HtmlLayer layerRef={htmlLayerRef} content={htmlContent} />
 
         <div
           style={{

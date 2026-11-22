@@ -210,6 +210,12 @@ The key rule: **the checker never calls `step()` to advance time**. It uses real
 
 ---
 
+## 5b. HTML content layer
+
+Section text is real HTML. `<Section id title html={...}>` registers its html with `DoodleySite`, which renders it outside the canvas in a fixed, pointer-events-none layer: one `<main id="main-content">` with one `<section id="section-<id>">` per section. Visibility follows progress (opacity and transform written from the frame loop); all text stays in the DOM and Tab follows section order. See `docs/adr/004-html-content-layer.md`.
+
+---
+
 ## 6. Package dependency rules
 
 - `core` has no `@doodley/*` dependencies.

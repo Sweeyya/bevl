@@ -79,6 +79,8 @@ export { Section } from "./components/Section.js";
 // Context
 export type { DoodleyContextValue } from "./context.js";
 export { DoodleyContext } from "./context.js";
+// HTML layer visibility (pure helpers)
+export { activeSection, sectionVisibility } from "./html/visibility.js";
 // Seeded random (use instead of Math.random in runtime code paths)
 export { makeRand } from "./rand.js";
 // Example choreographies for agents to start from
