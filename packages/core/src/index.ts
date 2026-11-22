@@ -81,3 +81,6 @@ export type { DoodleyContextValue } from "./context.js";
 export { DoodleyContext } from "./context.js";
 // Seeded random (use instead of Math.random in runtime code paths)
 export { makeRand } from "./rand.js";
+// Example choreographies for agents to start from
+export type { Recipe, RecipeName } from "./recipes/index.js";
+export { getRecipe, recipeNames, recipes } from "./recipes/index.js";
