@@ -3,6 +3,7 @@ import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { chromium } from "playwright";
 import { createServer, type ViteDevServer } from "vite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runCheck } from "../checker.js";
@@ -38,7 +39,15 @@ beforeAll(async () => {
   await server.listen();
   const address = server.httpServer?.address() as AddressInfo | null | undefined;
   base = `http://127.0.0.1:${address?.port}`;
-});
+
+  const browser = await chromium.launch();
+  const page = await browser.newPage();
+  for (const name of ["good", ...names]) {
+    await page.goto(`${base}/?fixture=${name}&doodley-test`, { waitUntil: "networkidle" });
+    await page.waitForFunction(() => "__doodley" in window, undefined, { timeout: 60_000 });
+  }
+  await browser.close();
+}, 300_000);
 
 afterAll(async () => {
   await server?.close();
