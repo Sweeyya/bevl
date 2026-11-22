@@ -14,18 +14,18 @@ Doodley is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and oth
 
 ## What works today
 
-| Area | Status |
-| --- | --- |
-| Core runtime (`@doodley/core`) | Works. Scroll choreography, one progress value driven by scroll, wheel, touch, drag, swipe, tap and keyboard, snap-to-screen settling, test mode and the `window.__doodley` bridge. |
-| Checker (`@doodley/check`) | Works. 19 rules covering load, render, budgets, scroll, snapping, determinism, keyboard, HTML and SEO. 12 broken fixtures prove the rules fail when they should. |
-| Accessibility layer (`@doodley/a11y`) | Works. Nav bar, skip link, keyboard and reduced motion. |
-| Token reader (`@doodley/tokens`) | Reads `DESIGN.md` and design-token JSON. **Not yet connected to the 3D scene.** |
-| Optimizer (`@doodley/optimizer`) | Shrinks `.glb` models with glTF Transform. |
-| CLI (`@doodley/cli`) | `create`, `check`, `optimize`. `add-section` and `apply-brand` are not built yet. |
-| MCP server (`@doodley/mcp`) | `check_site`, `optimize_assets`, `read_brand_tokens`. `create_site`, `add_section` and `apply_brand` are not built yet. |
-| Effects (`@doodley/effects`) | Scaffold only: a glass material and a shader background. |
-| Mascot (`@doodley/mascot`) | Empty. Planned for V2. |
-| Agent skill (`SKILL.md`) | Not written yet. |
+| Area                                  | Status                                                                                                                                                                              |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core runtime (`@doodley/core`)        | Works. Scroll choreography, one progress value driven by scroll, wheel, touch, drag, swipe, tap and keyboard, snap-to-screen settling, test mode and the `window.__doodley` bridge. |
+| Checker (`@doodley/check`)            | Works. 19 rules covering load, render, budgets, scroll, snapping, determinism, keyboard, HTML and SEO. 12 broken fixtures prove the rules fail when they should.                    |
+| Accessibility layer (`@doodley/a11y`) | Works. Nav bar, skip link, keyboard and reduced motion.                                                                                                                             |
+| Token reader (`@doodley/tokens`)      | Reads `DESIGN.md` and design-token JSON. **Not yet connected to the 3D scene.**                                                                                                     |
+| Optimizer (`@doodley/optimizer`)      | Shrinks `.glb` models with glTF Transform.                                                                                                                                          |
+| CLI (`@doodley/cli`)                  | `create`, `check`, `optimize`. `add-section` and `apply-brand` are not built yet.                                                                                                   |
+| MCP server (`@doodley/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`. `create_site`, `add_section` and `apply_brand` are not built yet.                                                             |
+| Effects (`@doodley/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                            |
+| Mascot (`@doodley/mascot`)            | Empty. Planned for V2.                                                                                                                                                              |
+| Agent skill (`SKILL.md`)              | Not written yet.                                                                                                                                                                    |
 
 The basic example in `examples/basic` scores 100/100.
 
@@ -77,11 +77,7 @@ A site is a `DoodleyConfig` (usually `doodley.json`). If you give it no `choreog
   "choreography": {
     "version": 1,
     "camera": { "position": [0, 0, 0] },
-    "beats": [
-      { "id": "hero", "at": 0 },
-      { "id": "work", "at": 0.5 },
-      { "id": "contact", "at": 1 }
-    ],
+    "beats": [{ "id": "hero", "at": 0 }, { "id": "work", "at": 0.5 }, { "id": "contact", "at": 1 }],
     "layouts": { "sections": { "arrange": "onSphere", "radius": 8, "facing": "inward" } },
     "tracks": [
       {
@@ -148,20 +144,20 @@ The server treats every tool input as untrusted:
 
 ## Repo layout
 
-| Path | What it is |
-| --- | --- |
-| `packages/core` | 3D runtime, choreography, inputs, test bridge |
-| `packages/check` | The checker and its rules |
-| `packages/a11y` | Nav, skip link, keyboard, reduced motion |
-| `packages/tokens` | Brand and token file reader |
-| `packages/optimizer` | `.glb` shrinker |
-| `packages/effects` | Visual effects (scaffold) |
-| `packages/mascot` | Mascot motion (V2) |
-| `packages/cli` | The `doodley` command |
-| `packages/mcp` | The MCP server |
-| `examples/basic` | A three-section example that scores 100 |
-| `fixtures/` | Tiny broken sites, each of which must fail one rule |
-| `docs/adr` | Architecture decisions |
+| Path                 | What it is                                          |
+| -------------------- | --------------------------------------------------- |
+| `packages/core`      | 3D runtime, choreography, inputs, test bridge       |
+| `packages/check`     | The checker and its rules                           |
+| `packages/a11y`      | Nav, skip link, keyboard, reduced motion            |
+| `packages/tokens`    | Brand and token file reader                         |
+| `packages/optimizer` | `.glb` shrinker                                     |
+| `packages/effects`   | Visual effects (scaffold)                           |
+| `packages/mascot`    | Mascot motion (V2)                                  |
+| `packages/cli`       | The `doodley` command                               |
+| `packages/mcp`       | The MCP server                                      |
+| `examples/basic`     | A three-section example that scores 100             |
+| `fixtures/`          | Tiny broken sites, each of which must fail one rule |
+| `docs/adr`           | Architecture decisions                              |
 
 Built with TypeScript (strict, ESM), React Three Fiber, Three.js, Playwright, Vitest, Biome, Turborepo and pnpm.
 
