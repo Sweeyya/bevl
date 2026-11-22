@@ -50,7 +50,7 @@ function parseTestParams(): { testMode: boolean; seed: number } {
   return { testMode: p.has("doodley-test"), seed: Number(p.get("seed") ?? "1") || 1 };
 }
 
-function makeBridgeState(): BridgeState {
+function makeBridgeState(choreography: Choreography): BridgeState {
   return {
     advance: () => {},
     getSections: () => [],
@@ -61,6 +61,7 @@ function makeBridgeState(): BridgeState {
       fov: 60,
       sectionId: null,
     }),
+    getChoreography: () => choreography,
     getScroll: () => 0,
     getStats: () => ({
       triangles: 0,
@@ -168,7 +169,7 @@ export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JS
   const bridgeStateRef = useRef<BridgeState | null>(null);
   const bridgeRef = useRef<DoodleyBridge | null>(null);
   if (bridgeStateRef.current === null) {
-    bridgeStateRef.current = makeBridgeState();
+    bridgeStateRef.current = makeBridgeState(choreography);
     if (testMode) bridgeRef.current = installBridge(bridgeStateRef.current);
   }
 

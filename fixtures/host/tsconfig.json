@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "noEmit": true,
+    "types": ["vite/client"],
+    "paths": {
+      "@doodley/core": ["../../packages/core/src/index.ts"],
+      "*": ["./node_modules/*", "./node_modules/@types/*"]
+    }
+  },
+  "include": ["src/**/*", "vite.config.ts", "../broken/**/*"]
+}

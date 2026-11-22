@@ -72,6 +72,8 @@ export interface DoodleyBridge {
   sections(): SectionState[];
   /** Current camera state */
   camera(): CameraState;
+  /** The validated choreography in effect: beats, snap settings and motion allowances (read-only) */
+  choreography(): Choreography;
   /** Current scroll progress 0-1 */
   scroll(): number;
   /** Scene stats (triangles, draw calls, texture MB, etc.) */

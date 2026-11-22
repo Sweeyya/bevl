@@ -1,0 +1,4 @@
+{
+  "mustFail": ["scroll/deterministic"],
+  "mayAlsoFail": []
+}

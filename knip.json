@@ -33,7 +33,7 @@
       "project": ["src/**/*.ts"]
     }
   },
-  "ignore": ["examples/**"],
+  "ignore": ["examples/**", "fixtures/**"],
   "ignoreExportsUsedInFile": true,
   "ignoreBinaries": ["playwright"],
   "ignoreDependencies": [

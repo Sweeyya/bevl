@@ -1,0 +1,4 @@
+{
+  "mustFail": ["scroll/no-jumps"],
+  "mayAlsoFail": []
+}

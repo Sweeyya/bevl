@@ -4,6 +4,7 @@
  * Only active in test mode — never shipped to production users.
  */
 
+import type { Choreography } from "./choreography/types.js";
 import type {
   CameraState,
   DoodleyBridge,
@@ -17,9 +18,11 @@ import type {
 
 /** Mutable refs updated by BridgeInstaller after the canvas mounts */
 export interface BridgeState {
-  advance: (ms: number) => void;
+  /** Render one frame at the given absolute time in ms (R3F's frameloop="never" takes timestamps). */
+  advance: (timeMs: number) => void;
   getSections: () => SectionState[];
   getCamera: () => CameraState;
+  getChoreography: () => Choreography;
   getScroll: () => number;
   getStats: () => SceneStats;
   getMaterials: () => MaterialState[];
@@ -50,14 +53,15 @@ export function installBridge(state: BridgeState): DoodleyBridge {
     step(ms: number) {
       const steps = Math.max(1, Math.round(ms / FRAME_MS));
       for (let i = 0; i < steps; i++) {
-        state.advance(FRAME_MS);
         time += FRAME_MS;
+        state.advance(time);
         frame += 1;
       }
       return { time, frame };
     },
     sections: () => state.getSections(),
     camera: () => state.getCamera(),
+    choreography: () => state.getChoreography(),
     scroll: () => state.getScroll(),
     stats: () => state.getStats(),
     materials: () => state.getMaterials(),

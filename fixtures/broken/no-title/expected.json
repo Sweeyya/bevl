@@ -1,0 +1,4 @@
+{
+  "mustFail": ["seo/title"],
+  "mayAlsoFail": []
+}

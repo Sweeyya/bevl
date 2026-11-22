@@ -93,17 +93,21 @@ Each rule has a stable id, a default severity (`error`, `warn`, `info`), a pass 
 
 The checker scrolls from top to bottom in 40 wheel steps (touch swipes on phone), stepping time after each, then back to the top.
 
-| Rule id                        | Pass rule                                                                          | Severity |
-| ------------------------------ | ---------------------------------------------------------------------------------- | -------- |
-| `scroll/reaches-every-section` | Every section is entered, in order                                                 | error    |
-| `scroll/end-reachable`         | The last section is reachable and the page can scroll back to the top              | error    |
-| `scroll/no-jumps`              | Camera never moves more than `maxStepMeters` in one step (no teleports)            | error    |
-| `scroll/speed-limit`           | Camera speed and turn speed stay under the limits in §6                            | warn     |
-| `scroll/no-roll`               | Camera up direction stays within 2° of world up                                    | error    |
-| `scroll/no-spin`               | Camera turns less than 15° per scroll step                                         | error    |
-| `scroll/no-free-roam`          | W, A, S, D and drag do not move the camera off the path                            | error    |
-| `scroll/reverse`               | Scrolling back to the top returns the camera to the start pose (within 1 cm, 0.5°) | warn     |
-| `scroll/eased`                 | Camera speed has no sudden spikes (speed change between steps under the limit)     | warn     |
+| Rule id                        | Pass rule                                                                                                                           | Severity |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `scroll/reaches-every-section` | Every section is entered, in order                                                                                                  | error    |
+| `scroll/end-reachable`         | The last section is reachable and the page can scroll back to the top                                                               | error    |
+| `scroll/no-jumps`              | Camera never moves more than `maxStepMeters` in one step (no teleports)                                                             | error    |
+| `scroll/speed-limit`           | Camera speed and turn speed stay under the limits in §6                                                                             | warn     |
+| `scroll/no-roll`               | Camera up direction stays within 2° of world up                                                                                     | error    |
+| `scroll/no-spin`               | Camera turns less than 15° per scroll step                                                                                          | error    |
+| `scroll/no-free-roam`          | W, A, S, D and drag do not move the camera off the path                                                                             | error    |
+| `scroll/reverse`               | Scrolling back to the top returns the camera to the start pose (within 1 cm, 0.5°)                                                  | warn     |
+| `scroll/eased`                 | Camera speed has no sudden spikes (speed change between steps under the limit)                                                      | warn     |
+| `scroll/snap-settles`          | After stopping between two beats, progress rests on a beat (opt-out: snap mode `none` or `snap: false`)                             | warn     |
+| `scroll/snap-no-trap`          | From every beat, keyboard and wheel reach the next and previous beat                                                                | error    |
+| `scroll/deterministic`         | Two fresh loads with the same seed give the same camera at 5 scroll positions (1e-6)                                                | error    |
+| `scroll/motion-allowances`     | Reports each `allow.roll/spin/fastMoves` opt-out; never lowers the score. `no-roll` and `no-jumps` skip when their allowance is set | info     |
 
 ### 4.3 Navigation (design rule 5)
 
@@ -134,15 +138,16 @@ The checker scrolls from top to bottom in 40 wheel steps (touch swipes on phone)
 
 axe can't see the 3D pixels behind text, so we add our own checks.
 
-| Rule id                 | Pass rule                                                                                                                                                | Severity |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `a11y/axe`              | No serious or critical axe violations on the HTML layer                                                                                                  | error    |
-| `a11y/contrast-over-3d` | For each text element, sample the rendered pixels behind it at every section. Contrast is at least 4.5:1 (3:1 for large text). Gives a `suggestedColor`. | error    |
-| `a11y/keyboard`         | Tab reaches the menu and every link. Enter starts the glide.                                                                                             | error    |
-| `a11y/focus-visible`    | Focused elements show a visible outline                                                                                                                  | error    |
-| `a11y/skip-link`        | There is a "skip to content" link                                                                                                                        | warn     |
-| `a11y/reduced-motion`   | With reduced motion on, the camera moves less than 10% as far while scrolling, and sections change with fades                                            | error    |
-| `a11y/canvas-hidden`    | The canvas has `aria-hidden="true"` or `role="img"` with a label                                                                                         | warn     |
+| Rule id                       | Pass rule                                                                                                                                                | Severity |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `a11y/axe`                    | No serious or critical axe violations on the HTML layer                                                                                                  | error    |
+| `a11y/contrast-over-3d`       | For each text element, sample the rendered pixels behind it at every section. Contrast is at least 4.5:1 (3:1 for large text). Gives a `suggestedColor`. | error    |
+| `a11y/keyboard`               | Tab reaches the menu and every link. Enter starts the glide.                                                                                             | error    |
+| `a11y/keyboard-reaches-beats` | ArrowDown visits every beat in order, ArrowUp returns, Home and End reach the ends                                                                       | error    |
+| `a11y/focus-visible`          | Focused elements show a visible outline                                                                                                                  | error    |
+| `a11y/skip-link`              | There is a "skip to content" link                                                                                                                        | warn     |
+| `a11y/reduced-motion`         | With reduced motion on, the camera moves less than 10% as far while scrolling, and sections change with fades                                            | error    |
+| `a11y/canvas-hidden`          | The canvas has `aria-hidden="true"` or `role="img"` with a label                                                                                         | warn     |
 
 ### 4.6 Budgets
 
@@ -302,7 +307,10 @@ The test fails if a `mustFail` rule passes, or if any rule not listed fails.
 | `huge-textures`           | `budgets/texture-mb`           |
 | `off-brand-colors`        | `brand/palette`                |
 | `wrong-font`              | `brand/fonts`                  |
-| `random-without-seed`     | `determinism/same-twice`       |
+| `random-without-seed`     | `scroll/deterministic`         |
+| `snap-never-settles`      | `scroll/snap-settles`          |
+| `snap-trap`               | `scroll/snap-no-trap`          |
+| `keyboard-skips-beat`     | `a11y/keyboard-reaches-beats`  |
 | `mascot-covers-text` (V2) | `mascot/not-covering-text`     |
 
 Rule: **every new check rule ships with its broken fixture in the same PR.**

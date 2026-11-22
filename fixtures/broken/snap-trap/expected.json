@@ -1,0 +1,4 @@
+{
+  "mustFail": ["scroll/snap-no-trap"],
+  "mayAlsoFail": []
+}

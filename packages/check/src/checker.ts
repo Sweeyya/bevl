@@ -102,14 +102,6 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
         () => undefined, // navigation errors are caught by the rules themselves
       );
 
-      // Inject collected errors so rules can read them synchronously.
-      await page
-        .evaluate((errors) => {
-          (window as unknown as { __doodleyConsoleErrors: string[] }).__doodleyConsoleErrors =
-            errors;
-        }, consoleErrors)
-        .catch(() => undefined);
-
       // Record the WebGL renderer string.
       const renderer = await page
         .evaluate(() => {
@@ -139,6 +131,12 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
       };
 
       for (const rule of activeRules) {
+        await page
+          .evaluate((errors) => {
+            (window as unknown as { __doodleyConsoleErrors: string[] }).__doodleyConsoleErrors =
+              errors;
+          }, consoleErrors)
+          .catch(() => undefined);
         const findings = await rule.run(ruleCtx).catch((err) => [
           {
             rule: rule.id,

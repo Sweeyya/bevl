@@ -1,0 +1,4 @@
+{
+  "mustFail": ["scroll/reaches-every-section"],
+  "mayAlsoFail": ["scroll/snap-no-trap"]
+}
