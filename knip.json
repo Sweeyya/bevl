@@ -1,0 +1,46 @@
+{
+  "$schema": "https://unpkg.com/knip@6.45.1/schema.json",
+  "workspaces": {
+    ".": {
+      "entry": [],
+      "project": []
+    },
+    "packages/core": {
+      "project": ["src/**/*.{ts,tsx}"]
+    },
+    "packages/check": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/cli": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/mcp": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/tokens": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/a11y": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/effects": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/optimizer": {
+      "project": ["src/**/*.ts"]
+    },
+    "packages/mascot": {
+      "project": ["src/**/*.ts"]
+    }
+  },
+  "ignore": ["examples/**"],
+  "ignoreExportsUsedInFile": true,
+  "ignoreBinaries": ["playwright"],
+  "ignoreDependencies": [
+    "@doodley/core",
+    "@doodley/check",
+    "@doodley/tokens",
+    "@doodley/optimizer",
+    "@react-three/drei"
+  ]
+}

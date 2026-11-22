@@ -1,0 +1,214 @@
+# CI — fast checks that run on every PR and push to main.
+# Jobs run in parallel. A PR cannot merge until ci-passed passes.
+#
+# This workflow only covers: lint, typecheck, unit tests, build.
+# Slower test types live in their own workflows with paths: filters
+# so they only run when the files they care about actually change:
+#   fixtures.yml  — broken fixture tests    (packages/check, fixtures/)
+#   visual.yml    — screenshot tests        (packages/core, effects, examples/)
+#   perf.yml      — Lighthouse CI           (runtime packages, examples/)
+#   nightly.yml   — determinism + golden    (scheduled, or workflow_dispatch)
+#
+# Patterns used here (learned from Vite, tRPC, Biome):
+#   - permissions: {} zero trust; each job grants only what it needs.
+#   - Actions pinned to full commit SHA, not a floating tag like @v4.
+#   - cancel-in-progress: true so a new push stops the stale run.
+#   - timeout-minutes on every job.
+#   - Parallel jobs — all four run at the same time.
+#   - Docs-only skip — a README typo fix doesn't run the test suite.
+#   - --frozen-lockfile — no surprise upgrades during install.
+#   - Composite setup action (.github/setup/action.yml) — written once, used everywhere.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Zero trust: no action gets any permission unless this workflow explicitly grants it.
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Skip check ───────────────────────────────��────────────────────────────
+  # If the PR only touches docs/markdown, skip the expensive jobs.
+  changed:
+    name: Check changed files
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      skip: ${{ steps.filter.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Detect docs-only changes
+        id: filter
+        shell: bash
+        run: |
+          # On a PR, compare against the base. On a push to main, compare against the previous commit.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE=${{ github.event.pull_request.base.sha }}
+          else
+            BASE=${{ github.event.before }}
+          fi
+          CHANGED=$(git diff --name-only "$BASE" HEAD 2>/dev/null || echo "unknown")
+          echo "Changed files: $CHANGED"
+          # If every changed file is under docs/, *.md, or .github (but not workflow files), skip.
+          if echo "$CHANGED" | grep -qvE '^(docs/|\.github/(?!workflows/).*|.*\.md$|CHANGELOG)'; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "docs_only=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  # ── Lint ──────────────────────────────────────────────────────────────────
+  lint:
+    name: Lint
+    needs: changed
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Lint
+        run: pnpm lint:ci
+
+  # ── Typecheck ─────────────────────────────────────────────────────────────
+  typecheck:
+    name: Typecheck
+    needs: changed
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+  # ── Test ──────────────────────────────────────────────────────────────────
+  test:
+    name: Test
+    needs: changed
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Unit tests
+        run: pnpm test
+
+  # ── Build ─────────────────────────────────────────────────────────────────
+  build:
+    name: Build
+    needs: changed
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Build
+        run: pnpm build
+
+  # ── Package quality ───────────────────────────────────────────────────────
+  # Four fast checks that catch AI-specific bloat and publishing mistakes:
+  #   publint  — package.json exports maps are correct for consumers
+  #   attw     — TypeScript types resolve correctly under CJS/ESM/bundler
+  #   size-limit — dist/ stays inside budget (400 kB core, 150 kB check, 100 kB cli)
+  #   knip     — no dead exports, unused imports, or orphaned files
+  # Skipped on docs-only PRs. All run after build (needs dist/).
+  pkg:
+    name: Package quality
+    needs: [changed, build]
+    if: needs.changed.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Build
+        run: pnpm build
+
+      - name: publint — exports map correctness
+        run: pnpm pkg:lint
+
+      - name: attw — type resolution under all module modes
+        # --profile esm-only: suppress CJSResolvesToESM for intentionally ESM packages.
+        # Runs only on the published packages, not examples or fixtures.
+        run: |
+          for pkg in packages/core packages/check packages/cli packages/mcp; do
+            echo "=== $pkg ==="
+            pnpm attw --pack "$pkg" --profile esm-only || exit 1
+          done
+
+      - name: size-limit — bundle size budgets
+        run: pnpm pkg:size
+
+      - name: knip — dead code and unused exports
+        # Non-blocking on this PR (exit 0) so we don't stall T1.x work,
+        # but output is always printed so you can see the debt accumulate.
+        # Change `|| true` to `|| exit 1` once the codebase is clean.
+        run: pnpm pkg:unused || true
+
+  # ── All passed (required status check) ───────────────────────────────────
+  # This is the one job you set as "required" in GitHub branch protection.
+  # It passes if all jobs passed OR if the skip was triggered.
+  # This way you don't need to add every individual job to branch protection.
+  ci-passed:
+    name: CI passed
+    needs: [lint, typecheck, test, build, pkg]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Check all jobs passed
+        shell: bash
+        run: |
+          results="${{ join(needs.*.result, ' ') }}"
+          echo "Job results: $results"
+          for result in $results; do
+            if [ "$result" != "success" ] && [ "$result" != "skipped" ]; then
+              echo "A required job failed: $result"
+              exit 1
+            fi
+          done
+          echo "All jobs passed or were skipped."

@@ -1,0 +1,136 @@
+# Nightly workflow.
+# Runs on a schedule (2am UTC) and before releases.
+# Two expensive jobs that are too slow for every PR:
+#
+#   determinism — runs `doodley check --verify-determinism` on every example.
+#                 Two runs must produce identical reports and screenshots that
+#                 differ by 0.1% of pixels or less. Catches non-deterministic
+#                 randomness, timer drift, and animation state leaks.
+#
+#   golden      — runs the 5 MCP golden tasks through Claude Code and checks
+#                 that each site scores 90+ with no errors. Costs tokens,
+#                 so it runs nightly and before release only.
+#
+# Can also be triggered manually (workflow_dispatch) before a release.
+# Pattern learned from tRPC (nightly E2E) and Playwright (nightly browser tests).
+
+name: Nightly
+
+on:
+  schedule:
+    # 2:00 AM UTC every day.
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      skip_golden:
+        description: Skip golden tasks (faster, no token cost)
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  # ── Determinism ─────────────────────────────────────────────────────────────
+  determinism:
+    name: Determinism check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    container:
+      # Same pinned Playwright image as visual.yml so software WebGL is identical.
+      image: mcr.microsoft.com/playwright:v1.49.0-noble
+      options: --user 1001
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 12.20.0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Determinism check
+        # Runs check twice on each example, diffs the reports and screenshots.
+        # Fails if any report field differs or any screenshot differs by >0.1%.
+        run: pnpm test:determinism
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+
+      - name: Upload determinism diffs on failure
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: determinism-diffs-${{ github.run_id }}
+          path: |
+            examples/*/.doodley/determinism/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ── Golden tasks ─────────────────────────────────────────────────────────────
+  golden:
+    name: MCP golden tasks
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    if: ${{ !inputs.skip_golden }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Get Playwright version
+        id: pw-version
+        shell: bash
+        run: |
+          ver=$(pnpm ls --depth 0 --json -w playwright 2>/dev/null \
+            | python3 -c "import sys,json; pkgs=json.load(sys.stdin); \
+              print(next((p['devDependencies']['playwright']['version'] \
+                for p in pkgs if 'devDependencies' in p \
+                and 'playwright' in p['devDependencies']), 'unknown'))" \
+            2>/dev/null || echo "unknown")
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.pw-version.outputs.version }}
+          restore-keys: playwright-chromium-${{ runner.os }}-
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Build
+        run: pnpm build
+
+      - name: Run golden tasks
+        # golden/README.md documents the exact Claude Code flags used.
+        # Requires ANTHROPIC_API_KEY in repo secrets.
+        # Records score, time, and tokens per task in golden/results/.
+        run: pnpm golden
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Upload golden task results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: golden-results-${{ github.run_id }}
+          path: golden/results/
+          retention-days: 30
+          if-no-files-found: ignore

@@ -1,0 +1,82 @@
+# Broken-fixture tests.
+# Runs every broken site through `doodley check` and verifies that
+# the expected rules fail. If a fixture passes when it should fail,
+# the checker has a bug.
+#
+# Only runs when check code or the fixtures themselves change.
+# Learned from Biome: use paths: so a docs-only PR never runs this.
+
+name: Fixtures
+
+on:
+  pull_request:
+    paths:
+      - "packages/check/**"
+      - "fixtures/**"
+      - ".github/workflows/fixtures.yml"
+      - ".github/setup/**"
+  push:
+    branches: [main]
+    paths:
+      - "packages/check/**"
+      - "fixtures/**"
+
+permissions: {}
+
+concurrency:
+  group: fixtures-${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  fixtures:
+    name: Broken fixture tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Build
+        run: pnpm build
+
+      # Cache Playwright's Chromium binary by the exact Playwright version.
+      # Saves 2-3 minutes once the cache warms. Pattern from Vite's CI.
+      - name: Get Playwright version
+        id: pw-version
+        shell: bash
+        run: |
+          ver=$(pnpm ls --depth 0 --json -w playwright 2>/dev/null \
+            | python3 -c "import sys,json; pkgs=json.load(sys.stdin); \
+              print(next((p['devDependencies']['playwright']['version'] \
+                for p in pkgs if 'devDependencies' in p \
+                and 'playwright' in p['devDependencies']), 'unknown'))" \
+            2>/dev/null || echo "unknown")
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.pw-version.outputs.version }}
+          restore-keys: playwright-chromium-${{ runner.os }}-
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Run broken fixture tests
+        run: pnpm test:fixtures
+
+      # On failure, upload check reports so you can see what actually failed.
+      - name: Upload fixture reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: fixture-reports-${{ github.run_id }}
+          path: fixtures/broken/*/.doodley/reports/
+          retention-days: 7
+          if-no-files-found: ignore

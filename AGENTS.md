@@ -1,33 +1,50 @@
 # Working in the Doodley repo
 
-Doodley is a framework that lets AI agents build 3D interactive websites, then check them, play through them, and score them. Read these first, in order:
+Doodley turns any brand into a fast, accessible 3D website, used from Claude, ChatGPT, Cursor or Lovable through an MCP. Every site it makes comes tested by `doodley check`.
 
-1. `docs/PLAN.md`: the whole project and why.
-2. `docs/STEP1_SPEC.md`: the exact spec for what we are building now.
+Read these first, in order:
+
+1. `PROJECT_PLAN.md`: the whole project, packages, files and schedule.
+2. `TESTING.md`: test mode, every `check` rule, budgets, fixtures, golden tasks.
+
+`docs/archive/` holds old plans. Do not build from them.
 
 ## How to work
 
-- Build **one milestone at a time** in the order in `STEP1_SPEC.md` §11. Do not start the next milestone until the current one's "Done when" passes.
-- At the start of each milestone, write a short plan. At the end, run all tests and commit with a message naming the milestone (e.g. `M2: runtime loop, RNG, state, bridge`).
-- If the spec is unclear or seems wrong, **stop and ask**. Do not invent a different design. Record any agreed change in the spec in the same commit.
-- Keep `docs/STEP1_SPEC.md` and the code in sync. If code must differ from the spec, update the spec and say why.
-- Keep a short log of decisions and surprises in `docs/decisions.md` (date, decision, reason).
+- One package per task. Every task has a "done means" line before you start.
+- Every feature ships with the `check` rule that tests it and a broken fixture for that rule (`TESTING.md` §11).
+- If the plan is unclear or seems wrong, stop and ask. Do not invent a different design.
+- Record big decisions in `docs/adr/` (one short file each).
+
+## Branches and commits
+
+- Work on a branch only: `feat/<name>` or `fix/<name>`.
+- Never commit to `main`. Never push to `main`.
+- No AI co-author lines or AI attribution in commits or commit messages.
+- Every PR description must disclose AI tool use: state which tool was used and how much of the work it did. This belongs in the PR description, not the commit.
+- Every PR has a changeset, a plain-language summary, screenshots if visuals changed, and the `check` score before and after if output changed.
 
 ## Rules
 
-- TypeScript strict, ESM only, Node 22+, pnpm workspaces.
-- **Dependencies:** check the current version on npm before adding anything. Use a version published at least 7 days ago. Pin exact versions. No `latest`, `*`, or open ranges. Note why each dependency exists in its package README.
-- **Determinism is the product.** Never add wall-clock time, unseeded randomness, timers, or network calls to the runtime's test mode or to checks. Every new check needs a determinism test.
-- Every check and lint rule gets: a stable id, a message, a `Fix:` line, a fixture that triggers it, and a test.
-- CLI output: `--json` on every command, `✗` + `Fix:` on failure, exit codes 0/1/2/3 as in the spec.
-- Do not copy code from HyperFrames or other projects. Learning from their ideas is fine. Respect licenses.
-- No secrets in the repo. No telemetry in Step 1.
-- Small, readable modules. Comments only where the why is not obvious.
+- TypeScript strict, ESM only, Node 22+, pnpm workspaces, Turborepo, Biome.
+- **Dependencies:** check the current version on npm before adding anything. Use a version published at least 7 days ago. Pin exact versions. No `latest`, `*` or open ranges.
+- **Test mode must stay repeatable.** No `Math.random`, `Date.now`, timers or network calls in runtime code paths used by test mode. Use the seeded random function and the test clock.
+- Every check rule has a stable id, a severity, a pass rule, a `Fix:` message, a broken fixture and tests.
+- No secrets in the repo.
+- **Keep code small.** AI agents tend to leave scaffolding, duplicate helpers, and narrative comments. Before opening a PR, check `pnpm pkg:unused` output and remove anything flagged. Do not add comments that restate what the code already says.
 
-## Commands (fill in as they are created)
+## Commands
 
 - Install: `pnpm install`
-- Test all: `pnpm test`
+- Build: `pnpm build`
+- Unit tests: `pnpm test`
+- Fixtures: `pnpm test:fixtures`
+- Examples score 90+: `pnpm check:examples`
+- Screenshots: `pnpm test:visual`
+- Speed: `pnpm test:perf`
+- Lint and format: `pnpm lint`
 - Typecheck: `pnpm typecheck`
-- Lint/format: `pnpm lint`
-- Install Chromium for tests: `pnpm exec playwright install chromium`
+- Package exports correct: `pnpm pkg:lint`
+- Type resolution correct: `pnpm pkg:types`
+- Bundle size within budget: `pnpm pkg:size`
+- Dead code / unused exports: `pnpm pkg:unused`
