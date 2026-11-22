@@ -28,7 +28,7 @@ import { ScrollCamera } from "./ScrollCamera.js";
 interface DoodleySiteProps {
   config: DoodleyConfig;
   /** Brand tokens (src/brand.tokens.json). Colors, fonts and the canvas background follow them. */
-  brand?: BrandTokens;
+  brand?: BrandTokens | undefined;
   children?: ReactNode;
   /** DOM rendered over the canvas (nav, HUD). Gets DoodleyContext. */
   overlay?: ReactNode;

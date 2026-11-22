@@ -121,8 +121,10 @@ export interface DoodleyBridge {
   scroll(): number;
   /** Scene stats (triangles, draw calls, texture MB, etc.) */
   stats(): SceneStats;
-  /** Every material and its colors */
+  /** Every distinct material in the scene: name and hex colors (color, plus emissive when not black) */
   materials(): MaterialState[];
+  /** Brand tokens the site was given (`<DoodleySite brand={...}>`), or null. Brand rules are skipped on null. */
+  brand(): BrandTokens | null;
   /** Any 3D text meshes (should have <= 40 chars each) */
   textMeshes(): TextMeshState[];
   /** Mascot state if present */

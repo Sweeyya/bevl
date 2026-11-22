@@ -1,0 +1,4 @@
+{
+  "mustFail": ["brand/palette"],
+  "mayAlsoFail": []
+}
