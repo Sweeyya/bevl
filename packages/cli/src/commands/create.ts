@@ -1,9 +1,29 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, resolve, sep } from "node:path";
 
 export interface CreateOptions {
   name: string;
   dir: string;
+}
+
+const SITE_NAME = /^[A-Za-z0-9][A-Za-z0-9 _-]{0,63}$/;
+
+export function validateSiteName(name: string): string {
+  if (!SITE_NAME.test(name)) {
+    throw new Error(
+      `Invalid site name "${name}". Fix: use 1-64 letters, numbers, spaces, dashes or underscores, starting with a letter or number.`,
+    );
+  }
+  return name;
+}
+
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 const DEFAULT_CONFIG = (name: string) =>
@@ -25,8 +45,8 @@ const DEFAULT_HTML = (name: string) => `<!doctype html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${name}</title>
-    <meta name="description" content="${name} — built with Doodley" />
+    <title>${escapeHtml(name)}</title>
+    <meta name="description" content="${escapeHtml(name)} — built with Doodley" />
     <style>* { margin:0; padding:0; box-sizing:border-box; } html,body,#root { height:100%; }</style>
   </head>
   <body>
@@ -90,10 +110,13 @@ export default defineConfig({
 `;
 
 export async function createSite(opts: CreateOptions): Promise<void> {
-  const base = join(opts.dir, opts.name);
+  const name = validateSiteName(opts.name);
+  const parent = resolve(opts.dir);
+  const base = resolve(parent, name);
+  if (!base.startsWith(parent + sep)) throw new Error(`Site folder would be outside ${parent}.`);
   await mkdir(join(base, "src"), { recursive: true });
-  await writeFile(join(base, "doodley.json"), DEFAULT_CONFIG(opts.name));
-  await writeFile(join(base, "index.html"), DEFAULT_HTML(opts.name));
+  await writeFile(join(base, "doodley.json"), DEFAULT_CONFIG(name));
+  await writeFile(join(base, "index.html"), DEFAULT_HTML(name));
   await writeFile(join(base, "vite.config.ts"), DEFAULT_VITE_CONFIG);
   await writeFile(join(base, "src", "main.tsx"), DEFAULT_MAIN);
   await writeFile(join(base, "src", "App.tsx"), DEFAULT_APP);

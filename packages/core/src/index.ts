@@ -21,6 +21,7 @@ export type {
   SceneStats,
   SectionConfig,
   SectionState,
+  TestModeSetting,
   TextMeshState,
   Vec3,
   ViewportConfig,
