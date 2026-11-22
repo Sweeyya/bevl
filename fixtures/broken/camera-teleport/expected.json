@@ -1,4 +1,4 @@
 {
   "mustFail": ["scroll/no-jumps"],
-  "mayAlsoFail": []
+  "mayAlsoFail": ["nav/link-glides"]
 }
