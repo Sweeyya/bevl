@@ -4,6 +4,8 @@ export interface OptimizeCommandOptions {
   input: string;
   output?: string;
   textureSize?: number;
+  draco?: boolean;
+  textures?: boolean;
 }
 
 export async function optimizeAssets(opts: OptimizeCommandOptions): Promise<void> {
@@ -11,6 +13,8 @@ export async function optimizeAssets(opts: OptimizeCommandOptions): Promise<void
     input: opts.input,
     ...(opts.output !== undefined && { output: opts.output }),
     ...(opts.textureSize !== undefined && { textureSize: opts.textureSize }),
+    ...(opts.draco && { draco: true }),
+    ...(opts.textures && { textures: true }),
   });
   const pct = (result.reduction * 100).toFixed(1);
   process.stdout.write(
