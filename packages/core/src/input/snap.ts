@@ -8,15 +8,11 @@ export interface ResolvedSnap {
   commit: number;
 }
 
-export function resolveSnapSettings(
-  spec: SnapSpec | undefined,
-  coarse: boolean,
-  testMode: boolean,
-): ResolvedSnap {
+export function resolveSnapSettings(spec: SnapSpec | undefined, coarse: boolean): ResolvedSnap {
   const over: SnapSettings = coarse ? (spec?.coarse ?? {}) : {};
   const mode = over.mode ?? spec?.mode ?? DEFAULT_SNAP.mode;
   const commit = over.commit ?? spec?.commit ?? DEFAULT_SNAP.commit;
-  const delay = testMode ? 0 : (over.delay ?? spec?.delay ?? DEFAULT_SNAP.delay);
+  const delay = over.delay ?? spec?.delay ?? DEFAULT_SNAP.delay;
   return { mode, delay, commit };
 }
 

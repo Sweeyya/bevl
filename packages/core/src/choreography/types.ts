@@ -90,7 +90,7 @@ export interface SnapSettings {
    * none: never snap.
    */
   mode?: SnapMode;
-  /** Seconds without input before snapping starts. Default 0.12. Always 0 in test mode. */
+  /** Seconds without input before snapping starts. Default 0.12. Counted in frame time, so test mode (stepped time) is deterministic. */
   delay?: number;
   /** Fraction (0-1) of the gap to the next beat the user must cross to advance; less snaps back. Default 0.15. */
   commit?: number;

@@ -32,19 +32,18 @@ describe("resolveSnapIndex", () => {
 });
 
 describe("resolveSnapSettings", () => {
-  it("uses defaults, coarse overrides, and zero delay in test mode", () => {
-    expect(resolveSnapSettings(undefined, false, false)).toEqual({
+  it("uses defaults and coarse overrides", () => {
+    expect(resolveSnapSettings(undefined, false)).toEqual({
       mode: "directional",
       delay: 0.12,
       commit: 0.15,
     });
-    expect(
-      resolveSnapSettings({ mode: "nearest", coarse: { mode: "strong" } }, true, false).mode,
-    ).toBe("strong");
-    expect(
-      resolveSnapSettings({ mode: "nearest", coarse: { mode: "strong" } }, false, false).mode,
-    ).toBe("nearest");
-    expect(resolveSnapSettings(undefined, false, true).delay).toBe(0);
+    expect(resolveSnapSettings({ mode: "nearest", coarse: { mode: "strong" } }, true).mode).toBe(
+      "strong",
+    );
+    expect(resolveSnapSettings({ mode: "nearest", coarse: { mode: "strong" } }, false).mode).toBe(
+      "nearest",
+    );
   });
 });
 

@@ -86,7 +86,7 @@ export function useProgressInput({
   }, [controller, beatsKey, snappableKey]);
 
   const reduced = useReducedMotionQuery();
-  controller.snapConfig = resolveSnapSettings(snap, coarse, testMode);
+  controller.snapConfig = resolveSnapSettings(snap, coarse);
   controller.snapInstantly = reduced;
 
   const kindsKey = resolveInputs(spec, coarse).join(",");
