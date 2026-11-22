@@ -1,7 +1,8 @@
 #!/usr/bin/env node
+import { resolve } from "node:path";
+import { addSection, applyBrand, createSite } from "@doodley/tokens";
 import { Command } from "commander";
 import { checkSite } from "./commands/check.js";
-import { createSite } from "./commands/create.js";
 import { optimizeAssets } from "./commands/optimize.js";
 import { VERSION } from "./index.js";
 
@@ -16,6 +17,24 @@ program
   .action(async (name: string, opts: { dir: string }) => {
     await createSite({ name, dir: opts.dir });
     process.stdout.write(`Created site: ${name}\n`);
+  });
+
+program
+  .command("add-section <id> <title>")
+  .description("Add a section to doodley.json (and src/App.tsx when it can)")
+  .option("-d, --dir <dir>", "Project folder", process.cwd())
+  .action(async (id: string, title: string, opts: { dir: string }) => {
+    const notes = await addSection({ dir: opts.dir, id, title });
+    process.stdout.write(`${notes.join("\n")}\n`);
+  });
+
+program
+  .command("apply-brand <file>")
+  .description("Read a DESIGN.md or token JSON file and write src/brand.tokens.json")
+  .option("-d, --dir <dir>", "Project folder", process.cwd())
+  .action(async (file: string, opts: { dir: string }) => {
+    const lines = await applyBrand({ dir: opts.dir, file: resolve(file) });
+    process.stdout.write(`${lines.join("\n")}\n`);
   });
 
 program
