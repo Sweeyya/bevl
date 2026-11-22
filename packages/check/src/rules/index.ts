@@ -1,6 +1,8 @@
 import type { Rule } from "../rule.js";
 import keyboard from "./a11y/keyboard.js";
 import keyboardReachesBeats from "./a11y/keyboard-reaches-beats.js";
+import fonts from "./brand/fonts.js";
+import palette from "./brand/palette.js";
 import drawCalls from "./budgets/draw-calls.js";
 import triangles from "./budgets/triangles.js";
 import sectionText from "./html/section-text.js";
@@ -39,6 +41,8 @@ const rules: Rule[] = [
   metaDescription,
   keyboard,
   keyboardReachesBeats,
+  palette,
+  fonts,
 ];
 
 export default rules;

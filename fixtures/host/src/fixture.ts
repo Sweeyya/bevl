@@ -1,4 +1,4 @@
-import type { DoodleyConfig } from "@doodley/core";
+import type { BrandTokens, DoodleyConfig } from "@doodley/core";
 import type { ComponentType, ReactNode } from "react";
 
 export interface Head {
@@ -11,4 +11,5 @@ export interface Fixture {
   overlay?: ReactNode;
   Scene?: ComponentType;
   head?: Head;
+  brand?: BrandTokens | undefined;
 }

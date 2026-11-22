@@ -9,6 +9,7 @@ export const VERSION = "0.1.0";
 
 export type {
   Box2,
+  BrandTokens,
   Budgets,
   CameraState,
   DoodleyBridge,
@@ -39,6 +40,9 @@ export const DESIGN_RULES = {
   MAX_TEXT_MESH_CHARS: 40,
 } as const;
 
+// Brand tokens -> scene
+export type { BrandRole } from "./brand.js";
+export { resolveBrand, useBrand } from "./brand.js";
 // Camera path math (pure TypeScript, no browser dependency)
 export { clampStep, enforceNoRoll } from "./camera/path.js";
 // Scroll choreography (docs/adr/003-scroll-choreography.md)
@@ -66,6 +70,8 @@ export type {
   Track,
   Vec3Tuple,
 } from "./choreography/types.js";
+export { BrandLights } from "./components/BrandLights.js";
+export { BrandMaterial } from "./components/BrandMaterial.js";
 // React components
 export { DoodleySite } from "./components/DoodleySite.js";
 export { ScrollCamera } from "./components/ScrollCamera.js";

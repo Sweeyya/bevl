@@ -6,6 +6,7 @@
 
 import type { Choreography } from "./choreography/types.js";
 import type {
+  BrandTokens,
   CameraState,
   DoodleyBridge,
   DoodleyEvent,
@@ -25,6 +26,7 @@ export interface BridgeState {
   getChoreography: () => Choreography;
   getScroll: () => number;
   getStats: () => SceneStats;
+  getBrand: () => BrandTokens | null;
   getMaterials: () => MaterialState[];
   getTextMeshes: () => TextMeshState[];
   getMascot: () => MascotState | null;
@@ -64,6 +66,7 @@ export function installBridge(state: BridgeState): DoodleyBridge {
     choreography: () => state.getChoreography(),
     scroll: () => state.getScroll(),
     stats: () => state.getStats(),
+    brand: () => state.getBrand(),
     materials: () => state.getMaterials(),
     textMeshes: () => state.getTextMeshes(),
     mascot: () => state.getMascot(),
