@@ -1,0 +1,1 @@
+{ "mustFail": ["load/failed-requests"], "mayAlsoFail": ["load/console-errors"] }

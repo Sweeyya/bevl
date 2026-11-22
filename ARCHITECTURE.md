@@ -125,7 +125,8 @@ export interface DoodleyBridge {
   materials(): MaterialState[];
   /** Brand tokens the site was given (`<DoodleySite brand={...}>`), or null. Brand rules are skipped on null. */
   brand(): BrandTokens | null;
-  /** Any 3D text meshes (should have <= 40 chars each) */
+  /** Any 3D text meshes (should have <= 40 chars each). An object counts as a text mesh when
+   *  `object.userData.doodleyText` is a string, whatever component renders it. */
   textMeshes(): TextMeshState[];
   /** Mascot state if present */
   mascot(): MascotState | null;

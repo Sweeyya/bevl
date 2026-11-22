@@ -1,0 +1,1 @@
+{ "mustFail": ["a11y/contrast-over-3d"], "mayAlsoFail": [] }

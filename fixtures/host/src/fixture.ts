@@ -10,6 +10,7 @@ export interface Fixture {
   config: DoodleyConfig;
   overlay?: ReactNode;
   Scene?: ComponentType;
+  fallback?: ReactNode;
   head?: Head;
   brand?: BrandTokens | undefined;
 }

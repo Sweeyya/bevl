@@ -23,6 +23,9 @@ import { resolveInputs } from "../input/resolve.js";
 import { useProgressInput } from "../input/useProgressInput.js";
 import { collectMaterials } from "../materials.js";
 import { isTestModeAllowed } from "../testmode.js";
+import { collectTextMeshes } from "../textMeshes.js";
+import { estimateTextureMb } from "../textureMemory.js";
+import { Fallback, hasWebGL } from "./Fallback.js";
 import { HtmlLayer, HtmlLayerDriver } from "./HtmlLayer.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
@@ -33,6 +36,8 @@ interface DoodleySiteProps {
   children?: ReactNode;
   /** DOM rendered over the canvas (nav, HUD). Gets DoodleyContext. */
   overlay?: ReactNode;
+  /** Replaces the built-in static page shown when WebGL is unavailable. */
+  fallback?: ReactNode;
 }
 
 const BRAND_HEADING_CSS =
@@ -128,11 +133,11 @@ function BridgeInstaller({
       drawCalls: info.render?.calls ?? 0,
       geometries: info.memory?.geometries ?? 0,
       textures,
-      textureMbEstimate: textures * 4,
+      textureMbEstimate: estimateTextureMb(scene),
     };
   };
   state.getMaterials = () => collectMaterials(scene);
-  state.getTextMeshes = () => [];
+  state.getTextMeshes = () => collectTextMeshes(scene);
   state.getMascot = () => null;
   state.getEvents = () => eventsRef.current;
   state.pushEvent = (e) => eventsRef.current.push(e);
@@ -167,7 +172,14 @@ function BridgeInstaller({
   return null;
 }
 
-export function DoodleySite({ config, brand, children, overlay }: DoodleySiteProps): JSX.Element {
+export function DoodleySite({
+  config,
+  brand,
+  children,
+  overlay,
+  fallback,
+}: DoodleySiteProps): JSX.Element {
+  const [webgl] = useState(hasWebGL);
   const { testMode } = parseTestParams(config);
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
   const [{ choreography, positions }] = useState(() => {
@@ -210,6 +222,8 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
     });
   }, []);
   const nativeScroll = resolveInputs(choreography.input, isCoarsePointer()).includes("scroll");
+
+  if (!webgl) return <Fallback config={config}>{fallback}</Fallback>;
 
   const initialPose = cameraPoseAt(choreography, 0);
   const tokens = resolveBrand(brand);

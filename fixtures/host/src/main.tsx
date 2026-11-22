@@ -37,7 +37,12 @@ const Scene = fixture.Scene;
 
 createRoot(rootEl).render(
   <StrictMode>
-    <DoodleySite config={fixture.config} brand={fixture.brand} overlay={fixture.overlay}>
+    <DoodleySite
+      config={fixture.config}
+      brand={fixture.brand}
+      overlay={fixture.overlay}
+      fallback={fixture.fallback}
+    >
       {Scene ? <Scene /> : null}
     </DoodleySite>
   </StrictMode>,

@@ -1,0 +1,1 @@
+{ "mustFail": ["html/no-canvas-copy"], "mayAlsoFail": [] }
