@@ -10,5 +10,6 @@ export default defineConfig({
     dedupe: ["react", "react-dom", "three", "@react-three/fiber"],
   },
   server: { fs: { allow: ["../.."] } },
+  build: { target: "esnext" },
   logLevel: "warn",
 });
