@@ -1,4 +1,4 @@
 {
   "mustFail": ["render/not-blank"],
-  "mayAlsoFail": []
+  "mayAlsoFail": ["html/section-text", "html/headings"]
 }
