@@ -3,6 +3,7 @@
  * ScrollCamera reads progress and choreography; Section reads sectionPositions.
  */
 
+import type { ReactNode } from "react";
 import { createContext } from "react";
 import type { Placement } from "./choreography/layout.js";
 import type { Choreography } from "./choreography/types.js";
@@ -21,6 +22,8 @@ export interface DoodleyContextValue {
   choreography: Choreography;
   /** Placement for each section, indexed by section order */
   sectionPositions: Placement[];
+  /** Section registers (or with null clears) its HTML content, which DoodleySite renders in the DOM layer */
+  registerHtml: (id: string, node: ReactNode | null) => void;
 }
 
 export const DoodleyContext = createContext<DoodleyContextValue | null>(null);

@@ -1,0 +1,4 @@
+{
+  "mustFail": ["html/headings"],
+  "mayAlsoFail": []
+}
