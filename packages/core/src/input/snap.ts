@@ -1,11 +1,21 @@
 import type { SnapMode, SnapSettings, SnapSpec } from "../choreography/types.js";
 
-export const DEFAULT_SNAP = { mode: "directional", delay: 0.12, commit: 0.15 } as const;
+export const DEFAULT_SNAP = { mode: "directional", delay: 0.25, commit: 0.15 } as const;
+
+/** Programmatic glides last clamp(base + perUnit * |distance|, base, max) seconds. */
+export const GLIDE = { base: 0.35, perUnit: 0.9, max: 1.2 } as const;
+
+export function glideDuration(distance: number, override?: number): number {
+  if (override !== undefined) return override;
+  return Math.min(GLIDE.max, Math.max(GLIDE.base, GLIDE.base + GLIDE.perUnit * Math.abs(distance)));
+}
 
 export interface ResolvedSnap {
   mode: SnapMode;
   delay: number;
   commit: number;
+  /** Fixed glide seconds for snaps, nav and keyboard moves. Undefined scales with distance. */
+  duration: number | undefined;
 }
 
 export function resolveSnapSettings(spec: SnapSpec | undefined, coarse: boolean): ResolvedSnap {
@@ -13,7 +23,8 @@ export function resolveSnapSettings(spec: SnapSpec | undefined, coarse: boolean)
   const mode = over.mode ?? spec?.mode ?? DEFAULT_SNAP.mode;
   const commit = over.commit ?? spec?.commit ?? DEFAULT_SNAP.commit;
   const delay = over.delay ?? spec?.delay ?? DEFAULT_SNAP.delay;
-  return { mode, delay, commit };
+  const duration = over.duration ?? spec?.duration;
+  return { mode, delay, commit, duration };
 }
 
 export function nearestIndex(beats: readonly number[], x: number): number {

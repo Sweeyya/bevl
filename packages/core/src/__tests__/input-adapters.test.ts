@@ -169,6 +169,7 @@ describe("scroll", () => {
     el.dispatch("scroll");
     expect(c.target).toBe(0.25);
     c.nextBeat("keyboard");
+    c.tick(10, 6);
     expect(el.scrollTop).toBe(500);
     const seen: string[] = [];
     c.listen((_t, s) => seen.push(s));

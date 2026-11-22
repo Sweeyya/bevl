@@ -90,10 +90,12 @@ export interface SnapSettings {
    * none: never snap.
    */
   mode?: SnapMode;
-  /** Seconds without input before snapping starts. Default 0.12. Counted in frame time, so test mode (stepped time) is deterministic. */
+  /** Seconds without input before snapping starts. Default 0.25. Counted in frame time, so test mode (stepped time) is deterministic. */
   delay?: number;
   /** Fraction (0-1) of the gap to the next beat the user must cross to advance; less snaps back. Default 0.15. */
   commit?: number;
+  /** Seconds a snap, nav click or keyboard move takes to glide (ease-in-out). 0 jumps. Default scales with distance: 0.35 s plus 0.9 s per full length, at most 1.2 s. */
+  duration?: number;
 }
 
 /** Snapping is on by default. `coarse` overrides the settings for touch users. */

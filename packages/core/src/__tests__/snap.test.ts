@@ -35,8 +35,9 @@ describe("resolveSnapSettings", () => {
   it("uses defaults and coarse overrides", () => {
     expect(resolveSnapSettings(undefined, false)).toEqual({
       mode: "directional",
-      delay: 0.12,
+      delay: 0.25,
       commit: 0.15,
+      duration: undefined,
     });
     expect(resolveSnapSettings({ mode: "nearest", coarse: { mode: "strong" } }, true).mode).toBe(
       "strong",
@@ -50,7 +51,7 @@ describe("resolveSnapSettings", () => {
 describe("ProgressController snapping", () => {
   const make = () => {
     const c = new ProgressController(beats);
-    c.snapConfig = { mode: "directional", delay: 0.1, commit: 0.15 };
+    c.snapConfig = { mode: "directional", delay: 0.1, commit: 0.15, duration: undefined };
     return c;
   };
   it("waits for the delay, then settles on the beat", () => {
@@ -118,6 +119,14 @@ describe("snap schema", () => {
       beats: base.beats.map((b, i) => (i === 0 ? { ...b, snap: false } : b)),
     };
     expect(validateChoreography(spec, ids).ok).toBe(true);
+  });
+  it("accepts a duration and rejects a negative one with a Fix", () => {
+    const base = defaultChoreography(ids);
+    expect(validateChoreography({ ...base, snap: { duration: 0.8 } }, ids).ok).toBe(true);
+    expect(validateChoreography({ ...base, snap: { duration: 0 } }, ids).ok).toBe(true);
+    const bad = validateChoreography({ ...base, snap: { duration: -1 } }, ids);
+    expect(bad.ok).toBe(false);
+    if (!bad.ok) expect(bad.errors[0]).toContain("Fix: use a value of at least 0");
   });
   it("rejects bad modes with a Fix", () => {
     const result = validateChoreography(

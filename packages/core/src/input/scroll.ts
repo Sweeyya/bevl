@@ -6,7 +6,7 @@ function maxScroll(el: HTMLElement): number {
   return el.scrollHeight - el.clientHeight;
 }
 
-/** Moves the native scrollbar to progress p without feeding the change back as a scroll input. */
+/** Moves the native scrollbar to progress p (the displayed value) without feeding the change back as a scroll input. */
 export function syncScroll(el: HTMLElement, p: number): void {
   const max = maxScroll(el);
   if (max <= 0) return;
@@ -17,6 +17,7 @@ export function syncScroll(el: HTMLElement, p: number): void {
 }
 
 export function attachScroll(el: HTMLElement, controller: ProgressController): () => void {
+  let userScrolling = false;
   const onScroll = (): void => {
     const expected = expectedTop.get(el);
     if (expected !== undefined) {
@@ -27,11 +28,15 @@ export function attachScroll(el: HTMLElement, controller: ProgressController): (
     controller.setTarget(max <= 0 ? 0 : el.scrollTop / max, "scroll");
   };
   el.addEventListener("scroll", onScroll, { passive: true });
-  const unlisten = controller.listen((target, source) => {
-    if (source !== "scroll") syncScroll(el, target);
+  const unlisten = controller.listen((_target, source) => {
+    userScrolling = source === "scroll";
+  });
+  const unlistenValue = controller.listenValue((value) => {
+    if (!userScrolling) syncScroll(el, value);
   });
   return () => {
     el.removeEventListener("scroll", onScroll);
     unlisten();
+    unlistenValue();
   };
 }
