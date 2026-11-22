@@ -4,7 +4,7 @@ Turn any brand into a fast, accessible 3D website, from inside the AI tool you a
 
 Doodley is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and others). You give the agent a brand kit, design tokens or a `DESIGN.md`. It generates a scroll-driven 3D site as source code **in your own repo**, then runs `doodley check` in a real browser and keeps fixing problems until the score is 90 or higher. You own the code and can deploy it anywhere.
 
-> **Status: early development.** Nothing is published to npm yet, and the brand-to-3D step and the agent skill are not finished. See [What works today](#what-works-today).
+> **Status: early development.** Nothing is published to npm yet. The core pieces work end to end from a source checkout, but expect rough edges. See [What works today](#what-works-today) for what is and is not done.
 
 ## The idea
 
@@ -14,20 +14,22 @@ Doodley is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and oth
 
 ## What works today
 
-| Area                                  | Status                                                                                                                                                                              |
-| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Core runtime (`@doodley/core`)        | Works. Scroll choreography, one progress value driven by scroll, wheel, touch, drag, swipe, tap and keyboard, snap-to-screen settling, test mode and the `window.__doodley` bridge. |
-| Checker (`@doodley/check`)            | Works. 19 rules covering load, render, budgets, scroll, snapping, determinism, keyboard, HTML and SEO. 12 broken fixtures prove the rules fail when they should.                    |
-| Accessibility layer (`@doodley/a11y`) | Works. Nav bar, skip link, keyboard and reduced motion.                                                                                                                             |
-| Token reader (`@doodley/tokens`)      | Reads `DESIGN.md` and design-token JSON. **Not yet connected to the 3D scene.**                                                                                                     |
-| Optimizer (`@doodley/optimizer`)      | Shrinks `.glb` models with glTF Transform.                                                                                                                                          |
-| CLI (`@doodley/cli`)                  | `create`, `check`, `optimize`. `add-section` and `apply-brand` are not built yet.                                                                                                   |
-| MCP server (`@doodley/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`. `create_site`, `add_section` and `apply_brand` are not built yet.                                                             |
-| Effects (`@doodley/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                            |
-| Mascot (`@doodley/mascot`)            | Empty. Planned for V2.                                                                                                                                                              |
-| Agent skill (`SKILL.md`)              | Not written yet.                                                                                                                                                                    |
+| Area                                  | Status                                                                                                                                                                                                                                                                                                                                 |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core runtime (`@doodley/core`)        | Works. Scroll choreography, six ready-made recipes, one progress value driven by scroll, wheel, touch, drag, swipe, tap and keyboard, snap-to-screen settling, a real HTML text layer (`<Section html={...}>`), brand tokens applied to materials, lights and fonts, a no-WebGL fallback, test mode and the `window.__doodley` bridge. |
+| Checker (`@doodley/check`)            | Works. 32 rules covering load, render, budgets, scroll, snapping, determinism, navigation, keyboard, HTML, SEO, contrast and brand. 27 broken fixtures prove the rules fail when they should, and browser end-to-end tests cover the real inputs.                                                                                      |
+| Accessibility layer (`@doodley/a11y`) | Works. Nav bar, skip link and keyboard. Nav links glide to screens.                                                                                                                                                                                                                                                                    |
+| Token reader (`@doodley/tokens`)      | Works. Reads `DESIGN.md` and design-token JSON, and holds the shared project commands (create, add-section, apply-brand).                                                                                                                                                                                                              |
+| Optimizer (`@doodley/optimizer`)      | Works for dedup, prune, weld, resample, instance and sparse with no extra packages. Draco (`--draco`) and WebP textures (`--textures`) are opt-in and need `draco3dgltf` or `sharp` installed. Not yet tested on models with textures.                                                                                                 |
+| CLI (`@doodley/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`.                                                                                                                                                                                                                                                                           |
+| MCP server (`@doodley/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`. Confined to the project folder and to localhost.                                                                                                                                                                                    |
+| Agent skill (`skills/doodley`)        | Written, with a test that keeps its rule table in sync with the checker. Not yet tried with a real agent.                                                                                                                                                                                                                              |
+| Effects (`@doodley/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                                                                                                                                                                               |
+| Mascot (`@doodley/mascot`)            | Empty. Planned for V2.                                                                                                                                                                                                                                                                                                                 |
 
-The basic example in `examples/basic` scores 100/100.
+Not done yet: the `a11y/reduced-motion` and `html/order-matches` rules, Linux screenshot baselines for the visual tests, the Spectr demo, golden agent tasks, and publishing to npm.
+
+Both examples (`examples/basic` and `examples/recipes`) score 100/100.
 
 ## Try it from source
 
@@ -106,6 +108,17 @@ The pieces:
 - **allow**: explicit opt-outs from the gentle-motion rules (`roll`, `spin`, `fastMoves`). The checker reports each one.
 
 Bad specs are rejected with the field path and a fix, for example `beats[2].id "pricng" does not match any section. Fix: use one of hero, work, contact.` The design is in [ADR 003](docs/adr/003-scroll-choreography.md).
+
+### Recipes
+
+You don't have to write a choreography from scratch. `@doodley/core` exports `recipes` for common experiences: `fly-through`, `sphere-of-screens`, `carousel`, `room`, `horizontal-gallery` and `orbit-product`. Each one works for 1 to 12 sections.
+
+```ts
+import { recipes } from "@doodley/core";
+const choreography = recipes["room"].create(sections.map((s) => s.id));
+```
+
+Start from a recipe and edit it. `examples/recipes` renders any of them: `?recipe=carousel&sections=6`.
 
 ## The checker
 

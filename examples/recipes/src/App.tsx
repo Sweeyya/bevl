@@ -35,7 +35,7 @@ export function App(): JSX.Element {
         >
           <mesh>
             <planeGeometry args={[2.4, 1.4]} />
-            <meshStandardMaterial color={`hsl(${(i * 47) % 360}, 65%, 55%)`} />
+            <meshStandardMaterial color={`hsl(${(i * 47) % 360}, 55%, 22%)`} />
           </mesh>
         </Section>
       ))}
