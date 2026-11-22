@@ -2,10 +2,12 @@ import type { Rule } from "../rule.js";
 import keyboard from "./a11y/keyboard.js";
 import keyboardReachesBeats from "./a11y/keyboard-reaches-beats.js";
 import drawCalls from "./budgets/draw-calls.js";
+import textureMb from "./budgets/texture-mb.js";
 import triangles from "./budgets/triangles.js";
 import noCanvasCopy from "./html/no-canvas-copy.js";
 import sectionText from "./html/section-text.js";
 import consoleErrors from "./load/console-errors.js";
+import failedRequests from "./load/failed-requests.js";
 import ready from "./load/ready.js";
 import webgl from "./load/webgl.js";
 import buttonsWork from "./nav/buttons-work.js";
@@ -53,6 +55,8 @@ const rules: Rule[] = [
   buttonsWork,
   noCanvasCopy,
   fallback,
+  textureMb,
+  failedRequests,
 ];
 
 export default rules;

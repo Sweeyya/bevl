@@ -21,6 +21,7 @@ import { resolveInputs } from "../input/resolve.js";
 import { useProgressInput } from "../input/useProgressInput.js";
 import { isTestModeAllowed } from "../testmode.js";
 import { collectTextMeshes } from "../textMeshes.js";
+import { estimateTextureMb } from "../textureMemory.js";
 import { Fallback, hasWebGL } from "./Fallback.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
@@ -122,7 +123,7 @@ function BridgeInstaller({
       drawCalls: info.render?.calls ?? 0,
       geometries: info.memory?.geometries ?? 0,
       textures,
-      textureMbEstimate: textures * 4,
+      textureMbEstimate: estimateTextureMb(scene),
     };
   };
   state.getMaterials = () => [];
