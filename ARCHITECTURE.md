@@ -50,6 +50,9 @@ export interface DoodleyConfig {
   brand?: string;
   /** Ordered list of sections */
   sections: SectionConfig[];
+  /** How progress (0-1) drives the scene. Default: fly forward, one beat per section.
+   *  See packages/core/src/choreography/types.ts and docs/adr/003-scroll-choreography.md */
+  choreography?: Choreography;
   /** Performance budgets. Defaults come from doodley.budgets.json */
   budgets?: Partial<Budgets>;
   /** Viewports to test. Defaults: desktop + phone */
