@@ -148,10 +148,10 @@ describe("reduced motion", () => {
     const { x, y } = centre(o.page);
     await o.page.mouse.move(x, y);
     await o.page.mouse.wheel(0, 0.3 * (await scrollLength(o.page)));
-    await expect.poll(() => displayedOf(o), { timeout: 15_000 }).toBeCloseTo(0.3, 2);
+    await expect.poll(() => displayedOf(o), { timeout: 15_000 }).toBeCloseTo(0.3, 3);
     await clearSeries(o);
     await expect.poll(() => displayedOf(o), { timeout: 15_000 }).toBeCloseTo(0.25, 3);
-    return (await series(o)).filter((v) => isIntermediate(v, 0.3, 0.25));
+    return (await series(o)).filter((v) => isIntermediate(v, 0.28, 0.25));
   }
 
   it("snaps instantly with reduced motion and glides without it", async () => {

@@ -1,0 +1,74 @@
+# End-to-end tests in a real browser and over stdio.
+# check package: real wheel, touch, drag, swipe, tap, snap and reduced-motion input.
+# mcp package: the built server driven by the MCP SDK client, with hostile input.
+
+name: E2E
+
+on:
+  pull_request:
+    paths:
+      - "packages/core/**"
+      - "packages/check/**"
+      - "packages/mcp/**"
+      - "packages/tokens/**"
+      - "packages/optimizer/**"
+      - "fixtures/**"
+      - ".github/workflows/e2e.yml"
+      - ".github/setup/**"
+  push:
+    branches: [main]
+    paths:
+      - "packages/core/**"
+      - "packages/check/**"
+      - "packages/mcp/**"
+      - "fixtures/**"
+
+permissions: {}
+
+concurrency:
+  group: e2e-${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Browser and MCP e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Build
+        run: pnpm build
+
+      # Cache Playwright's Chromium binary by the exact Playwright version.
+      # Saves 2-3 minutes once the cache warms. Pattern from Vite's CI.
+      - name: Get Playwright version
+        id: pw-version
+        shell: bash
+        run: |
+          ver=$(pnpm ls --depth 0 --json -w playwright 2>/dev/null \
+            | python3 -c "import sys,json; pkgs=json.load(sys.stdin); \
+              print(next((p['devDependencies']['playwright']['version'] \
+                for p in pkgs if 'devDependencies' in p \
+                and 'playwright' in p['devDependencies']), 'unknown'))" \
+            2>/dev/null || echo "unknown")
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ steps.pw-version.outputs.version }}
+          restore-keys: playwright-chromium-${{ runner.os }}-
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @doodley/check exec playwright install chromium --with-deps
+
+      - name: Run e2e tests
+        run: pnpm test:e2e
