@@ -19,6 +19,7 @@ import type {
 } from "../contract.js";
 import { resolveInputs } from "../input/resolve.js";
 import { useProgressInput } from "../input/useProgressInput.js";
+import { isTestModeAllowed } from "../testmode.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
 interface DoodleySiteProps {
@@ -44,10 +45,11 @@ function isCoarsePointer(): boolean {
   return typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches === true;
 }
 
-function parseTestParams(): { testMode: boolean; seed: number } {
+function parseTestParams(config: DoodleyConfig): { testMode: boolean; seed: number } {
   if (typeof window === "undefined") return { testMode: false, seed: 1 };
   const p = new URLSearchParams(window.location.search);
-  return { testMode: p.has("doodley-test"), seed: Number(p.get("seed") ?? "1") || 1 };
+  const allowed = isTestModeAllowed(config.testMode, window.location.hostname);
+  return { testMode: allowed && p.has("doodley-test"), seed: Number(p.get("seed") ?? "1") || 1 };
 }
 
 function makeBridgeState(choreography: Choreography): BridgeState {
@@ -156,7 +158,7 @@ function BridgeInstaller({
 }
 
 export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JSX.Element {
-  const { testMode } = parseTestParams();
+  const { testMode } = parseTestParams(config);
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
   const [{ choreography, positions }] = useState(() => {
     const built = buildChoreography(config);

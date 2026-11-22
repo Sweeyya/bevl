@@ -11,6 +11,9 @@ import type { Choreography } from "./choreography/types.js";
 
 // ─── Contract A: doodley.json ────────────────────────────────────────────────
 
+/** Where `?doodley-test` is honored: "localhost" (default), "always" (e.g. checking a preview URL), or "never". */
+export type TestModeSetting = "localhost" | "always" | "never";
+
 export interface DoodleyConfig {
   /** Project name, used in reports */
   name: string;
@@ -24,6 +27,8 @@ export interface DoodleyConfig {
    * See docs/adr/003-scroll-choreography.md.
    */
   choreography?: Choreography;
+  /** Where the test bridge may be switched on with ?doodley-test. Default "localhost". */
+  testMode?: TestModeSetting;
   /** Performance budgets. Defaults come from doodley.budgets.json */
   budgets?: Partial<Budgets>;
   /** Viewports to test. Defaults: desktop + phone */

@@ -3,8 +3,7 @@ import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "playwright";
-import { createServer, type ViteDevServer } from "vite";
+import { build, type PreviewServer, preview } from "vite";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runCheck } from "../checker.js";
 import type { Report } from "../report.js";
@@ -18,7 +17,7 @@ interface Expected {
   mayAlsoFail: string[];
 }
 
-let server: ViteDevServer;
+let server: PreviewServer;
 let base = "";
 let projectDir = "";
 
@@ -32,25 +31,21 @@ function failedRules(report: Report): Set<string> {
 
 beforeAll(async () => {
   projectDir = mkdtempSync(join(tmpdir(), "doodley-fixtures-"));
-  server = await createServer({
-    configFile: join(root, "fixtures/host/vite.config.ts"),
-    server: { port: 0, host: "127.0.0.1" },
+  const outDir = join(projectDir, "host-dist");
+  const configFile = join(root, "fixtures/host/vite.config.ts");
+  await build({ configFile, build: { outDir, emptyOutDir: true }, logLevel: "error" });
+  server = await preview({
+    configFile,
+    build: { outDir },
+    preview: { port: 0, host: "127.0.0.1" },
+    logLevel: "error",
   });
-  await server.listen();
-  const address = server.httpServer?.address() as AddressInfo | null | undefined;
-  base = `http://127.0.0.1:${address?.port}`;
-
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  for (const name of ["good", ...names]) {
-    await page.goto(`${base}/?fixture=${name}&doodley-test`, { waitUntil: "networkidle" });
-    await page.waitForFunction(() => "__doodley" in window, undefined, { timeout: 60_000 });
-  }
-  await browser.close();
+  const address = server.httpServer.address() as AddressInfo;
+  base = `http://127.0.0.1:${address.port}`;
 }, 300_000);
 
 afterAll(async () => {
-  await server?.close();
+  await new Promise<void>((done) => (server ? server.httpServer.close(() => done()) : done()));
   rmSync(projectDir, { recursive: true, force: true });
 });
 

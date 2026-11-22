@@ -34,5 +34,5 @@ Tested with:
 
 ## Trade-offs accepted
 
-- Test mode adds a small code path (`?doodley-test` branch) to `core`. This path must never run in production. We guard it with `if (import.meta.env.DEV || searchParams.has('doodley-test'))`.
+- Test mode adds a small code path (`?doodley-test` branch) to `core`. It is only honored on local hosts (`localhost`, `127.0.0.1`, `[::1]`, `*.localhost`) unless `doodley.json` sets `"testMode": "always"` (for checking a preview URL). `"never"` turns it off. This keeps a visitor from freezing or inspecting a deployed site by adding `?doodley-test` to the URL.
 - Seeded random means the site always looks the same in test mode. That is intentional.
