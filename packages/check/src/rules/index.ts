@@ -3,16 +3,23 @@ import keyboard from "./a11y/keyboard.js";
 import keyboardReachesBeats from "./a11y/keyboard-reaches-beats.js";
 import drawCalls from "./budgets/draw-calls.js";
 import triangles from "./budgets/triangles.js";
+import noCanvasCopy from "./html/no-canvas-copy.js";
 import sectionText from "./html/section-text.js";
 import consoleErrors from "./load/console-errors.js";
 import ready from "./load/ready.js";
 import webgl from "./load/webgl.js";
+import buttonsWork from "./nav/buttons-work.js";
+import linkGlides from "./nav/link-glides.js";
+import menuExists from "./nav/menu-exists.js";
+import fallback from "./render/fallback.js";
 import noNan from "./render/no-nan.js";
 import notBlank from "./render/not-blank.js";
 import deterministic from "./scroll/deterministic.js";
 import motionAllowances from "./scroll/motion-allowances.js";
+import noFreeRoam from "./scroll/no-free-roam.js";
 import noJumps from "./scroll/no-jumps.js";
 import noRoll from "./scroll/no-roll.js";
+import noSpin from "./scroll/no-spin.js";
 import reachesEverySection from "./scroll/reaches-every-section.js";
 import snapNoTrap from "./scroll/snap-no-trap.js";
 import snapSettles from "./scroll/snap-settles.js";
@@ -39,6 +46,13 @@ const rules: Rule[] = [
   metaDescription,
   keyboard,
   keyboardReachesBeats,
+  noSpin,
+  noFreeRoam,
+  menuExists,
+  linkGlides,
+  buttonsWork,
+  noCanvasCopy,
+  fallback,
 ];
 
 export default rules;

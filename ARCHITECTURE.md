@@ -123,7 +123,8 @@ export interface DoodleyBridge {
   stats(): SceneStats;
   /** Every material and its colors */
   materials(): MaterialState[];
-  /** Any 3D text meshes (should have <= 40 chars each) */
+  /** Any 3D text meshes (should have <= 40 chars each). An object counts as a text mesh when
+   *  `object.userData.doodleyText` is a string, whatever component renders it. */
   textMeshes(): TextMeshState[];
   /** Mascot state if present */
   mascot(): MascotState | null;

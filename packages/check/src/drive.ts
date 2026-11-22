@@ -85,3 +85,22 @@ export function finding(
     ...(data ? { evidence: { data } } : {}),
   };
 }
+
+export type Vec3 = { x: number; y: number; z: number };
+export type Quat = { x: number; y: number; z: number; w: number };
+export type CameraPose = { position: Vec3; quaternion: Quat };
+
+export async function cameraPose(page: Page): Promise<CameraPose> {
+  const pose = await page.evaluate(() => (window as unknown as Win).__doodley?.camera());
+  if (!pose) throw new Error("The doodley bridge is missing");
+  return { position: pose.position, quaternion: pose.quaternion };
+}
+
+export function distance(a: Vec3, b: Vec3): number {
+  return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+export function angleDeg(a: Quat, b: Quat): number {
+  const dot = Math.min(1, Math.abs(a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w));
+  return 2 * Math.acos(dot) * (180 / Math.PI);
+}

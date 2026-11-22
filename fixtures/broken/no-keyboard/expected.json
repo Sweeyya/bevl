@@ -1,4 +1,4 @@
 {
   "mustFail": ["a11y/keyboard"],
-  "mayAlsoFail": []
+  "mayAlsoFail": ["nav/menu-exists"]
 }
