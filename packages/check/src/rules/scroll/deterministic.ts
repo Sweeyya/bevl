@@ -56,7 +56,17 @@ const rule: Rule = {
 
     const a = await run();
     const b = await run();
-    if (!a || !b) return [];
+    if (!a || !b) {
+      return [
+        {
+          rule: "scroll/deterministic",
+          severity: "error",
+          viewport: ctx.viewport.name,
+          message: `Could not load the page twice to compare runs on ${ctx.viewport.name}.`,
+          fix: "Fix: make sure the site loads in test mode (window.__doodley exists and ready resolves) in a fresh browser context.",
+        },
+      ];
+    }
     const worst = a.reduce((m, v, i) => Math.max(m, Math.abs(v - (b[i] ?? Number.NaN))), 0);
     if (worst <= TOLERANCE) return [];
     return [

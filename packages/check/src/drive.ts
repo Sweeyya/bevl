@@ -21,15 +21,16 @@ type Win = {
 
 export const BEAT_EPSILON = 0.005;
 
-export async function waitReady(page: Page): Promise<boolean> {
-  return page
-    .evaluate(async () => {
-      const b = (window as unknown as Win).__doodley;
-      if (!b) return false;
-      await b.ready;
+export async function waitReady(page: Page, timeoutMs = 15_000): Promise<boolean> {
+  try {
+    await page.waitForFunction(() => "__doodley" in window, undefined, { timeout: timeoutMs });
+    return await page.evaluate(async () => {
+      await (window as unknown as Win).__doodley?.ready;
       return true;
-    })
-    .catch(() => false);
+    });
+  } catch {
+    return false;
+  }
 }
 
 export function step(page: Page, frames: number): Promise<void> {
