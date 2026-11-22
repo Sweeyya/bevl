@@ -19,6 +19,7 @@ const rule: Rule = {
               __doodley?: {
                 ready: Promise<void>;
                 step(ms: number): unknown;
+                choreography(): { allow?: { fastMoves?: boolean } };
                 camera(): { position: { x: number; y: number; z: number } };
               };
             }
@@ -26,6 +27,7 @@ const rule: Rule = {
           if (!bridge) return null;
 
           await bridge.ready;
+          if (bridge.choreography().allow?.fastMoves) return null;
 
           const scroller = (document.querySelector<HTMLElement>("[data-doodley-scroller]") ??
             document.scrollingElement ??
@@ -39,6 +41,7 @@ const rule: Rule = {
 
           for (let i = 1; i <= steps; i++) {
             scroller.scrollTop = (i / steps) * max;
+            await new Promise((r) => requestAnimationFrame(r));
             bridge.step(1000 / 60);
             const cur = bridge.camera().position;
             const dx = cur.x - prev.x;

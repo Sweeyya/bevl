@@ -1,25 +1,26 @@
 /**
  * DoodleyContext — shared state between DoodleySite and its children.
- * ScrollCamera reads scrollProgress; Section reads sections and cameraPath.
+ * ScrollCamera reads progress and choreography; Section reads sectionPositions.
  */
 
 import { createContext } from "react";
-import type { CameraPath } from "./camera/path.js";
-import type { CameraMode, SectionConfig, Vec3 } from "./contract.js";
+import type { Placement } from "./choreography/layout.js";
+import type { Choreography } from "./choreography/types.js";
+import type { SectionConfig } from "./contract.js";
 
 export interface DoodleyContextValue {
-  /** Scroll progress from 0 (top) to 1 (bottom) */
-  scrollProgress: number;
+  /** Displayed progress in [0, 1]; equals the input target in test mode */
+  getProgress: () => number;
+  /** Move progress to a beat by index, as nav links do; instant skips the glide (reduced motion) */
+  goToBeat: (index: number, instant?: boolean) => void;
+  /** Advance input smoothing by dt seconds; true while still moving */
+  tick: (dtSeconds: number) => boolean;
   /** Ordered list of sections from DoodleyConfig */
   sections: SectionConfig[];
-  /** Camera waypoint path computed from section anchors */
-  cameraPath: CameraPath;
-  /** World-space distance between sections along Z (linear mode only) */
-  sectionSpacing: number;
-  /** Active camera mode */
-  cameraMode: CameraMode;
-  /** World positions for each section, indexed by section order */
-  sectionPositions: Vec3[];
+  /** Validated choreography (or the default built from sections) */
+  choreography: Choreography;
+  /** Placement for each section, indexed by section order */
+  sectionPositions: Placement[];
 }
 
 export const DoodleyContext = createContext<DoodleyContextValue | null>(null);

@@ -66,7 +66,7 @@ jobs:
           restore-keys: playwright-chromium-${{ runner.os }}-
 
       - name: Install Playwright Chromium
-        run: pnpm exec playwright install chromium --with-deps
+        run: pnpm --filter @doodley/check exec playwright install chromium --with-deps
 
       - name: Run broken fixture tests
         run: pnpm test:fixtures

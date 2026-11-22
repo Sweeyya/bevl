@@ -1,0 +1,4 @@
+{
+  "mustFail": ["a11y/keyboard-reaches-beats"],
+  "mayAlsoFail": ["scroll/snap-no-trap"]
+}

@@ -63,10 +63,10 @@ An open source tool that turns any brand into a fast, accessible 3D website, use
 
 These rules are built into the engine. Every feature has to follow them. **`check` tests every rule** (see `TESTING.md` §4).
 
-1. **Scroll is the main control.** Scrolling moves the camera along a set path. No WASD and no free roaming.
+1. **Progress is the main control.** Scroll, wheel, touch, swipe, drag or tap move one progress value from 0 to 1, and a choreography spec turns that value into the whole scene state (`docs/adr/003-scroll-choreography.md`). Keyboard always works. No WASD and no free roaming off the choreography.
 2. **Text stays flat and crisp.** Text comes from the HTML layer and faces the viewer.
 3. **Depth shows importance.** Things closer to the viewer matter more. Nobody needs to explore to find content.
-4. **Motion is gentle.** No camera spins or tilts. Smooth easing with a speed limit.
+4. **Motion is gentle by default.** No camera spins or tilts, smooth easing and a speed limit. A spec can opt out on purpose with `allow`, and the report shows the opt-out.
 5. **Navigation is normal.** A real menu and real buttons. Clicking a link glides the camera to that section.
 6. **Reduced motion mode.** If the user turns on reduced motion, we use soft fades.
 7. **Test mode is repeatable.** With `?doodley-test`, the site runs on a clock we control and uses seeded randomness. The same test gives the same pictures every time.
@@ -77,7 +77,7 @@ These rules are built into the engine. Every feature has to follow them. **`chec
 
 ### V1 (launch Tuesday)
 
-- **Core runtime:** sections in 3D, a scroll camera path, an HTML layer, **test mode**.
+- **Core runtime:** sections in 3D, a **scroll choreography** (beats, tracks on any property, layouts, behaviors, inputs per device), an HTML layer, **test mode**.
 - **Brand tokens in:** read design token JSON or a DESIGN.md file. Turn colors, fonts and material style into 3D materials and lighting.
 - **Optimizer CLI:** one command that compresses and simplifies models.
 - **Effects pack:** glass and a shader background.
@@ -85,6 +85,17 @@ These rules are built into the engine. Every feature has to follow them. **`chec
 - **MCP server:** tools to create a site, add a section, apply a brand, optimize assets **and check the site**.
 - **Skill:** a SKILL.md so agents know when to use us, and that they must run `check` before they say they are done.
 - **Demo:** the Spectr landing page rebuilt in 3D, with its check report.
+
+### Scroll choreography (replaces camera modes)
+
+Decision: `docs/adr/003-scroll-choreography.md`. Contract: `packages/core/src/choreography/types.ts`.
+
+| Task                | Package | Done means                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1 Timeline runtime | `core`  | Spec is validated with Zod (errors give the field path and a fix), keyframes and easing evaluate any property, camera tracks support curves, layout helpers place children, behaviors register by name, a default spec is built from `sections`, `cameraMode` and `camera/modes.ts` are deleted, the basic example still goes red → green → blue, and unit tests pass. |
+| C2 Inputs           | `core`  | Native scroll, wheel, touch, drag, horizontal swipe and tap/click advance all write one progress target. Inputs are chosen per pointer type, keyboard and beat links always work, smoothing is frame-rate independent and skipped in test mode, and unit tests pass.                                                                                                   |
+| C3 Checker rules    | `check` | Scroll rules read beats. New rules: `scroll/deterministic`, `a11y/keyboard-reaches-beats` and `scroll/motion-allowances` (reports opt-outs). Each has a broken fixture and tests.                                                                                                                                                                                      |
+| C4 Recipes          | `core`  | Example specs (linear fly-through, sphere of screens, carousel, room) live under `recipes/` as data for agents, not as an enum.                                                                                                                                                                                                                                        |
 
 ### V2 Preview (if time allows)
 

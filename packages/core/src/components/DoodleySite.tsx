@@ -1,48 +1,47 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BridgeState } from "../bridge.js";
-import { installBridge, removeBridge } from "../bridge.js";
-import { buildCameraPathForMode, sectionPositionsForMode } from "../camera/modes.js";
-import type { CameraPath } from "../camera/path.js";
+import { exposeBridge, installBridge, removeBridge } from "../bridge.js";
+import { defaultChoreography } from "../choreography/default.js";
+import { cameraPoseAt } from "../choreography/pose.js";
+import { sectionPositions } from "../choreography/scene.js";
+import { validateChoreography } from "../choreography/schema.js";
+import type { Choreography } from "../choreography/types.js";
 import { DoodleyContext } from "../context.js";
 import type {
-  CameraMode,
   CameraState,
+  DoodleyBridge,
   DoodleyConfig,
   Quat,
   SceneStats,
   SectionState,
-  Vec3,
 } from "../contract.js";
+import { resolveInputs } from "../input/resolve.js";
+import { useProgressInput } from "../input/useProgressInput.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
 interface DoodleySiteProps {
   config: DoodleyConfig;
   children?: ReactNode;
+  /** DOM rendered over the canvas (nav, HUD). Gets DoodleyContext. */
+  overlay?: ReactNode;
 }
 
 const IDENTITY_QUAT: Quat = { x: 0, y: 0, z: 0, w: 1 };
-const SECTION_SPACING = 10;
-const CAMERA_OFFSET_Z = 6;
+/** The config's choreography if valid, otherwise the default (errors go to console.error). */
+function buildChoreography(config: DoodleyConfig): Choreography {
+  const ids = config.sections.map((s) => s.id);
+  const fallback = defaultChoreography(ids);
+  if (!config.choreography) return fallback;
+  const result = validateChoreography(config.choreography, ids);
+  if (result.ok) return result.value;
+  for (const error of result.errors) console.error(`[doodley] invalid choreography: ${error}`);
+  return fallback;
+}
 
-function buildPathAndPositions(config: DoodleyConfig): {
-  cameraPath: ReturnType<typeof buildCameraPathForMode>;
-  sectionPositions: Vec3[];
-  cameraMode: CameraMode;
-} {
-  const mode: CameraMode = config.cameraMode ?? "linear";
-  const cfg = {
-    mode,
-    sectionCount: Math.max(1, config.sections.length),
-    linearSpacing: SECTION_SPACING,
-    linearOffset: CAMERA_OFFSET_Z,
-  };
-  return {
-    cameraPath: buildCameraPathForMode(cfg),
-    sectionPositions: sectionPositionsForMode(cfg),
-    cameraMode: mode,
-  };
+function isCoarsePointer(): boolean {
+  return typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches === true;
 }
 
 function parseTestParams(): { testMode: boolean; seed: number } {
@@ -51,7 +50,7 @@ function parseTestParams(): { testMode: boolean; seed: number } {
   return { testMode: p.has("doodley-test"), seed: Number(p.get("seed") ?? "1") || 1 };
 }
 
-function makeBridgeState(): BridgeState {
+function makeBridgeState(choreography: Choreography): BridgeState {
   return {
     advance: () => {},
     getSections: () => [],
@@ -62,6 +61,7 @@ function makeBridgeState(): BridgeState {
       fov: 60,
       sectionId: null,
     }),
+    getChoreography: () => choreography,
     getScroll: () => 0,
     getStats: () => ({
       triangles: 0,
@@ -82,14 +82,12 @@ function makeBridgeState(): BridgeState {
 /** Lives inside the Canvas — wires useThree state into the bridge and renders the first frame */
 function BridgeInstaller({
   bridgeStateRef,
-  scrollProgress,
-  sections,
-  cameraPath,
+  getProgress,
+  choreography,
 }: {
   bridgeStateRef: React.MutableRefObject<BridgeState>;
-  scrollProgress: number;
-  sections: DoodleyConfig["sections"];
-  cameraPath: CameraPath;
+  getProgress: () => number;
+  choreography: Choreography;
 }): null {
   const { camera, gl, advance } = useThree();
   const eventsRef = useRef<import("../contract.js").DoodleyEvent[]>([]);
@@ -127,14 +125,17 @@ function BridgeInstaller({
   state.getEvents = () => eventsRef.current;
   state.pushEvent = (e) => eventsRef.current.push(e);
   state.getSections = (): SectionState[] =>
-    sections.map((s, i) => ({
-      id: s.id,
-      index: i,
-      anchor: i / Math.max(1, sections.length - 1),
-      cameraPose: cameraPath.lerp(i / Math.max(1, sections.length - 1)),
-      domId: `section-${s.id}`,
-    }));
-  state.getScroll = () => scrollProgress;
+    choreography.beats.map((beat, index) => {
+      const { position, quaternion } = cameraPoseAt(choreography, beat.at);
+      return {
+        id: beat.id,
+        index,
+        anchor: beat.at,
+        cameraPose: { position, quaternion },
+        domId: `section-${beat.id}`,
+      };
+    });
+  state.getScroll = getProgress;
 
   useEffect(() => {
     // Render the first frame so the canvas isn't black in test mode
@@ -154,64 +155,77 @@ function BridgeInstaller({
   return null;
 }
 
-export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element {
+export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JSX.Element {
   const { testMode } = parseTestParams();
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const pathRef = useRef(buildPathAndPositions(config));
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
+  const [{ choreography, positions }] = useState(() => {
+    const built = buildChoreography(config);
+    const ids = config.sections.map((s) => s.id);
+    return { choreography: built, positions: sectionPositions(built, ids) };
+  });
 
   // Create bridge state once; install the bridge synchronously so window.__doodley
   // is available as soon as the component mounts (before any useEffect runs).
   const bridgeStateRef = useRef<BridgeState | null>(null);
+  const bridgeRef = useRef<DoodleyBridge | null>(null);
   if (bridgeStateRef.current === null) {
-    bridgeStateRef.current = makeBridgeState();
-    if (testMode) installBridge(bridgeStateRef.current);
+    bridgeStateRef.current = makeBridgeState(choreography);
+    if (testMode) bridgeRef.current = installBridge(bridgeStateRef.current);
   }
 
   useEffect(() => {
-    if (!testMode) return;
+    if (!testMode || !bridgeRef.current) return;
+    exposeBridge(bridgeRef.current);
     return () => removeBridge();
   }, [testMode]);
 
-  const handleScroll = useCallback((e: Event) => {
-    const el = e.currentTarget as HTMLDivElement;
-    const max = el.scrollHeight - el.clientHeight;
-    setScrollProgress(max <= 0 ? 0 : Math.min(1, Math.max(0, el.scrollTop / max)));
-  }, []);
+  const { controller, getProgress, tick } = useProgressInput({
+    el: scroller,
+    spec: choreography.input,
+    beats: choreography.beats.map((b) => b.at),
+    snappable: choreography.beats.map((b) => b.snap !== false),
+    snap: choreography.snap,
+    testMode,
+  });
+  const nativeScroll = resolveInputs(choreography.input, isCoarsePointer()).includes("scroll");
 
-  const attachRef = useCallback(
-    (el: HTMLDivElement | null) => {
-      if (scrollerRef.current) scrollerRef.current.removeEventListener("scroll", handleScroll);
-      scrollerRef.current = el;
-      if (el) el.addEventListener("scroll", handleScroll, { passive: true });
-    },
-    [handleScroll],
-  );
-
-  const { cameraPath, sectionPositions, cameraMode } = pathRef.current;
-  const initialPose = cameraPath.lerp(0);
+  const initialPose = cameraPoseAt(choreography, 0);
 
   return (
     <DoodleyContext.Provider
       value={{
-        scrollProgress,
+        getProgress,
+        tick,
+        goToBeat: (index, instant) => {
+          controller.goToBeat(index, "nav");
+          if (instant) controller.snap();
+        },
         sections: config.sections,
-        cameraPath,
-        sectionSpacing: SECTION_SPACING,
-        cameraMode,
-        sectionPositions,
+        choreography,
+        sectionPositions: positions,
       }}
     >
       <div
-        ref={attachRef}
+        ref={setScroller}
         data-doodley-scroller
-        style={{ width: "100vw", height: "100vh", overflow: "auto", position: "relative" }}
+        style={{
+          width: "100vw",
+          height: "100vh",
+          overflow: nativeScroll ? "auto" : "hidden",
+          position: "relative",
+        }}
       >
         <Canvas
           frameloop={testMode ? "never" : "demand"}
           camera={{
             position: [initialPose.position.x, initialPose.position.y, initialPose.position.z],
-            fov: 60,
+            quaternion: [
+              initialPose.quaternion.x,
+              initialPose.quaternion.y,
+              initialPose.quaternion.z,
+              initialPose.quaternion.w,
+            ],
+            fov: initialPose.fov,
           }}
           style={{ position: "fixed", inset: 0, zIndex: 0, background: "#111" }}
         >
@@ -219,9 +233,8 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
           {testMode && (
             <BridgeInstaller
               bridgeStateRef={bridgeStateRef as React.MutableRefObject<BridgeState>}
-              scrollProgress={scrollProgress}
-              sections={config.sections}
-              cameraPath={cameraPath}
+              getProgress={getProgress}
+              choreography={choreography}
             />
           )}
           {children}
@@ -252,6 +265,7 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
             zIndex: 1,
           }}
         />
+        {overlay}
       </div>
     </DoodleyContext.Provider>
   );

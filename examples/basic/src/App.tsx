@@ -1,3 +1,4 @@
+import { DoodleyA11y } from "@doodley/a11y";
 import type { DoodleyConfig } from "@doodley/core";
 import { DoodleySite, Section } from "@doodley/core";
 
@@ -12,7 +13,7 @@ const config: DoodleyConfig = {
 
 export function App(): JSX.Element {
   return (
-    <DoodleySite config={config}>
+    <DoodleySite config={config} overlay={<DoodleyA11y config={{ sections: config.sections }} />}>
       <Section id="hero" title="Hero">
         <mesh position={[0, 0, 0]}>
           <boxGeometry args={[2, 2, 2]} />

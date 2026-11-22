@@ -1,0 +1,4 @@
+{
+  "mustFail": ["load/console-errors"],
+  "mayAlsoFail": []
+}

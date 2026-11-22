@@ -1,0 +1,4 @@
+{
+  "mustFail": ["render/not-blank"],
+  "mayAlsoFail": []
+}

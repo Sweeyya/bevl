@@ -5,13 +5,6 @@ import type { Rule } from "../../rule.js";
 const MAX_ROLL_DEG = 2;
 const SCROLL_STEPS = 40;
 
-function quatToRollDeg(q: { x: number; y: number; z: number; w: number }): number {
-  // Extract roll (rotation around Z axis) from quaternion
-  const sinRoll = 2 * (q.w * q.z + q.x * q.y);
-  const cosRoll = 1 - 2 * (q.y * q.y + q.z * q.z);
-  return Math.abs(Math.atan2(sinRoll, cosRoll) * (180 / Math.PI));
-}
-
 const rule: Rule = {
   id: "scroll/no-roll",
   group: "scroll",
@@ -26,6 +19,7 @@ const rule: Rule = {
               __doodley?: {
                 ready: Promise<void>;
                 step(ms: number): unknown;
+                choreography(): { allow?: { roll?: boolean } };
                 camera(): { quaternion: { x: number; y: number; z: number; w: number } };
               };
             }
@@ -33,6 +27,7 @@ const rule: Rule = {
           if (!bridge) return null;
 
           await bridge.ready;
+          if (bridge.choreography().allow?.roll) return null;
 
           const scroller = (document.querySelector<HTMLElement>("[data-doodley-scroller]") ??
             document.scrollingElement ??
@@ -45,6 +40,7 @@ const rule: Rule = {
 
           for (let i = 0; i <= steps; i++) {
             scroller.scrollTop = (i / steps) * max;
+            await new Promise((r) => requestAnimationFrame(r));
             bridge.step(1000 / 60);
             const q = bridge.camera().quaternion;
             const sinRoll = 2 * (q.w * q.z + q.x * q.y);
@@ -75,5 +71,4 @@ const rule: Rule = {
   },
 };
 
-export { quatToRollDeg };
 export default rule;

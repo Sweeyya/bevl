@@ -63,23 +63,11 @@ export function DoodleyA11y({ config }: Props): JSX.Element | null {
     e.preventDefault();
     const target = document.getElementById(`section-${sectionId}`);
     if (!target) return;
-    // With reduced motion just jump, otherwise scroll the container
-    if (reducedMotion) {
-      target.scrollIntoView();
-    } else {
-      target.scrollIntoView({ behavior: "smooth" });
-    }
-    // Update scroll progress via the scrollable container
-    const scroller = document.querySelector<HTMLElement>("[data-doodley-scroller]");
-    if (scroller) {
-      const max = scroller.scrollHeight - scroller.clientHeight;
-      const index = sections.findIndex((s) => s.id === sectionId);
-      const frac = sections.length > 1 ? index / (sections.length - 1) : 0;
-      scroller.scrollTop = frac * max;
-    }
+    const index = sections.findIndex((x) => x.id === sectionId);
+    if (index >= 0) ctx?.goToBeat(index, reducedMotion);
     // Move focus to the section anchor
     target.setAttribute("tabindex", "-1");
-    target.focus();
+    target.focus({ preventScroll: true });
   }
 
   if (!ctx) return null;
