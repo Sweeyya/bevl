@@ -39,6 +39,7 @@ server.tool(
     viewport: z.enum(["desktop", "phone"]).optional().describe("Run only this viewport"),
     ruleId: z
       .string()
+      .max(128)
       .regex(/^[a-z0-9-]+\/[a-z0-9-]+$/)
       .optional()
       .describe("Run only this rule id, e.g. scroll/no-jumps"),

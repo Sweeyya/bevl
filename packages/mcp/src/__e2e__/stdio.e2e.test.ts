@@ -24,7 +24,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const SERVER = resolve(fileURLToPath(import.meta.url), "../../../dist/server.js");
 /** Strings bounded only by a regex, which does not cap their length. Remove an entry once it gets a maxLength. */
-const PATTERN_ONLY = new Map([["check_site.ruleId", "no maxLength yet"]]);
+const PATTERN_ONLY = new Map<string, string>();
 const SECRET = "TOP-SECRET-OUTSIDE-ROOT";
 
 let sandbox = "";
@@ -218,10 +218,8 @@ describe("safe input", () => {
     expect(snapshot(root)).toEqual(before);
   });
 
-  // Known product bug: optimizeGlb calls draco() without registering the draco3d encoder (and
-  // textureCompress needs sharp), so every real file fails. Drop `.fails` once the optimizer is fixed.
-  it.fails("optimize_assets writes the optimized .glb next to the input", async () => {
-    const res = await call("optimize_assets", { input: "tiny.glb", textureSize: 256 });
+  it("optimize_assets writes the optimized .glb next to the input", async () => {
+    const res = await call("optimize_assets", { input: "tiny.glb" });
     expect(res.isError, res.text).toBe(false);
     expect(res.text).toMatch(/Optimized/);
     expect(existsSync(join(root, "tiny-optimized.glb"))).toBe(true);
