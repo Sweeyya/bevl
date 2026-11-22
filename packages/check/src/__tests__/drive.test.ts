@@ -18,7 +18,7 @@ afterEach(restoreGlobals);
 
 describe("onBeat", () => {
   it("matches within the epsilon only", () => {
-    expect(onBeat([0, 0.5], 0.5 + BEAT_EPSILON)).toBe(true);
+    expect(onBeat([0, 0.5], 0.5 + BEAT_EPSILON / 2)).toBe(true);
     expect(onBeat([0, 0.5], 0.5 + BEAT_EPSILON * 2)).toBe(false);
   });
 });

@@ -118,7 +118,7 @@ export class FakeSite {
     if (this.opts.deadKeys?.includes(key)) return;
     const sorted = [...this.beats].sort((a, b) => a - b);
     const nearest = sorted.findIndex((b) => Math.abs(b - this.progress) < 0.01);
-    const at = nearest < 0 ? 0 : nearest;
+    const at = Math.max(nearest, 0);
     const target =
       key === "Home"
         ? 0

@@ -15,6 +15,7 @@ const names = readdirSync(brokenDir).sort();
 interface Expected {
   mustFail: string[];
   mayAlsoFail: string[];
+  fixContains?: Record<string, string>;
 }
 
 let server: PreviewServer;
@@ -63,7 +64,12 @@ describe("broken fixtures", () => {
       const expected = JSON.parse(
         readFileSync(join(brokenDir, name, "expected.json"), "utf8"),
       ) as Expected;
-      const failed = failedRules(await check(name));
+      const report = await check(name);
+      const failed = failedRules(report);
+      for (const [rule, text] of Object.entries(expected.fixContains ?? {})) {
+        const fixes = report.findings.filter((f) => f.rule === rule).map((f) => f.fix);
+        expect(fixes.join("\n"), `${rule} Fix should mention ${text}`).toContain(text);
+      }
       for (const rule of expected.mustFail) expect(failed, `${rule} should fail`).toContain(rule);
       const allowed = new Set([...expected.mustFail, ...expected.mayAlsoFail]);
       expect([...failed].filter((r) => !allowed.has(r))).toEqual([]);

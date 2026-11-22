@@ -28,7 +28,7 @@ const rootEl = document.getElementById("root");
 if (!rootEl) throw new Error("No #root element found");
 
 const fixture = await loadFixture(new URLSearchParams(location.search).get("fixture"));
-applyHead(fixture.head ?? good.head);
+applyHead(fixture.head ?? good.head ?? {});
 const Scene = fixture.Scene;
 
 createRoot(rootEl).render(
