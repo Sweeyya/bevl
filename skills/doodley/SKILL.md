@@ -98,12 +98,12 @@ Run `doodley <command> --help` for the exact flags of `add-section` and `apply-b
 
 If `choreography` is missing, the site gets a default forward fly-through. An invalid choreography is reported on the console and falls back to the default, so always check for `load/console-errors` findings. Translate user descriptions with the steps and four worked examples in [references/choreography.md](references/choreography.md).
 
-Recipes: once agent D's work merges, `recipes` is exported from `@doodley/core` as functions `(sectionIds) => Choreography` such as `fly-through`, `sphere-of-screens`, `carousel` and `room`. Use one as a starting point and then edit it. (Available once D merges. Check the export exists before importing it.)
+Recipes: `@doodley/core` exports `recipes` (`fly-through`, `sphere-of-screens`, `carousel`, `room`, `horizontal-gallery`, `orbit-product`). `recipes["room"].create(sectionIds)` returns a ready `Choreography`. Use one as a starting point and then edit it.
 
 ## Content rules
 
 - **Body text must be real HTML**, outside the canvas, never only drawn as 3D text or textures. Screen readers, search engines and the `html/section-text` rule need it. Each section needs a DOM element with a heading.
-- Put text on screen with the Section `html` prop: `<Section id="hero" title="Hero" html={<><h2>Title</h2><p>Real copy.</p></>}>` (available once agent I merges; if the prop is missing, check the `Section` props in `@doodley/core` and use what it exports).
+- Put text on screen with the Section `html` prop: `<Section id="hero" title="Hero" html={<><h2>Title</h2><p>Real copy.</p></>}>`.
 - No walls of text in 3D. Keep on-screen copy to a heading and a few short lines per section.
 - Keyboard must work and cannot be disabled: Arrow keys, Home, End, PageUp, PageDown, Space and Tab to nav links. Never stop those keydown events.
 - Reduced motion must work. Keep motion gentle: no camera roll, no teleporting moves (max 1.5 m per scroll step), no fast spin.

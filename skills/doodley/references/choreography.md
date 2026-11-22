@@ -30,7 +30,7 @@ Invalid choreography falls back to the default and logs `[doodley] invalid chore
 
 ## Recipes (starting points)
 
-Once agent D's work merges, `@doodley/core` exports `recipes`: functions `(sectionIds) => Choreography` named like `fly-through`, `sphere-of-screens`, `carousel` and `room`. Start from one when it matches, then edit. Check the export exists before importing. The worked examples below work without recipes.
+`@doodley/core` exports `recipes`: `fly-through`, `sphere-of-screens`, `carousel`, `room`, `horizontal-gallery` and `orbit-product`. Each has a `description` and `whenToUse`, and `recipes["carousel"].create(sectionIds)` returns a ready `Choreography` for any section count. Start from one when it matches, then edit it. The worked examples below work without recipes.
 
 ## Worked example 1: fly through (the default)
 

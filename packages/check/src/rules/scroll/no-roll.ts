@@ -43,9 +43,8 @@ const rule: Rule = {
             await new Promise((r) => requestAnimationFrame(r));
             bridge.step(1000 / 60);
             const q = bridge.camera().quaternion;
-            const sinRoll = 2 * (q.w * q.z + q.x * q.y);
-            const cosRoll = 1 - 2 * (q.y * q.y + q.z * q.z);
-            const rollDeg = Math.abs(Math.atan2(sinRoll, cosRoll) * (180 / Math.PI));
+            const rightY = 2 * (q.x * q.y + q.w * q.z);
+            const rollDeg = Math.asin(Math.min(1, Math.abs(rightY))) * (180 / Math.PI);
             if (rollDeg > worstRoll) worstRoll = rollDeg;
           }
 

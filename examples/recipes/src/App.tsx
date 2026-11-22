@@ -22,7 +22,17 @@ export function App(): JSX.Element {
   return (
     <DoodleySite config={config} overlay={<DoodleyA11y config={{ sections }} />}>
       {sections.map((s, i) => (
-        <Section key={s.id} id={s.id} title={s.title}>
+        <Section
+          key={s.id}
+          id={s.id}
+          title={s.title}
+          html={
+            <>
+              {i === 0 ? <h1>{recipe.name}</h1> : <h2>{s.title}</h2>}
+              <p>{recipe.description}</p>
+            </>
+          }
+        >
           <mesh>
             <planeGeometry args={[2.4, 1.4]} />
             <meshStandardMaterial color={`hsl(${(i * 47) % 360}, 65%, 55%)`} />
