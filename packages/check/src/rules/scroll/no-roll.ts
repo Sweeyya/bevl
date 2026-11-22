@@ -1,5 +1,14 @@
 // Rule: scroll/no-roll
 // Pass: camera up direction stays within 2° of world up throughout scroll
+import {
+  choreography,
+  couldNotRun,
+  finding,
+  NO_SCROLL,
+  NOT_READY,
+  sweep,
+  waitReady,
+} from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const MAX_ROLL_DEG = 2;
@@ -11,63 +20,27 @@ const rule: Rule = {
   severity: "error",
   description: `Camera up direction must stay within ${MAX_ROLL_DEG}° of world up.`,
   async run(ctx) {
-    const result = await ctx.page
-      .evaluate(
-        async ({ steps, maxRoll }) => {
-          const bridge = (
-            window as unknown as {
-              __doodley?: {
-                ready: Promise<void>;
-                step(ms: number): unknown;
-                choreography(): { allow?: { roll?: boolean } };
-                camera(): { quaternion: { x: number; y: number; z: number; w: number } };
-              };
-            }
-          ).__doodley;
-          if (!bridge) return null;
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
+    if ((await choreography(ctx.page)).allow?.roll) return [];
+    const poses = await sweep(ctx.page, SCROLL_STEPS).catch(() => null);
+    if (!poses) return [couldNotRun(ctx, this.id, NO_SCROLL)];
 
-          await bridge.ready;
-          if (bridge.choreography().allow?.roll) return null;
-
-          const scroller = (document.querySelector<HTMLElement>("[data-doodley-scroller]") ??
-            document.scrollingElement ??
-            document.documentElement) as HTMLElement;
-
-          const max = scroller.scrollHeight - scroller.clientHeight;
-          if (max <= 0) return null;
-
-          let worstRoll = 0;
-
-          for (let i = 0; i <= steps; i++) {
-            scroller.scrollTop = (i / steps) * max;
-            await new Promise((r) => requestAnimationFrame(r));
-            bridge.step(1000 / 60);
-            const q = bridge.camera().quaternion;
-            const sinRoll = 2 * (q.w * q.z + q.x * q.y);
-            const cosRoll = 1 - 2 * (q.y * q.y + q.z * q.z);
-            const rollDeg = Math.abs(Math.atan2(sinRoll, cosRoll) * (180 / Math.PI));
-            if (rollDeg > worstRoll) worstRoll = rollDeg;
-          }
-
-          return { worstRoll, exceeded: worstRoll > maxRoll };
-        },
-        { steps: SCROLL_STEPS, maxRoll: MAX_ROLL_DEG },
-      )
-      .catch(() => null);
-
-    if (result?.exceeded) {
-      return [
-        {
-          rule: "scroll/no-roll",
-          severity: "error",
-          viewport: ctx.viewport.name,
-          message: `Camera rolled ${result.worstRoll.toFixed(1)}° on ${ctx.viewport.name} (max ${MAX_ROLL_DEG}°).`,
-          fix: "Ensure enforceNoRoll is applied every frame in ScrollCamera. Check that your camera path quaternions have no roll component.",
-          evidence: { data: { worstRoll: result.worstRoll, maxRoll: MAX_ROLL_DEG } },
-        },
-      ];
+    let worstRoll = 0;
+    for (const { quaternion: q } of poses) {
+      const rightY = 2 * (q.x * q.y + q.w * q.z);
+      worstRoll = Math.max(worstRoll, Math.asin(Math.min(1, Math.abs(rightY))) * (180 / Math.PI));
     }
-    return [];
+    if (worstRoll <= MAX_ROLL_DEG) return [];
+    return [
+      finding(
+        ctx,
+        this.id,
+        "error",
+        `Camera rolled ${worstRoll.toFixed(1)}° on ${ctx.viewport.name} (max ${MAX_ROLL_DEG}°).`,
+        "Ensure enforceNoRoll is applied every frame in ScrollCamera. Check that your camera path quaternions have no roll component.",
+        { worstRoll, maxRoll: MAX_ROLL_DEG },
+      ),
+    ];
   },
 };
 

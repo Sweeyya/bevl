@@ -40,7 +40,7 @@ const rule: Rule = {
           severity: "error",
           viewport: ctx.viewport.name,
           message: `window.__doodley.ready did not resolve within ${budget}ms on ${ctx.viewport.name}.`,
-          fix: `Ensure your DoodleyBridge sets up window.__doodley before the page loads and that the ready Promise resolves once all assets and fonts are loaded. Check the browser console for asset-loading errors. If the site is not on localhost, set "testMode": "always" in doodley.json so ?doodley-test is honored.`,
+          fix: `Ensure your DoodleyBridge sets up window.__doodley before the page loads and that the ready Promise resolves once all assets and fonts are loaded. Check the browser console for asset-loading errors. Test mode is only honored on localhost, and never when "testMode" is "never" in doodley.json. If testMode is "never" or the site is not on localhost, set "testMode": "always" so ?doodley-test is honored.`,
         },
       ];
     }

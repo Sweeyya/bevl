@@ -31,13 +31,22 @@ pnpm build
 
 ## Testing commands
 
-| Command                 | What it does                                             |
-| ----------------------- | -------------------------------------------------------- |
-| `pnpm test:fixtures`    | Run every broken fixture against check (must all fail)   |
-| `pnpm check:examples`   | Run doodley check on every example (must score 90+)      |
-| `pnpm test:visual`      | Screenshot tests (run inside Docker for reproducibility) |
-| `pnpm test:perf`        | Lighthouse CI on built demos                             |
-| `pnpm test:determinism` | Run check --verify-determinism on every example          |
+| Command                        | What it does                                                                                |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| `pnpm test:fixtures`           | Run every broken fixture against check (must all fail)                                      |
+| `pnpm check:examples`          | Build each example, serve it with `vite preview`, run check (all must score 90+, no errors) |
+| `pnpm test:determinism`        | Same as `check:examples`, and run check twice per example: findings must be identical       |
+| `pnpm test:visual`             | Screenshot tests against the baselines for your platform                                    |
+| `pnpm test:visual -- --update` | Remake the baselines for your platform (`tools/__screenshots__/<platform>/`)                |
+| `pnpm test:perf`               | Lighthouse CI (phone profile, 3 runs, median) on each built example                         |
+
+These scripts live in `tools/` (`@doodley/tools`, private). They need Chromium: `pnpm --filter @doodley/check exec playwright install chromium`.
+
+### Screenshot baselines
+
+Baselines differ between macOS and Linux (fonts, software WebGL), so they are stored per platform: `tools/__screenshots__/darwin/` and `tools/__screenshots__/linux/`. A missing baseline fails the test with the command to fix it; it never passes silently.
+
+CI uses `linux`. Do not make linux baselines by hand. Run the **Update visual baselines** workflow (Actions tab, choose your branch). It makes them on the CI runner and pushes a commit to your branch. Pushes made by that workflow do not start other workflows, so re-run **Visual** afterwards.
 
 ## Working on a package
 

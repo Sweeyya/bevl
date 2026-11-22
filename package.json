@@ -11,6 +11,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "test:fixtures": "turbo run test:fixtures",
+    "test:e2e": "turbo run test:e2e",
     "test:visual": "turbo run test:visual",
     "test:perf": "turbo run test:perf",
     "test:determinism": "turbo run test:determinism",
@@ -24,7 +25,7 @@
     "version": "changeset version",
     "release": "turbo run build && changeset publish",
     "pkg:lint": "publint --strict packages/*/",
-    "pkg:types": "attw --pack packages/core && attw --pack packages/check && attw --pack packages/cli && attw --pack packages/mcp",
+    "pkg:types": "attw --profile esm-only --pack packages/core && attw --profile esm-only --pack packages/check && attw --profile esm-only --pack packages/cli && attw --profile esm-only --pack packages/mcp",
     "pkg:size": "size-limit",
     "pkg:unused": "knip",
     "pkg:pack-check": "pnpm pack --dry-run --filter @doodley/core --filter @doodley/check --filter @doodley/cli --filter @doodley/mcp"

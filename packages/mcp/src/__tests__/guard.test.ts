@@ -1,9 +1,24 @@
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  realpathSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { assertSafeUrl, requireExtension, resolveInside } from "../guard.js";
-import { checkSite, optimizeAssets, readBrandTokens } from "../tools.js";
+import {
+  addSectionTool,
+  applyBrandTool,
+  checkSite,
+  createSiteTool,
+  optimizeAssets,
+  readBrandTokens,
+} from "../tools.js";
 
 let base = "";
 let root = "";
@@ -112,5 +127,49 @@ describe("tool handlers refuse unsafe input before doing any work", () => {
     await expect(readBrandTokens("../outside/secret.json", env())).rejects.toThrow(/outside/);
     await expect(readBrandTokens("link/secret.json", env())).rejects.toThrow(/outside/);
     await expect(readBrandTokens("/etc/passwd", env())).rejects.toThrow();
+  });
+  it("create_site stays under the root and rejects bad names", async () => {
+    await expect(createSiteTool({ name: "ok", dir: "../outside" }, env())).rejects.toThrow(
+      /outside/,
+    );
+    await expect(createSiteTool({ name: "ok", dir: "link" }, env())).rejects.toThrow(/outside/);
+    for (const name of ["../x", "<script>", 'a"b', "/etc"]) {
+      await expect(createSiteTool({ name }, env())).rejects.toThrow(/Invalid site name/);
+    }
+    await createSiteTool({ name: "made", dir: "sites" }, env());
+    expect(existsSync(join(root, "sites", "made", "doodley.json"))).toBe(true);
+    await expect(createSiteTool({ name: "made", dir: "sites" }, env())).rejects.toThrow(
+      /already exists/,
+    );
+  });
+  it("add_section and apply_brand reject traversal, symlinks, bad ids and titles", async () => {
+    await createSiteTool({ name: "p" }, env());
+    for (const projectDir of ["../outside", "link", "/etc"]) {
+      await expect(addSectionTool({ id: "x", title: "T", projectDir }, env())).rejects.toThrow();
+      await expect(applyBrandTool({ file: "DESIGN.md", projectDir }, env())).rejects.toThrow();
+    }
+    for (const id of ["../x", "<script>", 'a"b', "'; drop"]) {
+      await expect(addSectionTool({ id, title: "T", projectDir: "p" }, env())).rejects.toThrow(
+        /Invalid section id/,
+      );
+    }
+    await expect(
+      addSectionTool({ id: "x", title: "a\nb", projectDir: "p" }, env()),
+    ).rejects.toThrow(/title/);
+    await expect(
+      applyBrandTool({ file: "../outside/secret.json", projectDir: "p" }, env()),
+    ).rejects.toThrow(/outside/);
+    await expect(
+      applyBrandTool({ file: "link/secret.json", projectDir: "p" }, env()),
+    ).rejects.toThrow(/outside/);
+    await expect(
+      applyBrandTool({ file: "p/doodley.json", projectDir: "p" }, env()),
+    ).resolves.toContain("brand.tokens.json");
+    await expect(applyBrandTool({ file: "DESIGN.md", projectDir: "p" }, env())).rejects.toThrow(
+      /outside the project root/,
+    );
+    expect(await addSectionTool({ id: "extra", title: "Extra", projectDir: "p" }, env())).toContain(
+      "Inserted",
+    );
   });
 });

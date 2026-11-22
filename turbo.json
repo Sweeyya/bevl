@@ -11,6 +11,10 @@
       "dependsOn": ["^build"],
       "inputs": ["src/**", "tsconfig.json", "../../tsconfig.base.json"]
     },
+    "@doodley/fixtures-host#typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig.json", "../broken/**", "../../tsconfig.base.json"]
+    },
     "test": {
       "dependsOn": ["^build"],
       "inputs": ["src/**", "test/**", "tsconfig.json"],
@@ -19,6 +23,10 @@
     "test:fixtures": {
       "dependsOn": ["build"],
       "inputs": ["src/**", "../../fixtures/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "inputs": ["src/**", "../../fixtures/**", "../core/src/**"]
     },
     "test:visual": {
       "dependsOn": ["build"],

@@ -31,6 +31,14 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/node_modules", "!**/dist", "!**/.turbo", "!**/.changeset", "!**/*.d.ts"]
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/.turbo",
+      "!**/.changeset",
+      "!**/*.d.ts",
+      "!**/.lighthouseci"
+    ]
   }
 }

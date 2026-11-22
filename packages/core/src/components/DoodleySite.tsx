@@ -1,6 +1,6 @@
 import { Canvas, useThree } from "@react-three/fiber";
 import type { CSSProperties, ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fontStack, resolveBrand } from "../brand.js";
 import type { BridgeState } from "../bridge.js";
 import { exposeBridge, installBridge, removeBridge } from "../bridge.js";
@@ -23,6 +23,10 @@ import { resolveInputs } from "../input/resolve.js";
 import { useProgressInput } from "../input/useProgressInput.js";
 import { collectMaterials } from "../materials.js";
 import { isTestModeAllowed } from "../testmode.js";
+import { collectTextMeshes } from "../textMeshes.js";
+import { estimateTextureMb } from "../textureMemory.js";
+import { Fallback, hasWebGL } from "./Fallback.js";
+import { HtmlLayer, HtmlLayerDriver } from "./HtmlLayer.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
 interface DoodleySiteProps {
@@ -32,6 +36,8 @@ interface DoodleySiteProps {
   children?: ReactNode;
   /** DOM rendered over the canvas (nav, HUD). Gets DoodleyContext. */
   overlay?: ReactNode;
+  /** Replaces the built-in static page shown when WebGL is unavailable. */
+  fallback?: ReactNode;
 }
 
 const BRAND_HEADING_CSS =
@@ -127,11 +133,11 @@ function BridgeInstaller({
       drawCalls: info.render?.calls ?? 0,
       geometries: info.memory?.geometries ?? 0,
       textures,
-      textureMbEstimate: textures * 4,
+      textureMbEstimate: estimateTextureMb(scene),
     };
   };
   state.getMaterials = () => collectMaterials(scene);
-  state.getTextMeshes = () => [];
+  state.getTextMeshes = () => collectTextMeshes(scene);
   state.getMascot = () => null;
   state.getEvents = () => eventsRef.current;
   state.pushEvent = (e) => eventsRef.current.push(e);
@@ -166,7 +172,14 @@ function BridgeInstaller({
   return null;
 }
 
-export function DoodleySite({ config, brand, children, overlay }: DoodleySiteProps): JSX.Element {
+export function DoodleySite({
+  config,
+  brand,
+  children,
+  overlay,
+  fallback,
+}: DoodleySiteProps): JSX.Element {
+  const [webgl] = useState(hasWebGL);
   const { testMode } = parseTestParams(config);
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
   const [{ choreography, positions }] = useState(() => {
@@ -198,7 +211,19 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
     snap: choreography.snap,
     testMode,
   });
+  const htmlLayerRef = useRef<HTMLDivElement>(null);
+  const [htmlContent, setHtmlContent] = useState(() => new Map<string, ReactNode>());
+  const registerHtml = useCallback((id: string, node: ReactNode | null) => {
+    setHtmlContent((prev) => {
+      const next = new Map(prev);
+      if (node === null) next.delete(id);
+      else next.set(id, node);
+      return next;
+    });
+  }, []);
   const nativeScroll = resolveInputs(choreography.input, isCoarsePointer()).includes("scroll");
+
+  if (!webgl) return <Fallback config={config}>{fallback}</Fallback>;
 
   const initialPose = cameraPoseAt(choreography, 0);
   const tokens = resolveBrand(brand);
@@ -206,6 +231,7 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
     ? ({
         fontFamily: "var(--doodley-font-body)",
         color: tokens.colors.text,
+        "--doodley-text": tokens.colors.text,
         "--doodley-font-heading": fontStack(tokens.fonts.heading),
         "--doodley-font-body": fontStack(tokens.fonts.body),
       } as CSSProperties)
@@ -224,6 +250,7 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
         choreography,
         sectionPositions: positions,
         brand: brand ?? null,
+        registerHtml,
       }}
     >
       <div
@@ -253,6 +280,7 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
           style={{ position: "fixed", inset: 0, zIndex: 0, background: tokens.colors.background }}
         >
           <ScrollCamera />
+          <HtmlLayerDriver layer={htmlLayerRef} />
           {testMode && (
             <BridgeInstaller
               bridgeStateRef={bridgeStateRef as React.MutableRefObject<BridgeState>}
@@ -263,23 +291,7 @@ export function DoodleySite({ config, brand, children, overlay }: DoodleySitePro
           {children}
         </Canvas>
 
-        {config.sections.map((s) => (
-          <div
-            key={s.id}
-            id={`section-${s.id}`}
-            data-doodley-section={s.id}
-            data-doodley-title={s.title}
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              width: 1,
-              height: 1,
-              overflow: "hidden",
-              opacity: 0,
-              pointerEvents: "none",
-            }}
-          />
-        ))}
+        <HtmlLayer layerRef={htmlLayerRef} content={htmlContent} />
 
         <div
           style={{

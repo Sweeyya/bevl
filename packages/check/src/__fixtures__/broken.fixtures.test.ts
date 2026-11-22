@@ -10,11 +10,17 @@ import type { Report } from "../report.js";
 
 const root = resolve(fileURLToPath(import.meta.url), "../../../../..");
 const brokenDir = join(root, "fixtures/broken");
-const names = readdirSync(brokenDir).sort();
+const [shardIndex = 1, shardCount = 1] = (process.env.FIXTURE_SHARD ?? "1/1")
+  .split("/")
+  .map(Number);
+const names = readdirSync(brokenDir)
+  .sort()
+  .filter((_, i) => i % shardCount === shardIndex - 1);
 
 interface Expected {
   mustFail: string[];
   mayAlsoFail: string[];
+  fixContains?: Record<string, string>;
 }
 
 let server: PreviewServer;
@@ -49,7 +55,7 @@ afterAll(async () => {
   rmSync(projectDir, { recursive: true, force: true });
 });
 
-describe("good baseline", () => {
+describe.skipIf(shardIndex !== 1)("good baseline", () => {
   it("scores 90 or more with no errors", async () => {
     const report = await check("good");
     expect(report.findings.filter((f) => f.severity === "error")).toEqual([]);
@@ -63,7 +69,12 @@ describe("broken fixtures", () => {
       const expected = JSON.parse(
         readFileSync(join(brokenDir, name, "expected.json"), "utf8"),
       ) as Expected;
-      const failed = failedRules(await check(name));
+      const report = await check(name);
+      const failed = failedRules(report);
+      for (const [rule, text] of Object.entries(expected.fixContains ?? {})) {
+        const fixes = report.findings.filter((f) => f.rule === rule).map((f) => f.fix);
+        expect(fixes.join("\n"), `${rule} Fix should mention ${text}`).toContain(text);
+      }
       for (const rule of expected.mustFail) expect(failed, `${rule} should fail`).toContain(rule);
       const allowed = new Set([...expected.mustFail, ...expected.mayAlsoFail]);
       expect([...failed].filter((r) => !allowed.has(r))).toEqual([]);

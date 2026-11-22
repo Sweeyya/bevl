@@ -100,9 +100,6 @@ export function DoodleyA11y({ config }: Props): JSX.Element | null {
           ))}
         </ul>
       </nav>
-
-      {/* Hidden landmark for skip link target */}
-      <main id="main-content" aria-label="Main content" tabIndex={-1} />
     </>
   );
 }

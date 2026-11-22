@@ -1,0 +1,19 @@
+{
+  "name": "@doodley/tools",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:examples": "node check-examples.mjs",
+    "test:determinism": "node check-examples.mjs --determinism",
+    "test:visual": "node visual.mjs",
+    "test:perf": "node perf.mjs"
+  },
+  "dependencies": {
+    "@doodley/check": "workspace:*",
+    "@lhci/cli": "0.16.1",
+    "pixelmatch": "7.2.0",
+    "playwright": "1.65.1",
+    "pngjs": "7.0.0"
+  }
+}

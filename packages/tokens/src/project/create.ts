@@ -1,5 +1,7 @@
+import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve, sep } from "node:path";
+import { parseMd } from "../parse-md.js";
 
 export interface CreateOptions {
   name: string;
@@ -65,12 +67,18 @@ if (!root) throw new Error("No #root element");
 createRoot(root).render(<StrictMode><App /></StrictMode>);
 `;
 
-const DEFAULT_APP = `import { DoodleySite, Section } from "@doodley/core";
-import config from "../doodley.json" assert { type: "json" };
+const DEFAULT_APP = `import { DoodleyA11y } from "@doodley/a11y";
+import { DoodleySite, Section } from "@doodley/core";
+import brand from "./brand.tokens.json";
+import config from "../doodley.json";
 
 export default function App() {
   return (
-    <DoodleySite config={config}>
+    <DoodleySite
+      config={config}
+      brand={brand}
+      overlay={<DoodleyA11y config={{ sections: config.sections }} />}
+    >
       <Section id="hero" title="Hero">
         <mesh>
           <boxGeometry args={[2, 2, 2]} />
@@ -97,27 +105,80 @@ export default function App() {
 `;
 
 const DEFAULT_VITE_CONFIG = `import react from "@vitejs/plugin-react";
-import { resolve } from "node:path";
 import { defineConfig } from "vite";
 
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: { "@doodley/core": resolve(__dirname, "../../packages/core/src/index.ts") },
-  },
-  server: { fs: { allow: ["../.."] } },
-});
+export default defineConfig({ plugins: [react()] });
 `;
+
+const DEFAULT_TSCONFIG = JSON.stringify(
+  {
+    compilerOptions: {
+      target: "ES2022",
+      module: "ESNext",
+      moduleResolution: "bundler",
+      jsx: "react-jsx",
+      strict: true,
+      resolveJsonModule: true,
+      skipLibCheck: true,
+      noEmit: true,
+    },
+    include: ["src", "vite.config.ts"],
+  },
+  null,
+  2,
+);
+
+const packageName = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const DEFAULT_PACKAGE = (name: string) =>
+  JSON.stringify(
+    {
+      name: packageName(name),
+      version: "0.1.0",
+      private: true,
+      type: "module",
+      scripts: { dev: "vite", build: "vite build", preview: "vite preview" },
+      dependencies: {
+        "@doodley/a11y": "0.1.0",
+        "@doodley/core": "0.1.0",
+        react: "18.3.1",
+        "react-dom": "18.3.1",
+        three: "0.169.0",
+      },
+      devDependencies: {
+        "@types/react": "18.3.12",
+        "@types/react-dom": "18.3.1",
+        "@vitejs/plugin-react": "4.3.4",
+        typescript: "7.0.2",
+        vite: "6.4.5",
+      },
+    },
+    null,
+    2,
+  );
 
 export async function createSite(opts: CreateOptions): Promise<void> {
   const name = validateSiteName(opts.name);
   const parent = resolve(opts.dir);
   const base = resolve(parent, name);
   if (!base.startsWith(parent + sep)) throw new Error(`Site folder would be outside ${parent}.`);
+  if (existsSync(join(base, "doodley.json"))) {
+    throw new Error(`A Doodley site already exists at ${base}. Fix: choose a different name.`);
+  }
   await mkdir(join(base, "src"), { recursive: true });
   await writeFile(join(base, "doodley.json"), DEFAULT_CONFIG(name));
   await writeFile(join(base, "index.html"), DEFAULT_HTML(name));
   await writeFile(join(base, "vite.config.ts"), DEFAULT_VITE_CONFIG);
+  await writeFile(join(base, "package.json"), `${DEFAULT_PACKAGE(name)}\n`);
+  await writeFile(join(base, "tsconfig.json"), `${DEFAULT_TSCONFIG}\n`);
+  await writeFile(
+    join(base, "src", "brand.tokens.json"),
+    `${JSON.stringify(parseMd(""), null, 2)}\n`,
+  );
   await writeFile(join(base, "src", "main.tsx"), DEFAULT_MAIN);
   await writeFile(join(base, "src", "App.tsx"), DEFAULT_APP);
 }

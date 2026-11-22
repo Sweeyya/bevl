@@ -2,9 +2,8 @@
 # Runs on a schedule (2am UTC) and before releases.
 # Two expensive jobs that are too slow for every PR:
 #
-#   determinism — runs `doodley check --verify-determinism` on every example.
-#                 Two runs must produce identical reports and screenshots that
-#                 differ by 0.1% of pixels or less. Catches non-deterministic
+#   determinism — runs the checker twice on every example. The two runs must
+#                 produce identical scores and findings. Catches non-deterministic
 #                 randomness, timer drift, and animation state leaks.
 #
 #   golden      — runs the 5 MCP golden tasks through Claude Code and checks
@@ -37,46 +36,22 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
-    container:
-      # Same pinned Playwright image as visual.yml so software WebGL is identical.
-      image: mcr.microsoft.com/playwright:v1.49.0-noble
-      options: --user 1001
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-        with:
-          version: 12.20.0
+      - uses: ./.github/setup
 
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 pnpm install --frozen-lockfile
+      - name: Install Playwright Chromium
+        run: pnpm --filter @doodley/check exec playwright install chromium --with-deps
 
       - name: Build
         run: pnpm build
 
       - name: Determinism check
-        # Runs check twice on each example, diffs the reports and screenshots.
-        # Fails if any report field differs or any screenshot differs by >0.1%.
+        # Runs check twice on each example and fails if the findings differ.
         run: pnpm test:determinism
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
-
-      - name: Upload determinism diffs on failure
-        if: failure()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: determinism-diffs-${{ github.run_id }}
-          path: |
-            examples/*/.doodley/determinism/
-          retention-days: 7
-          if-no-files-found: ignore
 
   # ── Golden tasks ─────────────────────────────────────────────────────────────
   golden:

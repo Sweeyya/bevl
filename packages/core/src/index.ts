@@ -44,7 +44,7 @@ export const DESIGN_RULES = {
 export type { BrandRole } from "./brand.js";
 export { resolveBrand, useBrand } from "./brand.js";
 // Camera path math (pure TypeScript, no browser dependency)
-export { clampStep, enforceNoRoll } from "./camera/path.js";
+export { clampStep, enforceNoRoll, rollDegrees } from "./camera/path.js";
 // Scroll choreography (docs/adr/003-scroll-choreography.md)
 export { registerBehavior } from "./choreography/behaviors.js";
 export { defaultChoreography } from "./choreography/default.js";
@@ -67,6 +67,9 @@ export type {
   LayoutArrange,
   LayoutSpec,
   MotionAllowances,
+  SnapMode,
+  SnapSettings,
+  SnapSpec,
   Track,
   Vec3Tuple,
 } from "./choreography/types.js";
@@ -79,5 +82,10 @@ export { Section } from "./components/Section.js";
 // Context
 export type { DoodleyContextValue } from "./context.js";
 export { DoodleyContext } from "./context.js";
+// HTML layer visibility (pure helpers)
+export { activeSection, sectionVisibility } from "./html/visibility.js";
 // Seeded random (use instead of Math.random in runtime code paths)
 export { makeRand } from "./rand.js";
+// Example choreographies for agents to start from
+export type { Recipe, RecipeName } from "./recipes/index.js";
+export { getRecipe, recipeNames, recipes } from "./recipes/index.js";

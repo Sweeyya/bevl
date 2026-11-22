@@ -5,7 +5,7 @@ import { good } from "../../host/src/good.js";
 const overlay = (
   <>
     {good.overlay}
-    <h1
+    <h2
       style={{
         position: "fixed",
         top: 8,
@@ -15,7 +15,7 @@ const overlay = (
       }}
     >
       Doodley fixture
-    </h1>
+    </h2>
   </>
 );
 

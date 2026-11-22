@@ -1,5 +1,6 @@
 // Rule: budgets/draw-calls
 // Pass: draw call count is under budget
+import { couldNotRun, NOT_READY, stats, step, waitReady } from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const BUDGET_DESKTOP = 200;
@@ -13,13 +14,11 @@ const rule: Rule = {
   async run(ctx) {
     const budget = ctx.viewport.isMobile ? BUDGET_PHONE : BUDGET_DESKTOP;
 
-    const drawCalls = await ctx.page
-      .evaluate(() => {
-        const bridge = (window as unknown as { __doodley?: { stats(): { drawCalls: number } } })
-          .__doodley;
-        return bridge ? bridge.stats().drawCalls : 0;
-      })
-      .catch(() => 0);
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
+    await step(ctx.page, 1);
+    const drawCalls = (await stats(ctx.page))?.drawCalls;
+    if (drawCalls === undefined)
+      return [couldNotRun(ctx, this.id, "the bridge reports no scene stats")];
 
     if (drawCalls > budget) {
       return [

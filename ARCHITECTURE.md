@@ -125,7 +125,8 @@ export interface DoodleyBridge {
   materials(): MaterialState[];
   /** Brand tokens the site was given (`<DoodleySite brand={...}>`), or null. Brand rules are skipped on null. */
   brand(): BrandTokens | null;
-  /** Any 3D text meshes (should have <= 40 chars each) */
+  /** Any 3D text meshes (should have <= 40 chars each). An object counts as a text mesh when
+   *  `object.userData.doodleyText` is a string, whatever component renders it. */
   textMeshes(): TextMeshState[];
   /** Mascot state if present */
   mascot(): MascotState | null;
@@ -207,6 +208,12 @@ If this contract changes, update `ARCHITECTURE.md` first.
 See `docs/adr/002-test-mode.md` and `TESTING.md §2`.
 
 The key rule: **the checker never calls `step()` to advance time**. It uses real browser input only (wheel events, touch, clicks, keyboard). `step()` is only used in unit tests that test the camera math directly.
+
+---
+
+## 5b. HTML content layer
+
+Section text is real HTML. `<Section id title html={...}>` registers its html with `DoodleySite`, which renders it outside the canvas in a fixed, pointer-events-none layer: one `<main id="main-content">` with one `<section id="section-<id>">` per section. Visibility follows progress (opacity and transform written from the frame loop); all text stays in the DOM and Tab follows section order. See `docs/adr/004-html-content-layer.md`.
 
 ---
 

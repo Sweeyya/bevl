@@ -1,0 +1,21 @@
+{
+  "mustFail": ["load/ready"],
+  "mayAlsoFail": [
+    "a11y/keyboard-reaches-beats",
+    "budgets/draw-calls",
+    "budgets/triangles",
+    "html/section-text",
+    "render/no-nan",
+    "render/not-blank",
+    "scroll/deterministic",
+    "scroll/motion-allowances",
+    "scroll/no-jumps",
+    "scroll/no-roll",
+    "scroll/reaches-every-section",
+    "scroll/snap-no-trap",
+    "scroll/snap-settles"
+  ],
+  "fixContains": {
+    "load/ready": "testMode"
+  }
+}

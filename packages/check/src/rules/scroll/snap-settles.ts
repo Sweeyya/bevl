@@ -4,8 +4,12 @@ import {
   BEAT_EPSILON,
   beatAnchors,
   choreography,
+  couldNotRun,
   finding,
+  NO_SCROLL,
+  NOT_READY,
   onBeat,
+  progress,
   scrollTo,
   step,
   waitReady,
@@ -21,22 +25,20 @@ const rule: Rule = {
   severity: "warn",
   description: "Progress must come to rest on a beat after the user stops scrolling.",
   async run(ctx) {
-    if (!(await waitReady(ctx.page))) return [];
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
     const beats = await beatAnchors(ctx.page);
-    const flags = ((await choreography(ctx.page)) as { beats?: Array<{ snap?: boolean }> }).beats;
+    const flags = (await choreography(ctx.page)).beats;
     const stuck: string[] = [];
     for (let i = 0; i < beats.length - 1; i++) {
       const from = beats[i] ?? 0;
       const to = beats[i + 1] ?? 1;
       if (flags?.[i]?.snap === false || flags?.[i + 1]?.snap === false) continue;
-      await scrollTo(ctx.page, from);
+      if (!(await scrollTo(ctx.page, from))) return [couldNotRun(ctx, this.id, NO_SCROLL)];
       await step(ctx.page, SETTLE_FRAMES);
       const probe = from + (to - from) * FRACTION;
-      await scrollTo(ctx.page, probe);
+      if (!(await scrollTo(ctx.page, probe))) return [couldNotRun(ctx, this.id, NO_SCROLL)];
       await step(ctx.page, SETTLE_FRAMES);
-      const rest = await ctx.page.evaluate(() =>
-        (window as unknown as { __doodley: { scroll(): number } }).__doodley.scroll(),
-      );
+      const rest = await progress(ctx.page);
       if (!onBeat(beats, rest)) stuck.push(`${i}->${i + 1} rested at ${rest.toFixed(3)}`);
     }
     if (stuck.length === 0) return [];

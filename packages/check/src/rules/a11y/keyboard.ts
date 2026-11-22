@@ -2,12 +2,19 @@
 // Pass: Tab reaches the nav and every nav link
 import type { Rule } from "../../rule.js";
 
+const NAV_WAIT_MS = 3000;
+
 const rule: Rule = {
   id: "a11y/keyboard",
   group: "a11y",
   severity: "error",
   description: "Tab must reach the nav and every nav link.",
   async run(ctx) {
+    await ctx.page
+      .waitForFunction(() => document.querySelector("nav a, nav button"), undefined, {
+        timeout: NAV_WAIT_MS,
+      })
+      .catch(() => undefined);
     const result = await ctx.page
       .evaluate(() => {
         const nav = document.querySelector("nav");
