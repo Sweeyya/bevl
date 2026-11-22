@@ -66,6 +66,22 @@ export interface ViewportConfig {
   hasTouch: boolean;
 }
 
+/** Brand tokens passed to DoodleySite. Structurally identical to BrandTokens in @doodley/tokens. */
+export interface BrandTokens {
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    background: string;
+    surface: string;
+    text: string;
+    extra: Record<string, string>;
+  };
+  fonts: { heading: string; body: string };
+  spacingBase: number;
+  radiusBase: number;
+}
+
 // ─── Contract B: window.__doodley ────────────────────────────────────────────
 
 export interface DoodleyBridge {
@@ -85,6 +101,8 @@ export interface DoodleyBridge {
   stats(): SceneStats;
   /** Every material and its colors */
   materials(): MaterialState[];
+  /** Brand tokens the site was given, or null when it has none */
+  brand(): BrandTokens | null;
   /** Any 3D text meshes (should have <= 40 chars each) */
   textMeshes(): TextMeshState[];
   /** Mascot state if present */

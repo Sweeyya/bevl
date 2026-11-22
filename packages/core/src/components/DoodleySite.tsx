@@ -1,6 +1,7 @@
 import { Canvas, useThree } from "@react-three/fiber";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
+import { fontStack, resolveBrand } from "../brand.js";
 import type { BridgeState } from "../bridge.js";
 import { exposeBridge, installBridge, removeBridge } from "../bridge.js";
 import { defaultChoreography } from "../choreography/default.js";
@@ -10,6 +11,7 @@ import { validateChoreography } from "../choreography/schema.js";
 import type { Choreography } from "../choreography/types.js";
 import { DoodleyContext } from "../context.js";
 import type {
+  BrandTokens,
   CameraState,
   DoodleyBridge,
   DoodleyConfig,
@@ -19,15 +21,21 @@ import type {
 } from "../contract.js";
 import { resolveInputs } from "../input/resolve.js";
 import { useProgressInput } from "../input/useProgressInput.js";
+import { collectMaterials } from "../materials.js";
 import { isTestModeAllowed } from "../testmode.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
 interface DoodleySiteProps {
   config: DoodleyConfig;
+  /** Brand tokens (src/brand.tokens.json). Colors, fonts and the canvas background follow them. */
+  brand?: BrandTokens;
   children?: ReactNode;
   /** DOM rendered over the canvas (nav, HUD). Gets DoodleyContext. */
   overlay?: ReactNode;
 }
+
+const BRAND_HEADING_CSS =
+  "[data-doodley-scroller] :is(h1,h2,h3,h4,h5,h6){font-family:var(--doodley-font-heading)}";
 
 const IDENTITY_QUAT: Quat = { x: 0, y: 0, z: 0, w: 1 };
 /** The config's choreography if valid, otherwise the default (errors go to console.error). */
@@ -52,8 +60,9 @@ function parseTestParams(config: DoodleyConfig): { testMode: boolean; seed: numb
   return { testMode: allowed && p.has("doodley-test"), seed: Number(p.get("seed") ?? "1") || 1 };
 }
 
-function makeBridgeState(choreography: Choreography): BridgeState {
+function makeBridgeState(choreography: Choreography, brand: BrandTokens | null): BridgeState {
   return {
+    getBrand: () => brand,
     advance: () => {},
     getSections: () => [],
     getCamera: () => ({
@@ -91,7 +100,7 @@ function BridgeInstaller({
   getProgress: () => number;
   choreography: Choreography;
 }): null {
-  const { camera, gl, advance } = useThree();
+  const { camera, gl, advance, scene } = useThree();
   const eventsRef = useRef<import("../contract.js").DoodleyEvent[]>([]);
   const initialFrameDone = useRef(false);
 
@@ -121,7 +130,7 @@ function BridgeInstaller({
       textureMbEstimate: textures * 4,
     };
   };
-  state.getMaterials = () => [];
+  state.getMaterials = () => collectMaterials(scene);
   state.getTextMeshes = () => [];
   state.getMascot = () => null;
   state.getEvents = () => eventsRef.current;
@@ -157,7 +166,7 @@ function BridgeInstaller({
   return null;
 }
 
-export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JSX.Element {
+export function DoodleySite({ config, brand, children, overlay }: DoodleySiteProps): JSX.Element {
   const { testMode } = parseTestParams(config);
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
   const [{ choreography, positions }] = useState(() => {
@@ -171,7 +180,7 @@ export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JS
   const bridgeStateRef = useRef<BridgeState | null>(null);
   const bridgeRef = useRef<DoodleyBridge | null>(null);
   if (bridgeStateRef.current === null) {
-    bridgeStateRef.current = makeBridgeState(choreography);
+    bridgeStateRef.current = makeBridgeState(choreography, brand ?? null);
     if (testMode) bridgeRef.current = installBridge(bridgeStateRef.current);
   }
 
@@ -192,6 +201,15 @@ export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JS
   const nativeScroll = resolveInputs(choreography.input, isCoarsePointer()).includes("scroll");
 
   const initialPose = cameraPoseAt(choreography, 0);
+  const tokens = resolveBrand(brand);
+  const brandStyle = brand
+    ? ({
+        fontFamily: "var(--doodley-font-body)",
+        color: tokens.colors.text,
+        "--doodley-font-heading": fontStack(tokens.fonts.heading),
+        "--doodley-font-body": fontStack(tokens.fonts.body),
+      } as CSSProperties)
+    : {};
 
   return (
     <DoodleyContext.Provider
@@ -205,6 +223,7 @@ export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JS
         sections: config.sections,
         choreography,
         sectionPositions: positions,
+        brand: brand ?? null,
       }}
     >
       <div
@@ -215,8 +234,10 @@ export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JS
           height: "100vh",
           overflow: nativeScroll ? "auto" : "hidden",
           position: "relative",
+          ...brandStyle,
         }}
       >
+        {brand && <style>{BRAND_HEADING_CSS}</style>}
         <Canvas
           frameloop={testMode ? "never" : "demand"}
           camera={{
@@ -229,7 +250,7 @@ export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JS
             ],
             fov: initialPose.fov,
           }}
-          style={{ position: "fixed", inset: 0, zIndex: 0, background: "#111" }}
+          style={{ position: "fixed", inset: 0, zIndex: 0, background: tokens.colors.background }}
         >
           <ScrollCamera />
           {testMode && (
