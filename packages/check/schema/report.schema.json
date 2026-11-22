@@ -51,6 +51,18 @@
         }
       }
     },
+    "timings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rule", "viewport", "ms"],
+        "properties": {
+          "rule": { "type": "string" },
+          "viewport": { "type": "string" },
+          "ms": { "type": "number" }
+        }
+      }
+    },
     "artifacts": {
       "type": "array",
       "items": { "type": "string" }

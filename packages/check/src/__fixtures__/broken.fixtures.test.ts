@@ -21,14 +21,20 @@ interface Expected {
   mustFail: string[];
   mayAlsoFail: string[];
   fixContains?: Record<string, string>;
+  /** Viewport to run. Broken fixtures run desktop only unless they need the phone. */
+  viewport?: "desktop" | "phone";
 }
 
 let server: PreviewServer;
 let base = "";
 let projectDir = "";
 
-async function check(fixture: string): Promise<Report> {
-  return runCheck({ url: `${base}/?fixture=${fixture}`, projectDir });
+async function check(fixture: string, viewportName?: "desktop" | "phone"): Promise<Report> {
+  return runCheck({
+    url: `${base}/?fixture=${fixture}`,
+    projectDir,
+    ...(viewportName !== undefined && { viewportName }),
+  });
 }
 
 function failedRules(report: Report): Set<string> {
@@ -69,7 +75,7 @@ describe("broken fixtures", () => {
       const expected = JSON.parse(
         readFileSync(join(brokenDir, name, "expected.json"), "utf8"),
       ) as Expected;
-      const report = await check(name);
+      const report = await check(name, expected.viewport ?? "desktop");
       const failed = failedRules(report);
       for (const [rule, text] of Object.entries(expected.fixContains ?? {})) {
         const fixes = report.findings.filter((f) => f.rule === rule).map((f) => f.fix);
