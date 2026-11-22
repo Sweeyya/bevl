@@ -38,6 +38,20 @@ export const DESIGN_RULES = {
   MAX_TEXT_MESH_CHARS: 40,
 } as const;
 
+// Camera mode builders
+export type { PathConfig } from "./camera/modes.js";
+export {
+  buildCameraPathForMode,
+  buildCarouselPath,
+  buildLinearPath,
+  buildOrbitalPath,
+  buildRoomPath,
+  carouselSectionPositions,
+  linearSectionPositions,
+  orbitalSectionPositions,
+  roomSectionPositions,
+  sectionPositionsForMode,
+} from "./camera/modes.js";
 // Camera path math (pure TypeScript, no browser dependency)
 export { CameraPath, clampStep, enforceNoRoll } from "./camera/path.js";
 // React components
@@ -47,5 +61,6 @@ export { Section } from "./components/Section.js";
 // Context
 export type { DoodleyContextValue } from "./context.js";
 export { DoodleyContext } from "./context.js";
+export type { CameraMode } from "./contract.js";
 // Seeded random (use instead of Math.random in runtime code paths)
 export { makeRand } from "./rand.js";

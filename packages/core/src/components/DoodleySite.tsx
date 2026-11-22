@@ -3,15 +3,17 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { BridgeState } from "../bridge.js";
 import { installBridge, removeBridge } from "../bridge.js";
-import { CameraPath } from "../camera/path.js";
+import { buildCameraPathForMode, sectionPositionsForMode } from "../camera/modes.js";
+import type { CameraPath } from "../camera/path.js";
 import { DoodleyContext } from "../context.js";
 import type {
+  CameraMode,
   CameraState,
   DoodleyConfig,
-  Pose,
   Quat,
   SceneStats,
   SectionState,
+  Vec3,
 } from "../contract.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
@@ -24,15 +26,23 @@ const IDENTITY_QUAT: Quat = { x: 0, y: 0, z: 0, w: 1 };
 const SECTION_SPACING = 10;
 const CAMERA_OFFSET_Z = 6;
 
-function buildCameraPath(config: DoodleyConfig): CameraPath {
-  const poses: Pose[] = config.sections.map((_, i) => ({
-    position: { x: 0, y: 0, z: -i * SECTION_SPACING + CAMERA_OFFSET_Z },
-    quaternion: IDENTITY_QUAT,
-  }));
-  if (poses.length === 0) {
-    poses.push({ position: { x: 0, y: 0, z: CAMERA_OFFSET_Z }, quaternion: IDENTITY_QUAT });
-  }
-  return new CameraPath(poses);
+function buildPathAndPositions(config: DoodleyConfig): {
+  cameraPath: ReturnType<typeof buildCameraPathForMode>;
+  sectionPositions: Vec3[];
+  cameraMode: CameraMode;
+} {
+  const mode: CameraMode = config.cameraMode ?? "linear";
+  const cfg = {
+    mode,
+    sectionCount: Math.max(1, config.sections.length),
+    linearSpacing: SECTION_SPACING,
+    linearOffset: CAMERA_OFFSET_Z,
+  };
+  return {
+    cameraPath: buildCameraPathForMode(cfg),
+    sectionPositions: sectionPositionsForMode(cfg),
+    cameraMode: mode,
+  };
 }
 
 function parseTestParams(): { testMode: boolean; seed: number } {
@@ -147,7 +157,7 @@ function BridgeInstaller({
 export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element {
   const { testMode } = parseTestParams();
   const [scrollProgress, setScrollProgress] = useState(0);
-  const cameraPathRef = useRef<CameraPath>(buildCameraPath(config));
+  const pathRef = useRef(buildPathAndPositions(config));
   const scrollerRef = useRef<HTMLDivElement | null>(null);
 
   // Create bridge state once; install the bridge synchronously so window.__doodley
@@ -178,22 +188,31 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
     [handleScroll],
   );
 
+  const { cameraPath, sectionPositions, cameraMode } = pathRef.current;
+  const initialPose = cameraPath.lerp(0);
+
   return (
     <DoodleyContext.Provider
       value={{
         scrollProgress,
         sections: config.sections,
-        cameraPath: cameraPathRef.current,
+        cameraPath,
         sectionSpacing: SECTION_SPACING,
+        cameraMode,
+        sectionPositions,
       }}
     >
       <div
         ref={attachRef}
+        data-doodley-scroller
         style={{ width: "100vw", height: "100vh", overflow: "auto", position: "relative" }}
       >
         <Canvas
           frameloop={testMode ? "never" : "demand"}
-          camera={{ position: [0, 0, CAMERA_OFFSET_Z], fov: 60 }}
+          camera={{
+            position: [initialPose.position.x, initialPose.position.y, initialPose.position.z],
+            fov: 60,
+          }}
           style={{ position: "fixed", inset: 0, zIndex: 0, background: "#111" }}
         >
           <ScrollCamera />
@@ -202,7 +221,7 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
               bridgeStateRef={bridgeStateRef as React.MutableRefObject<BridgeState>}
               scrollProgress={scrollProgress}
               sections={config.sections}
-              cameraPath={cameraPathRef.current}
+              cameraPath={cameraPath}
             />
           )}
           {children}

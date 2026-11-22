@@ -11,14 +11,12 @@ interface SectionProps {
 export function Section({ id, title, children }: SectionProps): JSX.Element {
   const ctx = useContext(DoodleyContext);
 
-  // Find this section's index to compute its world position
   const index = ctx ? ctx.sections.findIndex((s) => s.id === id) : 0;
-  const spacing = ctx ? ctx.sectionSpacing : 10;
-  const z = -index * spacing;
+  const pos = ctx?.sectionPositions[index] ?? { x: 0, y: 0, z: -index * 10 };
 
   return (
     <group
-      position={[0, 0, z]}
+      position={[pos.x, pos.y, pos.z]}
       name={`section-${id}`}
       userData={{ doodleySection: id, doodleyTitle: title }}
     >

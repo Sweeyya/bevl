@@ -9,6 +9,16 @@
 
 // ─── Contract A: doodley.json ────────────────────────────────────────────────
 
+/**
+ * How the camera moves through sections as the user scrolls.
+ *
+ * linear   — camera flies forward along -Z (default, one section per screen)
+ * orbital  — camera orbits around the origin on a sphere; sections face inward
+ * carousel — sections arranged in a ring, camera rotates around the center
+ * room     — camera stays at origin; sections are placed on surrounding walls
+ */
+export type CameraMode = "linear" | "orbital" | "carousel" | "room";
+
 export interface DoodleyConfig {
   /** Project name, used in reports */
   name: string;
@@ -16,6 +26,11 @@ export interface DoodleyConfig {
   brand?: string;
   /** Ordered list of sections */
   sections: SectionConfig[];
+  /**
+   * How the camera moves through sections. Default: "linear".
+   * See CameraMode for descriptions of each mode.
+   */
+  cameraMode?: CameraMode;
   /** Performance budgets. Defaults come from doodley.budgets.json */
   budgets?: Partial<Budgets>;
   /** Viewports to test. Defaults: desktop + phone */
