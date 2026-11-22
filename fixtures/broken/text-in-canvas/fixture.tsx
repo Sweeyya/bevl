@@ -10,7 +10,7 @@ function CanvasCopy(): JSX.Element {
       {good.Scene ? <good.Scene /> : null}
       <mesh userData={{ doodleyText: COPY }}>
         <planeGeometry args={[4, 1]} />
-        <meshBasicMaterial color="#ffffff" />
+        <meshBasicMaterial color="#1a1a1a" />
       </mesh>
     </>
   );

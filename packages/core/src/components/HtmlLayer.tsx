@@ -8,7 +8,7 @@ import { sectionStyle } from "../html/visibility.js";
 const HEADING = "h1,h2,h3,h4,h5,h6";
 
 const CSS = `
-[data-doodley-html] [data-doodley-section]{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:8vh 8vw;max-width:100%;font-family:var(--doodley-font,system-ui,sans-serif);color:var(--doodley-text,#fff);pointer-events:none;outline:none}
+[data-doodley-html] [data-doodley-section]{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:8vh 8vw;max-width:100%;font-family:var(--doodley-font-body,system-ui,sans-serif);color:var(--doodley-text,#fff);pointer-events:none;outline:none}
 [data-doodley-html] [data-doodley-section]>div{max-width:40rem}
 [data-doodley-html] [data-doodley-active="true"] :is(a,button,input,select,textarea,summary){pointer-events:auto}
 [data-doodley-html] [data-doodley-section]:focus-within{opacity:1!important}

@@ -231,6 +231,7 @@ export function DoodleySite({
     ? ({
         fontFamily: "var(--doodley-font-body)",
         color: tokens.colors.text,
+        "--doodley-text": tokens.colors.text,
         "--doodley-font-heading": fontStack(tokens.fonts.heading),
         "--doodley-font-body": fontStack(tokens.fonts.body),
       } as CSSProperties)

@@ -1,4 +1,4 @@
 {
   "mustFail": ["brand/palette"],
-  "mayAlsoFail": []
+  "mayAlsoFail": ["a11y/contrast-over-3d"]
 }

@@ -15,7 +15,7 @@ Design rule 2 says text stays real HTML. Until now `<Section>` only rendered 3D 
 3. **Markup:** one `<main id="main-content">` containing one `<section id="section-<id>" aria-labelledby>` per config section, in config order. If the author's html has no h1 to h6, a visually hidden `<h2>` with the section title is added; otherwise the section is labelled with `aria-label`. `DoodleyA11y` no longer renders its own `<main>`; its skip link targets the layer's `main`.
 4. **Presentation:** the layer is `position: fixed; inset: 0; pointer-events: none`. Each frame, `HtmlLayerDriver` (inside the Canvas) writes opacity, a small translateY and `data-doodley-active` straight to the DOM from the progress value. No React state per frame, no timers. Visibility comes from the pure `sectionVisibility(progress, beats, index)`: fully visible within a quarter of the gap to the neighbouring beats, fading to 0 at half a gap. Interactive elements of the active section get `pointer-events: auto`.
 5. **Reduced motion:** no transform; sections switch on and off instantly (active section opacity 1, others 0).
-6. **Brand:** CSS custom properties with fallbacks (`--doodley-font`, `--doodley-text`).
+6. **Brand:** CSS custom properties with fallbacks (`--doodley-font-body`, `--doodley-text`).
 
 ## Accessibility rationale
 

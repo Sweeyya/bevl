@@ -29,9 +29,13 @@ const rule: Rule = {
           const w = window as unknown as { __navProbe?: Probe };
           w.__navProbe?.observer.disconnect();
           const probe = { mutations: 0, hash: location.hash } as Probe;
+          const meaningful = (m: MutationRecord): boolean =>
+            m.type !== "attributes" ||
+            !["style", "data-doodley-active"].includes(m.attributeName ?? "");
           probe.observer = new MutationObserver((r) => {
-            probe.mutations += r.length;
+            probe.mutations += r.filter(meaningful).length;
           });
+          (probe as Probe & { meaningful: typeof meaningful }).meaningful = meaningful;
           probe.observer.observe(document.documentElement, {
             subtree: true,
             childList: true,
@@ -49,7 +53,8 @@ const rule: Rule = {
         const p1 = await progress(page);
         responded = await page.evaluate(() => {
           const probe = (window as unknown as { __navProbe: Probe }).__navProbe;
-          probe.mutations += probe.observer.takeRecords().length;
+          const { meaningful } = probe as Probe & { meaningful: (m: MutationRecord) => boolean };
+          probe.mutations += probe.observer.takeRecords().filter(meaningful).length;
           probe.observer.disconnect();
           return probe.mutations > 0 || probe.hash !== location.hash;
         });
