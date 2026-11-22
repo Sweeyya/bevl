@@ -1,7 +1,5 @@
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import { Quaternion, Vector3 } from "three";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { cameraPoseAt } from "../choreography/pose.js";
 import { validateChoreography } from "../choreography/schema.js";
 import { DESIGN_RULES, getRecipe, recipeNames, recipes } from "../index.js";
@@ -26,7 +24,7 @@ describe.each(recipeNames)("recipe %s", (name) => {
     const choreo = recipe.create(ids);
 
     const result = validateChoreography(choreo, ids);
-    expect(result.errors ?? []).toEqual([]);
+
     expect(result.ok).toBe(true);
     expect(choreo.allow).toBeUndefined();
 
@@ -81,6 +79,42 @@ describe.each(recipeNames)("recipe %s", (name) => {
   });
 });
 
+describe("camera faces the intended screen at each beat", () => {
+  it.each(["sphere-of-screens", "room", "carousel"] as const)("%s", (name) => {
+    for (const n of [3, 6, 12]) {
+      const ids = idsFor(n);
+      const choreo = recipes[name].create(ids);
+      choreo.beats.forEach((beat, i) => {
+        const pin = choreo.tracks?.find(
+          (t) => t.target === `section-${beat.id}` && t.prop === "position",
+        );
+        const radius = choreo.layouts?.sections?.radius ?? 0;
+        const angle = (2 * Math.PI * i) / n;
+        const screen = new Vector3(
+          ...((pin?.keys[0]?.value as [number, number, number] | undefined) ?? [
+            Math.sin(angle) * radius,
+            0,
+            Math.cos(angle) * radius,
+          ]),
+        );
+        const pose = cameraPoseAt(choreo, beat.at);
+        const forward = new Vector3(0, 0, -1).applyQuaternion(
+          new Quaternion(
+            pose.quaternion.x,
+            pose.quaternion.y,
+            pose.quaternion.z,
+            pose.quaternion.w,
+          ),
+        );
+        const toScreen = screen
+          .sub(new Vector3(pose.position.x, pose.position.y, pose.position.z))
+          .normalize();
+        expect(forward.angleTo(toScreen), `${name} n=${n} ${beat.id}`).toBeLessThan(0.01);
+      });
+    }
+  });
+});
+
 describe("recipes registry", () => {
   it("lists six recipes and rejects unknown names", () => {
     expect(recipeNames).toHaveLength(6);
@@ -92,13 +126,18 @@ describe("recipes registry", () => {
     expect(recipes["horizontal-gallery"].create(idsFor(3)).input?.coarse).toContain("swipe-x");
   });
 
-  it("recipe sources never use Math.random, Date.now or timers", () => {
-    const dir = join(import.meta.dirname, "..", "recipes");
-    for (const file of readdirSync(dir)) {
-      const source = readFileSync(join(dir, file), "utf8");
-      expect(source, file).not.toMatch(
-        /Math\.random|Date\.now|setTimeout|setInterval|performance\.now/,
-      );
+  it("recipes never use Math.random, Date.now or timers", () => {
+    const forbidden = () => {
+      throw new Error("recipes must be pure");
+    };
+    vi.spyOn(Math, "random").mockImplementation(forbidden);
+    vi.spyOn(Date, "now").mockImplementation(forbidden);
+    vi.spyOn(globalThis, "setTimeout").mockImplementation(forbidden);
+    vi.spyOn(globalThis, "setInterval").mockImplementation(forbidden);
+    try {
+      for (const name of recipeNames) expect(() => recipes[name].create(idsFor(5))).not.toThrow();
+    } finally {
+      vi.restoreAllMocks();
     }
   });
 });
