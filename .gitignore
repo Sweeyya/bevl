@@ -23,3 +23,6 @@ test-results/
 
 # Lighthouse CI
 .lighthouseci/
+
+# Visual test output
+tools/__screenshots__/_results/

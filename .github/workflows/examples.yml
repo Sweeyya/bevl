@@ -1,0 +1,53 @@
+# Example scores.
+# Builds every example, serves the production build, runs the same checker the
+# CLI uses, and fails unless each example scores 90 or more with no errors.
+# Also runs the determinism check (two runs must give identical findings).
+
+name: Examples
+
+on:
+  pull_request:
+    paths:
+      - "packages/**"
+      - "examples/**"
+      - "tools/**"
+      - ".github/workflows/examples.yml"
+      - ".github/setup/**"
+  push:
+    branches: [main]
+    paths:
+      - "packages/**"
+      - "examples/**"
+      - "tools/**"
+
+permissions: {}
+
+concurrency:
+  group: examples-${{ github.workflow }}-${{ github.event.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  examples:
+    name: Example scores
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @doodley/check exec playwright install chromium --with-deps
+
+      - name: Build
+        run: pnpm build
+
+      - name: Check examples score 90 or more
+        run: pnpm check:examples
+
+      - name: Determinism
+        run: pnpm test:determinism

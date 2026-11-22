@@ -1,6 +1,6 @@
 # Performance tests (Lighthouse CI).
 # Runs against built examples on a phone-profile Lighthouse audit.
-# Budgets are in lighthouserc.json (generated from doodley.budgets.json).
+# Budgets are in lighthouserc.json; TESTING.md section 6 explains each number.
 #
 # Only runs when runtime packages or examples change — not on every PR.
 # Slow (~5 min); kept off the main CI path so it doesn't block quick fixes.
@@ -19,6 +19,7 @@ on:
       - "packages/optimizer/**"
       - "examples/**"
       - "lighthouserc.json"
+      - "tools/**"
       - "doodley.budgets.json"
       - ".github/workflows/perf.yml"
   push:
@@ -30,6 +31,8 @@ on:
       - "packages/tokens/**"
       - "packages/optimizer/**"
       - "examples/**"
+      - "tools/**"
+      - "lighthouserc.json"
 
 permissions: {}
 
@@ -51,13 +54,14 @@ jobs:
 
       - uses: ./.github/setup
 
+      - name: Install Playwright Chromium
+        run: pnpm --filter @doodley/check exec playwright install chromium --with-deps
+
       - name: Build
         run: pnpm build
 
       - name: Run Lighthouse CI
-        # pnpm test:perf runs: lhci autorun --config=lighthouserc.json
-        # lighthouserc.json points at the built example URLs served by lhci collect.
-        # Budgets come from doodley.budgets.json via the generate-lhrc script.
+        # Builds and serves each example, then runs lhci with lighthouserc.json.
         run: pnpm test:perf
 
       # Upload the full Lighthouse report on failure so you can inspect it.
@@ -67,5 +71,6 @@ jobs:
         with:
           name: lighthouse-${{ github.run_id }}
           path: .lighthouseci/
+          include-hidden-files: true
           retention-days: 7
           if-no-files-found: ignore

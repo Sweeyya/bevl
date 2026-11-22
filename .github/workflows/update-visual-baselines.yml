@@ -1,0 +1,58 @@
+# Remakes the linux screenshot baselines on the same runner type that
+# visual.yml compares against, then pushes them to the branch it was run on.
+# Run it from the Actions tab (pick your branch) after a deliberate visual
+# change, then review the new PNGs and put before/after pictures in the PR.
+#
+# Pushes made with GITHUB_TOKEN do not start other workflows: re-run the
+# Visual workflow (or push an empty commit) after this finishes.
+
+name: Update visual baselines
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: update-visual-baselines-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Update linux baselines
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/setup
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @doodley/check exec playwright install chromium --with-deps
+
+      - name: Build
+        run: pnpm build
+
+      - name: Make baselines
+        run: pnpm test:visual -- --update
+
+      - name: Commit and push baselines
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          git add tools/__screenshots__/linux
+          if git diff --cached --quiet; then
+            echo "Baselines already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update linux visual baselines"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${REPOSITORY}.git" "HEAD:refs/heads/${BRANCH}"

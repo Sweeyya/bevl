@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "check:examples": {
+      "dependsOn": ["^build", "@doodley/core#build", "@doodley/a11y#build"],
+      "cache": false
+    },
+    "test:determinism": {
+      "dependsOn": ["^build", "@doodley/core#build", "@doodley/a11y#build"],
+      "cache": false
+    },
+    "test:visual": {
+      "dependsOn": ["^build", "@doodley/core#build", "@doodley/a11y#build"],
+      "cache": false
+    },
+    "test:perf": {
+      "dependsOn": ["^build", "@doodley/core#build", "@doodley/a11y#build"],
+      "cache": false
+    }
+  }
+}
