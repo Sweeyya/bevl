@@ -1,72 +1,118 @@
 /**
- * ScrollCamera reads scroll progress from DoodleyContext, calls
- * cameraPath.lerp(scrollProgress) to get the target pose, and applies it
- * to the R3F camera each frame. Enforces no-roll and speed limit per update.
- *
- * Speed/turn clamping and no-roll enforcement mirror the design rules in
- * index.ts (DESIGN_RULES) and the pure-math helpers in camera/path.ts.
+ * Applies the choreography at the current progress every frame: camera pose
+ * (with the speed, turn and no-roll limits unless `allow` opts out), layouts,
+ * tracks on named objects, then registered behaviors.
  */
 
 import { useFrame, useThree } from "@react-three/fiber";
 import { useContext, useRef } from "react";
+import { type Camera, type Object3D, type PerspectiveCamera, Vector3 } from "three";
 import { clampStep, enforceNoRoll } from "../camera/path.js";
+import { setProp } from "../choreography/apply.js";
+import { getBehavior } from "../choreography/behaviors.js";
+import { evaluateTrack } from "../choreography/evaluate.js";
+import { layoutPositions, type Placement } from "../choreography/layout.js";
+import { cameraPoseAt } from "../choreography/pose.js";
+import { SECTIONS_LAYOUT } from "../choreography/scene.js";
+import type { Choreography } from "../choreography/types.js";
 import { DoodleyContext } from "../context.js";
 import type { Pose } from "../contract.js";
 import { DESIGN_RULES } from "../index.js";
+import { makeRand } from "../rand.js";
 
-function poseFromCamera(camera: {
-  position: { x: number; y: number; z: number };
-  quaternion: { x: number; y: number; z: number; w: number };
-}): Pose {
-  return {
-    position: {
-      x: camera.position.x,
-      y: camera.position.y,
-      z: camera.position.z,
-    },
-    quaternion: {
-      x: camera.quaternion.x,
-      y: camera.quaternion.y,
-      z: camera.quaternion.z,
-      w: camera.quaternion.w,
-    },
-  };
+const BEHAVIOR_SEED = 1;
+const scratch = new Vector3();
+
+function poseFromCamera(camera: Camera): Pose {
+  const { position: p, quaternion: q } = camera;
+  return { position: { x: p.x, y: p.y, z: p.z }, quaternion: { x: q.x, y: q.y, z: q.z, w: q.w } };
+}
+
+function applyLayouts(
+  choreo: Choreography,
+  scene: Object3D,
+  camera: Camera,
+  cache: Map<string, Placement[]>,
+): void {
+  for (const [id, spec] of Object.entries(choreo.layouts ?? {})) {
+    if (id === SECTIONS_LAYOUT) continue;
+    const group = scene.getObjectByName(id);
+    if (!group) continue;
+    const key = `${id}:${group.children.length}`;
+    let placements = cache.get(key);
+    if (!placements) {
+      placements = layoutPositions(spec, group.children.length);
+      cache.set(key, placements);
+    }
+    group.children.forEach((child, i) => {
+      const placement = placements[i];
+      if (!placement) return;
+      child.position.fromArray(placement.position);
+      if (placement.lookAt) child.lookAt(group.localToWorld(scratch.fromArray(placement.lookAt)));
+      else if ((spec.facing ?? "camera") === "camera") child.lookAt(camera.position);
+    });
+  }
+}
+
+function applyTracks(choreo: Choreography, scene: Object3D, progress: number): void {
+  for (const track of choreo.tracks ?? []) {
+    if (track.target === "camera") continue;
+    const object = scene.getObjectByName(track.target);
+    if (object) setProp(object, track.prop, evaluateTrack(track, progress));
+  }
+}
+
+function runBehaviors(
+  choreo: Choreography,
+  scene: Object3D,
+  camera: Camera,
+  progress: number,
+): void {
+  (choreo.behaviors ?? []).forEach((name, i) => {
+    getBehavior(name)?.(progress, {
+      getObject: (n) => scene.getObjectByName(n),
+      camera,
+      rand: makeRand(BEHAVIOR_SEED + i),
+    });
+  });
 }
 
 export function ScrollCamera(): null {
   const ctx = useContext(DoodleyContext);
-  const { camera, invalidate } = useThree();
+  const { camera, scene, invalidate } = useThree();
   const prevPoseRef = useRef<Pose | null>(null);
+  const layoutCache = useRef(new Map<string, Placement[]>());
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (!ctx) return;
+    ctx.tick(delta);
+    const choreo = ctx.choreography;
+    const progress = ctx.getProgress();
+    const allow = choreo.allow ?? {};
 
-    const target = ctx.cameraPath.lerp(ctx.scrollProgress);
-
-    // On first frame, seed prevPose from the camera's current state
-    const prevPose: Pose = prevPoseRef.current ?? poseFromCamera(camera);
-
-    // Enforce speed and turn limits
+    const target = cameraPoseAt(choreo, progress);
     const clamped = clampStep(
-      prevPose,
+      prevPoseRef.current ?? poseFromCamera(camera),
       target,
-      DESIGN_RULES.MAX_MOVE_PER_STEP_M,
-      DESIGN_RULES.MAX_TURN_PER_STEP_DEG,
+      allow.fastMoves ? Number.POSITIVE_INFINITY : DESIGN_RULES.MAX_MOVE_PER_STEP_M,
+      allow.spin ? Number.POSITIVE_INFINITY : DESIGN_RULES.MAX_TURN_PER_STEP_DEG,
     );
+    const q = allow.roll
+      ? clamped.quaternion
+      : enforceNoRoll(clamped.quaternion, DESIGN_RULES.MAX_ROLL_DEG);
+    camera.position.set(clamped.position.x, clamped.position.y, clamped.position.z);
+    camera.quaternion.set(q.x, q.y, q.z, q.w);
+    prevPoseRef.current = { position: clamped.position, quaternion: q };
 
-    // Enforce no-roll
-    const safeQuat = enforceNoRoll(clamped.quaternion, DESIGN_RULES.MAX_ROLL_DEG);
-    const safePose: Pose = { position: clamped.position, quaternion: safeQuat };
+    const perspective = camera as PerspectiveCamera;
+    if (perspective.isPerspectiveCamera && perspective.fov !== target.fov) {
+      perspective.fov = target.fov;
+      perspective.updateProjectionMatrix();
+    }
 
-    camera.position.set(safePose.position.x, safePose.position.y, safePose.position.z);
-    camera.quaternion.set(
-      safePose.quaternion.x,
-      safePose.quaternion.y,
-      safePose.quaternion.z,
-      safePose.quaternion.w,
-    );
-
-    prevPoseRef.current = safePose;
+    applyLayouts(choreo, scene, camera, layoutCache.current);
+    applyTracks(choreo, scene, progress);
+    runBehaviors(choreo, scene, camera, progress);
     invalidate();
   });
 

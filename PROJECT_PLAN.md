@@ -90,12 +90,12 @@ These rules are built into the engine. Every feature has to follow them. **`chec
 
 Decision: `docs/adr/003-scroll-choreography.md`. Contract: `packages/core/src/choreography/types.ts`.
 
-| Task | Package | Done means |
-| ---- | ------- | ---------- |
-| C1 Timeline runtime | `core` | Spec is validated with Zod (errors give the field path and a fix), keyframes and easing evaluate any property, camera tracks support curves, layout helpers place children, behaviors register by name, a default spec is built from `sections`, `cameraMode` and `camera/modes.ts` are deleted, the basic example still goes red → green → blue, and unit tests pass. |
-| C2 Inputs | `core` | Native scroll, wheel, touch, drag, horizontal swipe and tap/click advance all write one progress target. Inputs are chosen per pointer type, keyboard and beat links always work, smoothing is frame-rate independent and skipped in test mode, and unit tests pass. |
-| C3 Checker rules | `check` | Scroll rules read beats. New rules: `scroll/deterministic`, `a11y/keyboard-reaches-beats` and `scroll/motion-allowances` (reports opt-outs). Each has a broken fixture and tests. |
-| C4 Recipes | `core` | Example specs (linear fly-through, sphere of screens, carousel, room) live under `recipes/` as data for agents, not as an enum. |
+| Task                | Package | Done means                                                                                                                                                                                                                                                                                                                                                             |
+| ------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C1 Timeline runtime | `core`  | Spec is validated with Zod (errors give the field path and a fix), keyframes and easing evaluate any property, camera tracks support curves, layout helpers place children, behaviors register by name, a default spec is built from `sections`, `cameraMode` and `camera/modes.ts` are deleted, the basic example still goes red → green → blue, and unit tests pass. |
+| C2 Inputs           | `core`  | Native scroll, wheel, touch, drag, horizontal swipe and tap/click advance all write one progress target. Inputs are chosen per pointer type, keyboard and beat links always work, smoothing is frame-rate independent and skipped in test mode, and unit tests pass.                                                                                                   |
+| C3 Checker rules    | `check` | Scroll rules read beats. New rules: `scroll/deterministic`, `a11y/keyboard-reaches-beats` and `scroll/motion-allowances` (reports opt-outs). Each has a broken fixture and tests.                                                                                                                                                                                      |
+| C4 Recipes          | `core`  | Example specs (linear fly-through, sphere of screens, carousel, room) live under `recipes/` as data for agents, not as an enum.                                                                                                                                                                                                                                        |
 
 ### V2 Preview (if time allows)
 

@@ -1,15 +1,8 @@
 /**
- * CameraPath holds an ordered list of Pose waypoints (one per section).
- * lerp(t) returns the interpolated Pose for scroll progress t in [0,1].
- * - Positions lerp linearly between adjacent waypoints.
- * - Rotations slerp (spherical lerp) between adjacent quaternions.
- * - Speed limit: the camera never moves more than MAX_MOVE_PER_STEP_M per
- *   discrete step, and never turns more than MAX_TURN_PER_STEP_DEG per step.
- *   These are enforced in the scroll handler, not inside lerp().
- * - No-roll: the camera up vector must stay within MAX_ROLL_DEG of world up (0,1,0).
- *   Enforce by projecting the interpolated quaternion onto the no-roll subspace.
- *
- * Matching scroll handler: components/ScrollCamera.tsx
+ * Camera motion limits applied per frame by components/ScrollCamera.tsx:
+ * - Speed limit: the camera never moves more than MAX_MOVE_PER_STEP_M and never
+ *   turns more than MAX_TURN_PER_STEP_DEG per step.
+ * - No-roll: the camera up vector stays within MAX_ROLL_DEG of world up (0,1,0).
  */
 
 import type { Pose, Quat, Vec3 } from "../contract.js";
@@ -132,55 +125,4 @@ export function clampStep(prev: Pose, next: Pose, maxMeters: number, maxDeg: num
       : next.quaternion;
 
   return { position: clampedPosition, quaternion: clampedQuaternion };
-}
-
-/**
- * CameraPath holds an ordered list of Pose waypoints and interpolates
- * between them. lerp(t) accepts t in [0,1] and returns the camera Pose
- * for that scroll progress.
- */
-export class CameraPath {
-  private readonly poses: readonly Pose[];
-
-  constructor(poses: Pose[]) {
-    if (poses.length === 0) {
-      throw new Error("CameraPath requires at least one pose");
-    }
-    this.poses = poses;
-  }
-
-  /**
-   * Returns the interpolated camera Pose for scroll progress t in [0,1].
-   * - t=0 → first waypoint; t=1 → last waypoint.
-   * - Positions lerp linearly; rotations slerp.
-   */
-  lerp(t: number): Pose {
-    const clamped = Math.min(1, Math.max(0, t));
-    const poses = this.poses;
-    const n = poses.length;
-
-    if (n === 1) {
-      const p = poses[0];
-      if (!p) throw new Error("CameraPath has no poses");
-      return p;
-    }
-
-    // Map t to segment index and local t within that segment
-    const scaled = clamped * (n - 1);
-    const i = Math.min(n - 2, Math.floor(scaled));
-    const localT = scaled - i;
-
-    const a = poses[i];
-    const b = poses[i + 1];
-    if (!a || !b) throw new Error(`CameraPath: missing pose at index ${i}`);
-
-    return {
-      position: {
-        x: a.position.x + (b.position.x - a.position.x) * localT,
-        y: a.position.y + (b.position.y - a.position.y) * localT,
-        z: a.position.z + (b.position.z - a.position.z) * localT,
-      },
-      quaternion: quatSlerp(a.quaternion, b.quaternion, localT),
-    };
-  }
 }

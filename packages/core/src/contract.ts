@@ -7,17 +7,9 @@
  * If either contract changes, update ARCHITECTURE.md first.
  */
 
-// ─── Contract A: doodley.json ────────────────────────────────────────────────
+import type { Choreography } from "./choreography/types.js";
 
-/**
- * How the camera moves through sections as the user scrolls.
- *
- * linear   — camera flies forward along -Z (default, one section per screen)
- * orbital  — camera orbits around the origin on a sphere; sections face inward
- * carousel — sections arranged in a ring, camera rotates around the center
- * room     — camera stays at origin; sections are placed on surrounding walls
- */
-export type CameraMode = "linear" | "orbital" | "carousel" | "room";
+// ─── Contract A: doodley.json ────────────────────────────────────────────────
 
 export interface DoodleyConfig {
   /** Project name, used in reports */
@@ -27,10 +19,11 @@ export interface DoodleyConfig {
   /** Ordered list of sections */
   sections: SectionConfig[];
   /**
-   * How the camera moves through sections. Default: "linear".
-   * See CameraMode for descriptions of each mode.
+   * Scroll choreography: beats, camera, tracks, layouts and behaviors.
+   * Default: camera flies forward along -Z, one beat per section.
+   * See docs/adr/003-scroll-choreography.md.
    */
-  cameraMode?: CameraMode;
+  choreography?: Choreography;
   /** Performance budgets. Defaults come from doodley.budgets.json */
   budgets?: Partial<Budgets>;
   /** Viewports to test. Defaults: desktop + phone */
@@ -75,7 +68,7 @@ export interface DoodleyBridge {
   ready: Promise<void>;
   /** Advance time by ms. Returns the new time and frame number. */
   step(ms: number): { time: number; frame: number };
-  /** Every section with its scroll anchor and camera pose */
+  /** Every beat in order with its anchor and the camera pose at that beat */
   sections(): SectionState[];
   /** Current camera state */
   camera(): CameraState;
@@ -95,7 +88,9 @@ export interface DoodleyBridge {
 
 export interface SectionState {
   id: string;
+  /** Position in the beats list */
   index: number;
+  /** The beat `at` (0-1) for this section */
   anchor: number;
   cameraPose: Pose;
   domId: string;

@@ -32,7 +32,7 @@ export interface BridgeState {
 
 const FRAME_MS = 1000 / 60;
 
-export function installBridge(state: BridgeState): void {
+export function installBridge(state: BridgeState): DoodleyBridge {
   let time = 0;
   let frame = 0;
 
@@ -66,6 +66,11 @@ export function installBridge(state: BridgeState): void {
     events: () => state.getEvents(),
   };
 
+  exposeBridge(bridge);
+  return bridge;
+}
+
+export function exposeBridge(bridge: DoodleyBridge): void {
   (window as unknown as { __doodley: DoodleyBridge }).__doodley = bridge;
 }
 
