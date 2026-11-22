@@ -36,6 +36,8 @@ export interface Beat {
   id: string;
   /** Progress in [0, 1] where this section is in focus */
   at: number;
+  /** Set false to let progress rest anywhere near this beat instead of locking onto it. Default true. */
+  snap?: boolean;
 }
 
 export type LayoutArrange = "line" | "grid" | "ring" | "onSphere" | "alongPath";
@@ -78,6 +80,27 @@ export interface InputSpec {
   smoothing?: number;
 }
 
+export type SnapMode = "directional" | "nearest" | "strong" | "none";
+
+export interface SnapSettings {
+  /**
+   * directional: after the user stops, glide to the beat in the direction they were moving (default).
+   * nearest: glide to the closest beat.
+   * strong: like directional, but a single gesture never moves more than one beat.
+   * none: never snap.
+   */
+  mode?: SnapMode;
+  /** Seconds without input before snapping starts. Default 0.12. Always 0 in test mode. */
+  delay?: number;
+  /** Fraction (0-1) of the gap to the next beat the user must cross to advance; less snaps back. Default 0.15. */
+  commit?: number;
+}
+
+/** Snapping is on by default. `coarse` overrides the settings for touch users. */
+export interface SnapSpec extends SnapSettings {
+  coarse?: SnapSettings;
+}
+
 /** Explicit opt-outs from the gentle-motion rules. The checker reports each one. */
 export interface MotionAllowances {
   roll?: boolean;
@@ -94,6 +117,7 @@ export interface Choreography {
   /** Names of behaviors registered with registerBehavior() */
   behaviors?: string[];
   input?: InputSpec;
+  snap?: SnapSpec;
   allow?: MotionAllowances;
 }
 

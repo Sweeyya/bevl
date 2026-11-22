@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { InputKind, InputSpec } from "../choreography/types.js";
+import type { InputKind, InputSpec, SnapSpec } from "../choreography/types.js";
 import { attachInputs } from "./attach.js";
 import { ProgressController } from "./progress.js";
 import { resolveInputs } from "./resolve.js";
+import { resolveSnapSettings } from "./snap.js";
 
 const COARSE_QUERY = "(pointer: coarse)";
 const DEFAULT_SMOOTHING = 6;
@@ -11,6 +12,9 @@ export interface UseProgressInputArgs {
   el: HTMLElement | null;
   spec?: InputSpec | undefined;
   beats: number[];
+  /** Per-beat snap flags, same order as beats. Missing means true. */
+  snappable?: boolean[];
+  snap?: SnapSpec | undefined;
   testMode: boolean;
 }
 
@@ -40,10 +44,28 @@ function useCoarsePointer(): boolean {
   return coarse;
 }
 
+function useReducedMotionQuery(): boolean {
+  const [reduced, setReduced] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true,
+  );
+  useEffect(() => {
+    const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!mql) return;
+    const onChange = (): void => setReduced(mql.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+  return reduced;
+}
+
 export function useProgressInput({
   el,
   spec,
   beats,
+  snappable,
+  snap,
   testMode,
 }: UseProgressInputArgs): ProgressInput {
   const ref = useRef<ProgressController | null>(null);
@@ -56,9 +78,16 @@ export function useProgressInput({
   const beatsKey = beats.join(",");
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: beatsKey tracks beat values, not array identity
+  const snappableKey = (snappable ?? []).join(",");
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: keys track values, not array identity
   useEffect(() => {
-    controller.setBeats(beats);
-  }, [controller, beatsKey]);
+    controller.setBeats(beats, snappable);
+  }, [controller, beatsKey, snappableKey]);
+
+  const reduced = useReducedMotionQuery();
+  controller.snapConfig = resolveSnapSettings(snap, coarse, testMode);
+  controller.snapInstantly = reduced;
 
   const kindsKey = resolveInputs(spec, coarse).join(",");
   const wheelMultiplier = spec?.wheelMultiplier;

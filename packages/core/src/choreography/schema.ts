@@ -10,11 +10,18 @@ const CAMERA_PROPS = ["position", "lookAt", "fov"];
 const vec3 = z.tuple([z.number(), z.number(), z.number()]);
 const progress = z.number().min(0).max(1);
 const ease = z.enum(["linear", "smooth", "easeIn", "easeOut", "easeInOut"]);
+const snapSettings = z.strictObject({
+  mode: z.enum(["directional", "nearest", "strong", "none"]).exactOptional(),
+  delay: z.number().min(0).max(5).exactOptional(),
+  commit: z.number().min(0).max(1).exactOptional(),
+});
 const inputKind = z.enum(["scroll", "wheel", "touch", "drag", "swipe-x", "tap-advance"]);
 
 export const choreographySchema: z.ZodType<Choreography> = z.strictObject({
   version: z.literal(1),
-  beats: z.array(z.strictObject({ id: z.string().min(1), at: progress })),
+  beats: z.array(
+    z.strictObject({ id: z.string().min(1), at: progress, snap: z.boolean().exactOptional() }),
+  ),
   camera: z.strictObject({
     position: vec3,
     lookAt: vec3.exactOptional(),
@@ -63,6 +70,7 @@ export const choreographySchema: z.ZodType<Choreography> = z.strictObject({
       smoothing: z.number().min(0).exactOptional(),
     })
     .exactOptional(),
+  snap: snapSettings.extend({ coarse: snapSettings.exactOptional() }).exactOptional(),
   allow: z
     .strictObject({
       roll: z.boolean().exactOptional(),

@@ -180,6 +180,8 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
     el: scroller,
     spec: choreography.input,
     beats: choreography.beats.map((b) => b.at),
+    snappable: choreography.beats.map((b) => b.snap !== false),
+    snap: choreography.snap,
     testMode,
   });
   const nativeScroll = resolveInputs(choreography.input, isCoarsePointer()).includes("scroll");

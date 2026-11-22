@@ -12,6 +12,7 @@ export {
 export { type InputSource, ProgressController, type TargetListener } from "./progress.js";
 export { resolveInputs } from "./resolve.js";
 export { attachScroll, syncScroll } from "./scroll.js";
+export { type ResolvedSnap, resolveSnapIndex, resolveSnapSettings } from "./snap.js";
 export {
   type ProgressInput,
   type UseProgressInputArgs,
