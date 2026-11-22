@@ -2,9 +2,9 @@
 // Pass: W, A, S, D and mouse drag leave the camera on the choreography path
 import {
   angleDeg,
-  cameraPose,
   distance,
   progress,
+  requireCameraPose,
   scrollTo,
   step,
   waitReady,
@@ -26,12 +26,12 @@ const rule: Rule = {
 
     await scrollTo(page, 0);
     await step(page, SETTLE_FRAMES);
-    const before = await cameraPose(page);
+    const before = await requireCameraPose(page);
     const p0 = await progress(page);
 
     const offPath = async (): Promise<{ moved: number; turned: number }> => {
       await step(page, SETTLE_FRAMES);
-      const now = await cameraPose(page);
+      const now = await requireCameraPose(page);
       return {
         moved: distance(before.position, now.position),
         turned: angleDeg(before.quaternion, now.quaternion),

@@ -1,6 +1,6 @@
 // Rule: scroll/deterministic
 // Pass: two fresh loads with the same seed give the same camera at the same scroll positions
-import { scrollTo, step, waitReady } from "../../drive.js";
+import { cameraPose, couldNotRun, scrollTo, step, waitReady } from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const POSITIONS = [0.1, 0.35, 0.5, 0.8, 1];
@@ -15,7 +15,8 @@ const rule: Rule = {
   description: "The same seed must produce the same camera at the same scroll positions.",
   async run(ctx) {
     const browser = ctx.page.context().browser();
-    if (!browser) return [];
+    if (!browser)
+      return [couldNotRun(ctx, this.id, "the page has no browser to open a second context in")];
     const run = async (): Promise<Sample | null> => {
       const context = await browser.newContext({
         viewport: { width: ctx.viewport.width, height: ctx.viewport.height },
@@ -28,23 +29,12 @@ const rule: Rule = {
         if (!(await waitReady(page))) return null;
         const out: Sample = [];
         for (const p of POSITIONS) {
-          await scrollTo(page, p);
+          if (!(await scrollTo(page, p))) return null;
           await step(page, 5);
-          const cam = await page.evaluate(() => {
-            const c = (
-              window as unknown as {
-                __doodley: {
-                  camera(): {
-                    position: { x: number; y: number; z: number };
-                    quaternion: { x: number; y: number; z: number; w: number };
-                  };
-                };
-              }
-            ).__doodley.camera();
-            const { position: v, quaternion: q } = c;
-            return [v.x, v.y, v.z, q.x, q.y, q.z, q.w];
-          });
-          out.push(...cam);
+          const cam = await cameraPose(page);
+          if (!cam) return null;
+          const { position: v, quaternion: q } = cam;
+          out.push(v.x, v.y, v.z, q.x, q.y, q.z, q.w);
         }
         return out;
       } catch {
@@ -58,13 +48,11 @@ const rule: Rule = {
     const b = await run();
     if (!a || !b) {
       return [
-        {
-          rule: "scroll/deterministic",
-          severity: "error",
-          viewport: ctx.viewport.name,
-          message: `Could not load the page twice to compare runs on ${ctx.viewport.name}.`,
-          fix: "Fix: make sure the site loads in test mode (window.__doodley exists and ready resolves) in a fresh browser context.",
-        },
+        couldNotRun(
+          ctx,
+          this.id,
+          "the page could not be loaded and scrolled twice in fresh browser contexts",
+        ),
       ];
     }
     const worst = a.reduce((m, v, i) => Math.max(m, Math.abs(v - (b[i] ?? Number.NaN))), 0);

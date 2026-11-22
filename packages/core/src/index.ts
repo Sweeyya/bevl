@@ -67,6 +67,9 @@ export type {
   LayoutArrange,
   LayoutSpec,
   MotionAllowances,
+  SnapMode,
+  SnapSettings,
+  SnapSpec,
   Track,
   Vec3Tuple,
 } from "./choreography/types.js";

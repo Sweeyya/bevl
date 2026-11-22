@@ -1,6 +1,13 @@
 // Rule: scroll/no-spin
 // Pass: camera turns less than 15 degrees per scroll step
-import { angleDeg, cameraPose, choreography, scrollTo, step, waitReady } from "../../drive.js";
+import {
+  angleDeg,
+  choreography,
+  requireCameraPose,
+  scrollTo,
+  step,
+  waitReady,
+} from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const MAX_TURN_DEG = 15;
@@ -19,12 +26,12 @@ const rule: Rule = {
 
     await scrollTo(page, 0);
     await step(page, 1);
-    let prev = await cameraPose(page);
+    let prev = await requireCameraPose(page);
     let worst = 0;
     for (let i = 1; i <= SCROLL_STEPS; i++) {
       await scrollTo(page, i / SCROLL_STEPS);
       await step(page, 1);
-      const cur = await cameraPose(page);
+      const cur = await requireCameraPose(page);
       worst = Math.max(worst, angleDeg(prev.quaternion, cur.quaternion));
       prev = cur;
     }

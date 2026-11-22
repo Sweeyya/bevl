@@ -1,7 +1,15 @@
 // Rule: scroll/snap-no-trap
 // Pass: from every beat, keyboard and wheel input can reach the next and the previous beat
 import type { Page } from "playwright";
-import { BEAT_EPSILON, beatAnchors, progress, step, waitReady } from "../../drive.js";
+import {
+  BEAT_EPSILON,
+  beatAnchors,
+  couldNotRun,
+  NOT_READY,
+  progress,
+  step,
+  waitReady,
+} from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const SETTLE_FRAMES = 20;
@@ -37,14 +45,12 @@ async function leftBeat(page: Page, beats: number[], from: number, dir: 1 | -1):
 }
 
 async function keyboardLeaves(page: Page, beats: number[], from: number, dir: 1 | -1) {
-  if (!(await goTo(page, beats, from))) return true;
   await page.keyboard.press(dir === 1 ? "ArrowDown" : "ArrowUp");
   await step(page, SETTLE_FRAMES);
   return leftBeat(page, beats, from, dir);
 }
 
 async function wheelLeaves(page: Page, beats: number[], from: number, dir: 1 | -1) {
-  if (!(await goTo(page, beats, from))) return true;
   const size = page.viewportSize() ?? { width: 1000, height: 800 };
   await page.mouse.move(size.width / 2, size.height / 2);
   for (let n = 0; n < MAX_WHEELS; n++) {
@@ -64,15 +70,23 @@ const rule: Rule = {
   severity: "error",
   description: "Every beat must be leavable in both directions by keyboard and by wheel.",
   async run(ctx) {
-    if (!(await waitReady(ctx.page))) return [];
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
     const beats = [...(await beatAnchors(ctx.page))].sort((a, b) => a - b);
+    if (beats.length === 0) return [couldNotRun(ctx, this.id, "the bridge reports no sections")];
     const trapped: string[] = [];
     for (let i = 0; i < beats.length; i++) {
       for (const dir of [1, -1] as const) {
         if (beats[i + dir] === undefined) continue;
         const label = `beat ${i} ${dir === 1 ? "forward" : "back"}`;
-        if (!(await keyboardLeaves(ctx.page, beats, i, dir))) trapped.push(`${label} (keyboard)`);
-        if (!(await wheelLeaves(ctx.page, beats, i, dir))) trapped.push(`${label} (wheel)`);
+        for (const [how, leaves] of [
+          ["keyboard", keyboardLeaves],
+          ["wheel", wheelLeaves],
+        ] as const) {
+          if (!(await goTo(ctx.page, beats, i))) {
+            return [couldNotRun(ctx, this.id, `the keyboard could not reach beat ${i} to test it`)];
+          }
+          if (!(await leaves(ctx.page, beats, i, dir))) trapped.push(`${label} (${how})`);
+        }
       }
     }
     if (trapped.length === 0) return [];

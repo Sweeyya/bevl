@@ -1,39 +1,46 @@
 // Rule: render/no-nan
-// Pass: no object has NaN position, rotation or scale
+// Pass: the camera and every beat's camera pose have no NaN
+import {
+  cameraPose,
+  couldNotRun,
+  finding,
+  NOT_READY,
+  sectionPoses,
+  step,
+  waitReady,
+} from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const rule: Rule = {
   id: "render/no-nan",
   group: "render",
   severity: "error",
-  description: "No scene object may have NaN in position, rotation, or scale.",
+  description: "The camera and every beat's camera pose must not contain NaN.",
   async run(ctx) {
-    const hasNaN = await ctx.page
-      .evaluate(() => {
-        const bridge = (
-          window as unknown as {
-            __doodley?: { camera(): { position: { x: number; y: number; z: number } } };
-          }
-        ).__doodley;
-        if (!bridge) return false;
-        const cam = bridge.camera();
-        const pos = cam.position;
-        return Number.isNaN(pos.x) || Number.isNaN(pos.y) || Number.isNaN(pos.z);
-      })
-      .catch(() => false);
-
-    if (hasNaN) {
-      return [
-        {
-          rule: "render/no-nan",
-          severity: "error",
-          viewport: ctx.viewport.name,
-          message: `Camera has NaN in its position on ${ctx.viewport.name}.`,
-          fix: "Check your camera path math. A division by zero or an empty path produces NaN. Ensure your DoodleyConfig has at least one section.",
-        },
-      ];
-    }
-    return [];
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
+    await step(ctx.page, 1);
+    const cam = await cameraPose(ctx.page);
+    if (!cam) return [couldNotRun(ctx, this.id, "the bridge has no camera")];
+    const values = [
+      ...Object.values(cam.position),
+      ...Object.values(cam.quaternion),
+      ...Object.values(cam.up),
+      cam.fov,
+      ...(await sectionPoses(ctx.page)).flatMap((s) => [
+        ...Object.values(s.cameraPose.position),
+        ...Object.values(s.cameraPose.quaternion),
+      ]),
+    ];
+    if (!values.some((v) => Number.isNaN(v))) return [];
+    return [
+      finding(
+        ctx,
+        this.id,
+        "error",
+        `Camera has NaN in its pose on ${ctx.viewport.name}.`,
+        "Check your camera path math. A division by zero or an empty path produces NaN. Ensure your DoodleyConfig has at least one section.",
+      ),
+    ];
   },
 };
 

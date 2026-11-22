@@ -5,12 +5,13 @@ const params = new URLSearchParams(location.search);
 const sections = sectionList(5);
 const noSnapBeat = number("nosnap");
 const mode = (params.get("mode") ?? "directional") as SnapMode;
+const delay = number("delay");
 
 export const fixture = buildFixture(sections, (base) => ({
   ...base,
   beats: base.beats.map((b, i) => (i === noSnapBeat ? { ...b, snap: false } : b)),
   tracks: [...(base.tracks ?? []), PROBE_TRACK],
-  snap: { mode, ...(number("delay") === undefined ? {} : { delay: number("delay") }) },
+  snap: { mode, ...(delay === undefined ? {} : { delay }) },
   input: {
     fine: list("fine") ?? ["wheel"],
     coarse: list("coarse") ?? ["touch"],

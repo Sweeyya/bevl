@@ -7,8 +7,7 @@
     "noEmit": true,
     "types": ["vite/client"],
     "paths": {
-      "@doodley/core": ["../../packages/core/src/index.ts"],
-      "*": ["./node_modules/*", "./node_modules/@types/*"]
+      "*": ["./node_modules/@types/*", "./node_modules/*"]
     }
   },
   "include": ["src/**/*", "vite.config.ts", "../broken/**/*", "../e2e/**/*"]

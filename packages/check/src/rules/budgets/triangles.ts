@@ -1,5 +1,6 @@
 // Rule: budgets/triangles
 // Pass: triangle count is under budget at every section
+import { couldNotRun, NOT_READY, stats, step, waitReady } from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const BUDGET_DESKTOP = 500_000;
@@ -14,13 +15,11 @@ const rule: Rule = {
   async run(ctx) {
     const budget = ctx.viewport.isMobile ? BUDGET_PHONE : BUDGET_DESKTOP;
 
-    const triangles = await ctx.page
-      .evaluate(() => {
-        const bridge = (window as unknown as { __doodley?: { stats(): { triangles: number } } })
-          .__doodley;
-        return bridge ? bridge.stats().triangles : 0;
-      })
-      .catch(() => 0);
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
+    await step(ctx.page, 1);
+    const triangles = (await stats(ctx.page))?.triangles;
+    if (triangles === undefined)
+      return [couldNotRun(ctx, this.id, "the bridge reports no scene stats")];
 
     if (triangles > budget) {
       return [

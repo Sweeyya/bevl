@@ -2,12 +2,21 @@
 // Pass: page has a meta description
 import type { Rule } from "../../rule.js";
 
+const HEAD_WAIT_MS = 2000;
+
 const rule: Rule = {
   id: "seo/meta-description",
   group: "seo",
   severity: "warn",
   description: "Page should have a meta description.",
   async run(ctx) {
+    await ctx.page
+      .waitForFunction(
+        () => document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content?.trim(),
+        undefined,
+        { timeout: HEAD_WAIT_MS },
+      )
+      .catch(() => undefined);
     const desc = await ctx.page
       .evaluate(() => {
         const el = document.querySelector<HTMLMetaElement>('meta[name="description"]');

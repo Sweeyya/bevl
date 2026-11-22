@@ -1,6 +1,6 @@
 // Rule: scroll/motion-allowances
 // Info only: lists every opt-out from the gentle-motion rules in the choreography
-import { choreography, waitReady } from "../../drive.js";
+import { choreography, couldNotRun, NOT_READY, waitReady } from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const NAMES = ["roll", "spin", "fastMoves"] as const;
@@ -12,10 +12,8 @@ const rule: Rule = {
   description:
     "Reports each allow.roll, allow.spin and allow.fastMoves opt-out. Never lowers the score.",
   async run(ctx) {
-    if (!(await waitReady(ctx.page))) return [];
-    const { allow } = (await choreography(ctx.page)) as {
-      allow?: Partial<Record<(typeof NAMES)[number], boolean>>;
-    };
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
+    const { allow } = await choreography(ctx.page);
     return NAMES.filter((n) => allow?.[n] === true).map((n) => ({
       rule: "scroll/motion-allowances",
       severity: "info" as const,
