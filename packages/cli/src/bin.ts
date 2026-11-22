@@ -47,14 +47,23 @@ program
   .command("optimize <file>")
   .description("Shrink a GLB file using glTF Transform")
   .option("-o, --output <path>", "Output file path")
-  .option("--texture-size <px>", "Max texture size in px", "1024")
-  .action(async (file: string, opts: { output?: string; textureSize: string }) => {
-    await optimizeAssets({
-      input: file,
-      ...(opts.output !== undefined && { output: opts.output }),
-      textureSize: Number(opts.textureSize),
-    });
-  });
+  .option("--texture-size <px>", "Max texture size in px (with --textures)", "1024")
+  .option("--draco", "Compress geometry with Draco (needs the draco3dgltf package)")
+  .option("--textures", "Resize textures and convert to WebP (needs the sharp package)")
+  .action(
+    async (
+      file: string,
+      opts: { output?: string; textureSize: string; draco?: boolean; textures?: boolean },
+    ) => {
+      await optimizeAssets({
+        input: file,
+        ...(opts.output !== undefined && { output: opts.output }),
+        textureSize: Number(opts.textureSize),
+        ...(opts.draco && { draco: true }),
+        ...(opts.textures && { textures: true }),
+      });
+    },
+  );
 
 program.parseAsync(process.argv).catch((err: unknown) => {
   process.stderr.write(`${err instanceof Error ? err.message : String(err)}\n`);
