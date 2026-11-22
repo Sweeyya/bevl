@@ -78,16 +78,16 @@ Each rule has a stable id, a default severity (`error`, `warn`, `info`), a pass 
 
 ### 4.1 Load and render
 
-| Rule id                | Pass rule                                                                       | Severity |
-| ---------------------- | ------------------------------------------------------------------------------- | -------- |
-| `load/ready`           | `ready` resolves within the `readyMs` budget                                    | error    |
-| `load/console-errors`  | No console errors or page errors                                                | error    |
-| `load/failed-requests` | No failed network requests                                                      | error    |
-| `load/webgl`           | WebGL2 works. Record the renderer. Software renderer is `info`.                 | error    |
-| `render/not-blank`     | Picture is not one flat color, not all black, not magenta                       | error    |
-| `render/resolution`    | Canvas pixel size equals CSS size × dpr (±1 px)                                 | warn     |
-| `render/no-nan`        | No object has NaN position, rotation or scale                                   | error    |
-| `render/fallback`      | With WebGL turned off, the static fallback shows and all text is still readable | error    |
+| Rule id                | Pass rule                                                                                        | Severity |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | -------- |
+| `load/ready`           | `ready` resolves within the `readyMs` budget                                                     | error    |
+| `load/console-errors`  | No console errors or page errors                                                                 | error    |
+| `load/failed-requests` | No failed network requests                                                                       | error    |
+| `load/webgl`           | WebGL2 works. Record the renderer. Software renderer is `info`.                                  | error    |
+| `render/not-blank`     | Picture is not one flat color, not all black, not magenta                                        | error    |
+| `render/resolution`    | Canvas pixel size equals CSS size × dpr (±1 px)                                                  | warn     |
+| `render/no-nan`        | No object has NaN position, rotation or scale                                                    | error    |
+| `render/fallback`      | With WebGL turned off, the static fallback (`[data-doodley-fallback]`) shows every section title | error    |
 
 ### 4.2 Scroll (design rules 1, 3, 4)
 
@@ -111,28 +111,28 @@ The checker scrolls from top to bottom in 40 wheel steps (touch swipes on phone)
 
 ### 4.3 Navigation (design rule 5)
 
-| Rule id            | Pass rule                                                                                     | Severity |
-| ------------------ | --------------------------------------------------------------------------------------------- | -------- |
-| `nav/menu-exists`  | A real `<nav>` with one link per section                                                      | error    |
-| `nav/link-glides`  | Clicking each link moves the camera to that section's pose within 1500 ms, with no jumps      | error    |
-| `nav/hash-updates` | The URL hash changes to the section id                                                        | warn     |
-| `nav/focus-moves`  | Focus moves to the section heading after the glide                                            | warn     |
-| `nav/buttons-work` | Every button and link in the HTML layer does something (navigates, glides, or emits an event) | error    |
+| Rule id            | Pass rule                                                                                              | Severity |
+| ------------------ | ------------------------------------------------------------------------------------------------------ | -------- |
+| `nav/menu-exists`  | A real `<nav>` with one link per section                                                               | error    |
+| `nav/link-glides`  | Clicking each link ends on that section's beat, and the camera never moves more than 1.5 m in one step | error    |
+| `nav/hash-updates` | The URL hash changes to the section id                                                                 | warn     |
+| `nav/focus-moves`  | Focus moves to the section heading after the glide                                                     | warn     |
+| `nav/buttons-work` | Every button and link in the HTML layer does something (navigates, glides, or emits an event)          | error    |
 
 ### 4.4 HTML layer and search (design rule 2)
 
-| Rule id                  | Pass rule                                                                 | Severity       |
-| ------------------------ | ------------------------------------------------------------------------- | -------------- |
-| `html/section-text`      | Every 3D section has a DOM section with a heading and text                | error          |
-| `html/order-matches`     | DOM section order matches the 3D section order                            | error          |
-| `html/no-canvas-copy`    | No 3D text mesh holds more than 40 characters (body copy belongs in HTML) | error          |
-| `html/text-faces-viewer` | HTML text is not rotated more than 5°                                     | warn           |
-| `html/static-content`    | The raw HTML (before JavaScript runs) contains every section heading      | warn at launch |
-| `seo/title`              | Page has a title                                                          | error          |
-| `seo/meta-description`   | Page has a meta description                                               | warn           |
-| `seo/one-h1`             | Exactly one `h1`                                                          | warn           |
-| `seo/img-alt`            | Every image has alt text                                                  | error          |
-| `seo/lang`               | `<html>` has a `lang`                                                     | warn           |
+| Rule id                  | Pass rule                                                                                                                                | Severity       |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `html/section-text`      | Every 3D section has a DOM section with a heading and text                                                                               | error          |
+| `html/order-matches`     | DOM section order matches the 3D section order                                                                                           | error          |
+| `html/no-canvas-copy`    | No 3D text mesh holds more than 40 characters (body copy belongs in HTML). A mesh counts as text when `userData.doodleyText` is a string | error          |
+| `html/text-faces-viewer` | HTML text is not rotated more than 5°                                                                                                    | warn           |
+| `html/static-content`    | The raw HTML (before JavaScript runs) contains every section heading                                                                     | warn at launch |
+| `seo/title`              | Page has a title                                                                                                                         | error          |
+| `seo/meta-description`   | Page has a meta description                                                                                                              | warn           |
+| `seo/one-h1`             | Exactly one `h1`                                                                                                                         | warn           |
+| `seo/img-alt`            | Every image has alt text                                                                                                                 | error          |
+| `seo/lang`               | `<html>` has a `lang`                                                                                                                    | warn           |
 
 ### 4.5 Accessibility (design rule 6)
 

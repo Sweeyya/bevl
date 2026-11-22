@@ -1,4 +1,5 @@
 import type { Rule } from "../rule.js";
+import contrastOver3d from "./a11y/contrast-over-3d.js";
 import keyboard from "./a11y/keyboard.js";
 import keyboardReachesBeats from "./a11y/keyboard-reaches-beats.js";
 import drawCalls from "./budgets/draw-calls.js";
@@ -57,6 +58,7 @@ const rules: Rule[] = [
   fallback,
   textureMb,
   failedRequests,
+  contrastOver3d,
 ];
 
 export default rules;
