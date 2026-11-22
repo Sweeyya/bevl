@@ -11,6 +11,8 @@ import type { SectionConfig } from "./contract.js";
 export interface DoodleyContextValue {
   /** Displayed progress in [0, 1]; equals the input target in test mode */
   getProgress: () => number;
+  /** Move progress to a beat by index, as nav links do; instant skips the glide (reduced motion) */
+  goToBeat: (index: number, instant?: boolean) => void;
   /** Advance input smoothing by dt seconds; true while still moving */
   tick: (dtSeconds: number) => boolean;
   /** Ordered list of sections from DoodleyConfig */

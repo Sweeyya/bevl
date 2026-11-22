@@ -205,6 +205,9 @@ importers:
 
   examples/basic:
     dependencies:
+      '@doodley/a11y':
+        specifier: workspace:*
+        version: link:../../packages/a11y
       '@doodley/core':
         specifier: workspace:*
         version: link:../../packages/core

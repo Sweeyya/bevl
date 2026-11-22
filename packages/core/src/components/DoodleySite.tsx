@@ -24,6 +24,8 @@ import { ScrollCamera } from "./ScrollCamera.js";
 interface DoodleySiteProps {
   config: DoodleyConfig;
   children?: ReactNode;
+  /** DOM rendered over the canvas (nav, HUD). Gets DoodleyContext. */
+  overlay?: ReactNode;
 }
 
 const IDENTITY_QUAT: Quat = { x: 0, y: 0, z: 0, w: 1 };
@@ -152,7 +154,7 @@ function BridgeInstaller({
   return null;
 }
 
-export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element {
+export function DoodleySite({ config, children, overlay }: DoodleySiteProps): JSX.Element {
   const { testMode } = parseTestParams();
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
   const [{ choreography, positions }] = useState(() => {
@@ -176,7 +178,7 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
     return () => removeBridge();
   }, [testMode]);
 
-  const { getProgress, tick } = useProgressInput({
+  const { controller, getProgress, tick } = useProgressInput({
     el: scroller,
     spec: choreography.input,
     beats: choreography.beats.map((b) => b.at),
@@ -193,6 +195,10 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
       value={{
         getProgress,
         tick,
+        goToBeat: (index, instant) => {
+          controller.goToBeat(index, "nav");
+          if (instant) controller.snap();
+        },
         sections: config.sections,
         choreography,
         sectionPositions: positions,
@@ -258,6 +264,7 @@ export function DoodleySite({ config, children }: DoodleySiteProps): JSX.Element
             zIndex: 1,
           }}
         />
+        {overlay}
       </div>
     </DoodleyContext.Provider>
   );
