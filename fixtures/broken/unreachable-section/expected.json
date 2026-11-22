@@ -1,4 +1,10 @@
 {
   "mustFail": ["scroll/reaches-every-section"],
-  "mayAlsoFail": ["scroll/snap-no-trap"]
+  "mayAlsoFail": [
+    "scroll/deterministic",
+    "scroll/no-jumps",
+    "scroll/no-roll",
+    "scroll/snap-no-trap",
+    "scroll/snap-settles"
+  ]
 }

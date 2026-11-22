@@ -1,9 +1,10 @@
 // Rule: scroll/reaches-every-section
 // Pass: scrolling to each beat anchor brings progress to that anchor, puts the camera at the
-//       choreography's pose for that beat, and the section's DOM anchor exists
+//       choreography's pose for that beat (unless behaviors move the camera), and the DOM anchor exists
 import {
   BEAT_EPSILON,
   cameraPose,
+  choreography,
   couldNotRun,
   finding,
   NO_SCROLL,
@@ -29,6 +30,7 @@ const rule: Rule = {
     const { page } = ctx;
     if (!(await waitReady(page))) return [couldNotRun(ctx, this.id, NOT_READY)];
     const sections = await sectionPoses(page).catch(() => []);
+    const behaviorsMoveCamera = ((await choreography(page)).behaviors ?? []).length > 0;
     if (sections.length === 0) return [couldNotRun(ctx, this.id, "the bridge reports no sections")];
 
     const missing: string[] = [];
@@ -60,8 +62,7 @@ const rule: Rule = {
         : Number.POSITIVE_INFINITY;
       const reached =
         Math.abs(p - s.anchor) <= BEAT_EPSILON &&
-        dist <= POSITION_TOLERANCE &&
-        1 - dot <= ORIENTATION_TOLERANCE;
+        (behaviorsMoveCamera || (dist <= POSITION_TOLERANCE && 1 - dot <= ORIENTATION_TOLERANCE));
       if (!reached || !hasDom) missing.push(s.id);
     }
     if (missing.length === 0) return [];

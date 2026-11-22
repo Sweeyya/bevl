@@ -35,12 +35,6 @@
   },
   "ignore": ["examples/**", "fixtures/**"],
   "ignoreExportsUsedInFile": true,
-  "ignoreBinaries": ["playwright"],
-  "ignoreDependencies": [
-    "@doodley/core",
-    "@doodley/check",
-    "@doodley/tokens",
-    "@doodley/optimizer",
-    "@react-three/drei"
-  ]
+  "ignoreBinaries": [],
+  "ignoreDependencies": ["@doodley/core", "@doodley/tokens", "@react-three/drei"]
 }

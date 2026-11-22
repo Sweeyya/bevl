@@ -55,6 +55,10 @@ describe("scroll/no-jumps", () => {
     const [f] = await run(noJumps, { pose: teleport });
     expect(f?.message).toContain("jumped");
   });
+  it("allows a step at the limit", async () => {
+    const pose = (p: number) => ({ ...flyForward(p), position: { x: 0, y: 0, z: -60 * p } });
+    expect(await run(noJumps, { pose })).toEqual([]);
+  });
   it("skips when fastMoves is allowed", async () => {
     expect(await run(noJumps, { pose: teleport, allow: { fastMoves: true } })).toEqual([]);
   });
@@ -89,6 +93,9 @@ describe("scroll/reaches-every-section", () => {
     expect(f?.message).toContain("s1");
     expect(f?.message).toContain("s2");
     expect(f?.message).not.toContain("s0");
+  });
+  it("does not compare the camera pose when behaviors move the camera", async () => {
+    expect(await run(reaches, { camera: () => flyForward(0), behaviors: ["sway"] })).toEqual([]);
   });
   it("lists sections without a DOM anchor", async () => {
     const [f] = await run(reaches, { domIds: ["s0", "s2"] });

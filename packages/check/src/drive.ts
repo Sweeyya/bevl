@@ -12,6 +12,7 @@ type Win = {
       allow?: { roll?: boolean; spin?: boolean; fastMoves?: boolean };
       snap?: { mode?: string; coarse?: { mode?: string } };
       beats?: Array<{ snap?: boolean }>;
+      behaviors?: string[];
     };
     stats(): { drawCalls: number; triangles: number };
     camera(): {

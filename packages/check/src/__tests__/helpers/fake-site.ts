@@ -12,6 +12,7 @@ export interface FakeSiteOptions {
   scroller?: boolean;
   maxScroll?: number;
   allow?: { roll?: boolean; spin?: boolean; fastMoves?: boolean };
+  behaviors?: string[];
   beatSnap?: Array<boolean | undefined>;
   /** Maps scroll progress to the camera pose. Default: flies along -Z. */
   pose?: (progress: number) => Pose;
@@ -98,6 +99,7 @@ export class FakeSite {
         })),
       choreography: () => ({
         allow: this.opts.allow ?? {},
+        behaviors: this.opts.behaviors ?? [],
         beats: this.beats.map((_, i) => ({ snap: this.opts.beatSnap?.[i] })),
       }),
       camera: () => ({

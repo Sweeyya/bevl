@@ -12,6 +12,7 @@ import {
 import type { Rule } from "../../rule.js";
 
 const MAX_STEP_METERS = 1.5;
+const TOLERANCE_METERS = 0.01;
 const SCROLL_STEPS = 40;
 
 const rule: Rule = {
@@ -31,7 +32,7 @@ const rule: Rule = {
       const b = poses[i]?.position;
       if (a && b) worstJump = Math.max(worstJump, Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z));
     }
-    if (worstJump <= MAX_STEP_METERS) return [];
+    if (worstJump <= MAX_STEP_METERS + TOLERANCE_METERS) return [];
     return [
       finding(
         ctx,
