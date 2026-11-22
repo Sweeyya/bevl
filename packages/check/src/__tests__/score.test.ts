@@ -98,4 +98,33 @@ describe("calculateScore", () => {
     expect(loadGroup).toBeDefined();
     expect(loadGroup?.weight).toBe(15);
   });
+
+  it.each(["load/ready", "render/not-blank", "scroll/reaches-every-section"])(
+    "%s failing as error is a hard gate",
+    (rule) => {
+      const result = calculateScore([finding(rule, "error")], [...ALL_RULES, rule]);
+      expect(result.score).toBe(0);
+      expect(result.passed).toBe(false);
+      expect(Object.values(result.groups).every((g) => g.score === 0)).toBe(true);
+    },
+  );
+
+  it("hard-gate rules only gate on error severity", () => {
+    const { score } = calculateScore([finding("load/ready", "warn")], ALL_RULES);
+    expect(score).toBeGreaterThan(0);
+  });
+
+  it("a non-gate error does not zero the score", () => {
+    const { score } = calculateScore(
+      [finding("scroll/no-jumps", "error")],
+      [...ALL_RULES, "scroll/no-jumps"],
+    );
+    expect(score).toBeGreaterThan(0);
+  });
+
+  it("info findings never lower the score", () => {
+    expect(calculateScore([finding("scroll/motion-allowances", "info")], ALL_RULES).score).toBe(
+      100,
+    );
+  });
 });

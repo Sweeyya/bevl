@@ -1,6 +1,7 @@
 // Rule: render/not-blank
 // Pass: screenshot is not one flat color (not all black, not all white, not all
 //       magenta). At least 5% of pixels must differ from the most common color.
+import { couldNotRun, NOT_READY, step, waitReady } from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 /** Minimum fraction of pixels that must differ from the dominant color. */
@@ -12,6 +13,8 @@ const rule: Rule = {
   severity: "error",
   description: "Screenshot must not be a single flat color (not blank, black, white or magenta).",
   async run(ctx) {
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
+    await step(ctx.page, 2);
     const screenshotBuffer = await ctx.page.screenshot({ type: "png" }).catch(() => null);
 
     if (!screenshotBuffer) {
@@ -35,7 +38,7 @@ const rule: Rule = {
     const isBlank = await ctx.page
       .evaluate(
         async ({ dataUrl, minVariedFraction }) => {
-          return new Promise<boolean>((resolve) => {
+          return new Promise<boolean | null>((resolve) => {
             const img = new Image();
             img.onload = () => {
               const canvas = document.createElement("canvas");
@@ -43,7 +46,7 @@ const rule: Rule = {
               canvas.height = img.height;
               const drawCtx = canvas.getContext("2d");
               if (!drawCtx) {
-                resolve(true);
+                resolve(null);
                 return;
               }
               drawCtx.drawImage(img, 0, 0);
@@ -65,7 +68,7 @@ const rule: Rule = {
               const dominantFraction = maxCount / total;
               resolve(dominantFraction > 1 - minVariedFraction);
             };
-            img.onerror = () => resolve(true);
+            img.onerror = () => resolve(null);
             img.src = dataUrl;
           });
         },
@@ -74,8 +77,11 @@ const rule: Rule = {
           minVariedFraction: MIN_VARIED_FRACTION,
         },
       )
-      .catch(() => true);
+      .catch(() => null);
 
+    if (isBlank === null) {
+      return [couldNotRun(ctx, this.id, "the screenshot could not be decoded")];
+    }
     if (isBlank) {
       return [
         {

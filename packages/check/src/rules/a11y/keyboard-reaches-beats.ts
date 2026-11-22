@@ -1,6 +1,14 @@
 // Rule: a11y/keyboard-reaches-beats
 // Pass: ArrowDown visits every beat in order, ArrowUp returns, Home and End reach the ends
-import { beatAnchors, onBeat, progress, step, waitReady } from "../../drive.js";
+import {
+  beatAnchors,
+  couldNotRun,
+  NOT_READY,
+  onBeat,
+  progress,
+  step,
+  waitReady,
+} from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
 const SETTLE_FRAMES = 20;
@@ -11,9 +19,10 @@ const rule: Rule = {
   severity: "error",
   description: "Arrow keys, Home and End must reach every beat in order.",
   async run(ctx) {
-    if (!(await waitReady(ctx.page))) return [];
+    if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
     const { page } = ctx;
     const beats = [...(await beatAnchors(page))].sort((a, b) => a - b);
+    if (beats.length === 0) return [couldNotRun(ctx, this.id, "the bridge reports no sections")];
     const last = beats.length - 1;
     const problems: string[] = [];
 
