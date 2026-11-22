@@ -31,6 +31,10 @@
     },
     "packages/mascot": {
       "project": ["src/**/*.ts"]
+    },
+    "tools": {
+      "entry": ["*.mjs"],
+      "ignoreBinaries": ["vite"]
     }
   },
   "ignore": ["examples/**", "fixtures/**"],

@@ -3,6 +3,7 @@ packages:
   - "apps/*"
   - "examples/*"
   - "fixtures/host"
+  - "tools"
 
 allowBuilds:
   esbuild: true

@@ -1,15 +1,11 @@
 # Screenshot tests.
-# Runs `pnpm test:visual` inside the official Playwright Docker image at a
-# pinned digest so the browser, font renderer, and GPU stub are identical
-# every run. Baselines must be made in the same image:
-#   pnpm test:visual --update   (runs Docker locally, see TESTING.md §9)
+# Runs `pnpm test:visual` on ubuntu-latest and compares with the linux baselines
+# in tools/__screenshots__/linux/. Those baselines are only ever made on the
+# same runner type, by the "Update visual baselines" workflow
+# (update-visual-baselines.yml). Missing baselines fail the job.
 #
 # Only runs when runtime packages or examples change.
-# A PR that only changes tokens or the checker skips this.
-#
-# On failure: uploads pixel-diff PNGs as an artifact so the reviewer can see
-# exactly which pixels changed. PRs that change baselines must include
-# before/after screenshots in the PR description.
+# On failure: uploads pixel-diff PNGs as an artifact.
 
 name: Visual
 
@@ -21,7 +17,7 @@ on:
       - "packages/a11y/**"
       - "packages/tokens/**"
       - "examples/**"
-      - "fixtures/golden/**"
+      - "tools/**"
       - ".github/workflows/visual.yml"
   push:
     branches: [main]
@@ -31,6 +27,7 @@ on:
       - "packages/a11y/**"
       - "packages/tokens/**"
       - "examples/**"
+      - "tools/**"
 
 permissions: {}
 
@@ -45,51 +42,27 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
-    # Use the official Playwright Docker image at a pinned digest.
-    # This pins the browser version, font renderer, and software WebGL
-    # so screenshots are pixel-identical across runs and machines.
-    # To update: run `docker pull mcr.microsoft.com/playwright:v1.49.0-noble`
-    # locally, check the digest, update here and in TESTING.md.
-    # v1.49.0 pinned 2024-11. Check for newer stable versions before each release.
-    container:
-      image: mcr.microsoft.com/playwright:v1.49.0-noble
-      options: --user 1001
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
-        with:
-          version: 12.20.0
+      - uses: ./.github/setup
 
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        # Browsers are already in the Docker image; skip downloading them.
-        run: PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 pnpm install --frozen-lockfile
+      - name: Install Playwright Chromium
+        run: pnpm --filter @doodley/check exec playwright install chromium --with-deps
 
       - name: Build
         run: pnpm build
 
       - name: Screenshot tests
         run: pnpm test:visual
-        env:
-          # Tell Playwright where the browsers are inside the Docker image.
-          PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
 
-      # Always upload diffs, even on success (zero files = no artifact created).
-      # On failure a reviewer clicks the artifact to see which pixels changed.
       - name: Upload pixel diffs
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: visual-diffs-${{ github.run_id }}
-          path: |
-            **/__snapshots__/**/*-diff.png
-            **/__snapshots__/**/*-actual.png
+          path: tools/__screenshots__/_results/
           retention-days: 14
           if-no-files-found: ignore
