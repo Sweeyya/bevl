@@ -4,6 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { VERSION } from "./index.js";
 import { captureShotsTool } from "./shots.js";
+import { dealArtDirectionTool, validateBriefTool } from "./taste.js";
 import {
   addSectionTool,
   applyBrandTool,
@@ -140,6 +141,28 @@ server.tool(
     projectDir,
   },
   async (args) => text(await applyBrandTool(args)),
+);
+
+server.tool(
+  "validate_brief",
+  "Check a toros.brief.json file inside the project. Returns every problem with a Fix line, or says the brief is valid. Read-only.",
+  { file: z.string().max(1024).describe("Path to the brief .json, relative to the project root") },
+  async (args) => text(await validateBriefTool(args)),
+);
+
+server.tool(
+  "deal_art_direction",
+  "Deal one of Toros's own art directions (palette, fonts, material and lighting mood, scroll styles, motion) for a brief, for sites with no brand. Deterministic for a seed and avoids directions in the brief history. With apply=true it writes src/brand.tokens.json and records direction and history in toros.brief.json.",
+  {
+    briefFile: z
+      .string()
+      .max(1024)
+      .describe("Path to the brief .json, relative to the project root"),
+    seed: z.number().int().min(0).max(2147483647).optional().describe("Seed (default 1)"),
+    apply: z.boolean().optional().describe("Write the tokens and update the brief"),
+    projectDir,
+  },
+  async (args) => text(await dealArtDirectionTool(args)),
 );
 
 server.tool(

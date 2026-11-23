@@ -4,6 +4,7 @@ import keyboard from "./a11y/keyboard.js";
 import keyboardReachesBeats from "./a11y/keyboard-reaches-beats.js";
 import reducedMotion from "./a11y/reduced-motion.js";
 import fonts from "./brand/fonts.js";
+import notDefaultLook from "./brand/not-default-look.js";
 import palette from "./brand/palette.js";
 import drawCalls from "./budgets/draw-calls.js";
 import textureMb from "./budgets/texture-mb.js";
@@ -67,6 +68,7 @@ const rules: Rule[] = [
   failedRequests,
   contrastOver3d,
   reducedMotion,
+  notDefaultLook,
 ];
 
 export default rules;

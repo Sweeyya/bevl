@@ -315,6 +315,7 @@ The test fails if a `mustFail` rule passes, or if any rule not listed fails.
 | `too-many-triangles`      | `budgets/triangles`            |
 | `huge-textures`           | `budgets/texture-mb`           |
 | `off-brand-colors`        | `brand/palette`                |
+| `default-grey-look`       | `brand/not-default-look`       |
 | `wrong-font`              | `brand/fonts`                  |
 | `random-without-seed`     | `scroll/deterministic`         |
 | `snap-never-settles`      | `scroll/snap-settles`          |
