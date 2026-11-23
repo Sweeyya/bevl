@@ -40,6 +40,8 @@ const STYLES = {
     display: "flex",
     gap: 8,
     padding: "12px 24px",
+    overflowX: "auto",
+    whiteSpace: "nowrap",
     background: "rgba(0,0,0,0.5)",
     backdropFilter: "blur(8px)",
   } as React.CSSProperties,
@@ -88,7 +90,7 @@ export function DoodleyA11y({ config }: Props): JSX.Element | null {
       <nav aria-label="Site sections">
         <ul style={{ ...STYLES.nav, listStyle: "none", margin: 0, padding: "12px 24px" }}>
           {sections.map((s) => (
-            <li key={s.id}>
+            <li key={s.id} style={{ flexShrink: 0 }}>
               <a
                 href={`#section-${s.id}`}
                 style={STYLES.link}

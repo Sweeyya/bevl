@@ -42,7 +42,7 @@ export function App(): JSX.Element {
       {recipe.name === "orbit-product" && (
         <mesh name="product" position={[0, 0.3, 0]}>
           <icosahedronGeometry args={[0.8, 1]} />
-          <meshStandardMaterial color="#f4d35e" />
+          <meshStandardMaterial color="#6b4f10" />
         </mesh>
       )}
       <ambientLight intensity={0.8} />

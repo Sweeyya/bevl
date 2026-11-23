@@ -129,6 +129,24 @@ export async function sweep(page: Page, steps: number): Promise<CameraPose[] | n
 }
 
 /** Error finding for a rule that could not run, so a rule never passes silently. */
+/**
+ * Steps frames until the camera stops moving. The camera is limited to a fixed distance per
+ * frame, so after a big scroll jump it can still be travelling when a rule starts measuring.
+ */
+export async function settleCamera(page: Page, chunk = 10, maxFrames = 300): Promise<void> {
+  let last = await requireCameraPose(page);
+  for (let used = 0; used < maxFrames; used += chunk) {
+    await step(page, chunk);
+    const now = await requireCameraPose(page);
+    if (
+      distance(last.position, now.position) < 1e-4 &&
+      angleDeg(last.quaternion, now.quaternion) < 1e-3
+    )
+      return;
+    last = now;
+  }
+}
+
 export function couldNotRun(ctx: RuleContext, rule: string, why: string): Finding {
   return finding(
     ctx,
