@@ -74,12 +74,15 @@ export type {
   Track,
   Vec3Tuple,
 } from "./choreography/types.js";
+export { BackdropLights } from "./components/BackdropLights.js";
 export { BrandLights } from "./components/BrandLights.js";
 export { BrandMaterial } from "./components/BrandMaterial.js";
+export { ScreenFrame } from "./components/ScreenFrame.js";
 export { ScrollCamera } from "./components/ScrollCamera.js";
 export { Section } from "./components/Section.js";
 // React components
 export { TorosSite } from "./components/TorosSite.js";
+export { World } from "./components/World.js";
 // Context
 export type { TorosContextValue } from "./context.js";
 export { TorosContext } from "./context.js";
@@ -92,3 +95,7 @@ export { makeRand } from "./rand.js";
 // Example choreographies for agents to start from
 export type { Recipe, RecipeName } from "./recipes/index.js";
 export { getRecipe, recipeNames, recipes } from "./recipes/index.js";
+export { useWorldPlan } from "./world/context.js";
+// Set dressing helpers (pure)
+export type { Mood, WorldKind, WorldPlan } from "./world/plan.js";
+export { moodOf, planWorld } from "./world/plan.js";
