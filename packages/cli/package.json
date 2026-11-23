@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@toros/check": "workspace:*",
+    "@toros/core": "workspace:*",
     "@toros/optimizer": "workspace:*",
     "@toros/tokens": "workspace:*",
     "commander": "15.1.0"

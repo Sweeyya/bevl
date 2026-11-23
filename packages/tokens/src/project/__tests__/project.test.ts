@@ -12,6 +12,7 @@ import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import { addSection } from "../add-section.js";
 import { applyBrand } from "../apply-brand.js";
+import { applyChoreography } from "../apply-choreography.js";
 import { createSite } from "../create.js";
 
 const bases: string[] = [];
@@ -154,5 +155,24 @@ describe("applyBrand", () => {
     const bad = await site("{nope");
     writeFileSync(join(bad.dir, "D.md"), "- primary: #112233\n");
     await expect(applyBrand({ dir: bad.dir, file: "D.md" })).rejects.toThrow(/not valid JSON/);
+  });
+});
+
+describe("applyChoreography", () => {
+  it("writes what build returns for the current section ids, and re-applies cleanly", async () => {
+    const { dir } = await site();
+    const build = (ids: string[]) => ({ version: 1, beats: ids.map((id, i) => ({ id, at: i })) });
+    await applyChoreography({ dir, build });
+    await applyChoreography({ dir, build });
+    expect(JSON.parse(read(join(dir, "toros.json"))).choreography.beats).toHaveLength(3);
+    await addSection({ dir, id: "extra", title: "Extra" });
+    await applyChoreography({ dir, build });
+    const cfg = JSON.parse(read(join(dir, "toros.json")));
+    expect(cfg.choreography.beats.map((b: { id: string }) => b.id)).toEqual([
+      "hero",
+      "features",
+      "contact",
+      "extra",
+    ]);
   });
 });

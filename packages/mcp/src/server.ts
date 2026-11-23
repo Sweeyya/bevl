@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { VERSION } from "./index.js";
+import { applyRecipeTool, recommendRecipeTool } from "./recipe.js";
 import {
   addSectionTool,
   applyBrandTool,
@@ -125,6 +126,38 @@ server.tool(
     projectDir,
   },
   async (args) => text(await applyBrandTool(args)),
+);
+
+server.tool(
+  "recommend_recipe",
+  "Rank the six scroll styles (recipes) for a site from its kind, section count and mood words. Read-only. Use the top result unless the brief clearly says otherwise.",
+  {
+    kind: z.enum([
+      "landing",
+      "product",
+      "portfolio",
+      "gallery",
+      "story",
+      "venue",
+      "saas",
+      "event",
+      "other",
+    ]),
+    sections: z.number().int().min(1).max(12),
+    tone: z.array(z.string().max(40)).max(10).optional().describe("Mood words, e.g. calm, playful"),
+    heroObject: z.boolean().optional().describe("The site shows one hero object"),
+  },
+  async (args) => text(recommendRecipeTool(args)),
+);
+
+server.tool(
+  "apply_recipe",
+  "Write a scroll style's choreography (plain data) into <projectDir>/toros.json for the project's current sections. Safe to re-run after sections change. Edits only toros.json.",
+  {
+    name: z.string().max(40).describe("Recipe name from recommend_recipe"),
+    projectDir,
+  },
+  async (args) => text(await applyRecipeTool(args)),
 );
 
 await server.connect(new StdioServerTransport());

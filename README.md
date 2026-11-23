@@ -21,8 +21,8 @@ Toros is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and other
 | Accessibility layer (`@toros/a11y`) | Works. Nav bar, skip link and keyboard. Nav links glide to screens.                                                                                                                                                                                                                                                                  |
 | Token reader (`@toros/tokens`)      | Works. Reads `DESIGN.md` and design-token JSON, and holds the shared project commands (create, add-section, apply-brand).                                                                                                                                                                                                            |
 | Optimizer (`@toros/optimizer`)      | Works for dedup, prune, weld, resample, instance and sparse with no extra packages. Draco (`--draco`) and WebP textures (`--textures`) are opt-in and need `draco3dgltf` or `sharp` installed. Not yet tested on models with textures.                                                                                               |
-| CLI (`@toros/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`.                                                                                                                                                                                                                                                                         |
-| MCP server (`@toros/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`. Confined to the project folder and to localhost.                                                                                                                                                                                  |
+| CLI (`@toros/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`, `recipe list                                                                                                                                                                                                                                                            | recommend | apply`. |
+| MCP server (`@toros/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`, `recommend_recipe`, `apply_recipe`. Confined to the project folder and to localhost.                                                                                                                                              |
 | Agent skill (`skills/toros`)        | Written, with a test that keeps its rule table in sync with the checker. Not yet tried with a real agent.                                                                                                                                                                                                                            |
 | Effects (`@toros/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                                                                                                                                                                             |
 | Mascot (`@toros/mascot`)            | Empty. Planned for V2.                                                                                                                                                                                                                                                                                                               |
@@ -118,6 +118,16 @@ You don't have to write a choreography from scratch. `@toros/core` exports `reci
 import { recipes } from "@toros/core";
 const choreography = recipes["room"].create(sections.map((s) => s.id));
 ```
+
+You don't have to pick one yourself. The system ranks them from the kind of site, the number of sections and the mood, and writes the choreography into `toros.json`:
+
+```sh
+toros recipe list [--json]
+toros recipe recommend --kind venue --sections 5 --tone cozy,calm [--hero] [--json]
+toros recipe apply room [--project-dir <dir>]
+```
+
+`apply` can be re-run after sections change. The MCP has the same two steps as `recommend_recipe` and `apply_recipe`.
 
 Start from a recipe and edit it. `examples/recipes` renders any of them: `?recipe=carousel&sections=6`.
 
