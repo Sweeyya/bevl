@@ -52,7 +52,6 @@ const STYLES = {
     borderRadius: 4,
     fontSize: 14,
     fontWeight: 600,
-    display: "block",
   } as React.CSSProperties,
 };
 
