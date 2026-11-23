@@ -12,6 +12,7 @@ dist/
 # Test output
 coverage/
 **/.toros/reports/
+**/.toros/shots/
 playwright-report/
 test-results/
 
