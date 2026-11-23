@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { InputKind, InputSpec, SnapSpec } from "../choreography/types.js";
+import { useReducedMotion } from "../motion/preference.js";
 import { attachInputs } from "./attach.js";
 import { ProgressController } from "./progress.js";
 import { resolveInputs } from "./resolve.js";
@@ -44,22 +45,6 @@ function useCoarsePointer(): boolean {
   return coarse;
 }
 
-function useReducedMotionQuery(): boolean {
-  const [reduced, setReduced] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true,
-  );
-  useEffect(() => {
-    const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
-    if (!mql) return;
-    const onChange = (): void => setReduced(mql.matches);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
-  return reduced;
-}
-
 export function useProgressInput({
   el,
   spec,
@@ -85,7 +70,7 @@ export function useProgressInput({
     controller.setBeats(beats, snappable);
   }, [controller, beatsKey, snappableKey]);
 
-  const reduced = useReducedMotionQuery();
+  const reduced = useReducedMotion();
   controller.snapConfig = resolveSnapSettings(snap, coarse);
   controller.snapInstantly = reduced;
 

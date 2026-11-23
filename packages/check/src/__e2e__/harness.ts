@@ -55,6 +55,7 @@ declare global {
       step(ms: number): unknown;
       scroll(): number;
       camera(): { position: { x: number; y: number; z: number } };
+      motion(): { reducedMotion: boolean };
     };
     __e2e: {
       scene: { getObjectByName(n: string): unknown };

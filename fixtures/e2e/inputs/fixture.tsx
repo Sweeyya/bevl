@@ -7,6 +7,7 @@ export const fixture = buildFixture(sectionList(3), (base) => {
   return {
     ...base,
     tracks: [...(base.tracks ?? []), PROBE_TRACK],
+    reducedMotion: { tracks: [PROBE_TRACK] },
     snap: { mode: "none" },
     input: {
       ...(fine ? { fine } : {}),

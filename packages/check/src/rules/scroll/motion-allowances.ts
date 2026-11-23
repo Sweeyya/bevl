@@ -3,24 +3,41 @@
 import { choreography, couldNotRun, NOT_READY, waitReady } from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
-const NAMES = ["roll", "spin", "fastMoves"] as const;
+const NAMES = ["roll", "spin", "fastMoves", "reducedMotion"] as const;
 
 const rule: Rule = {
   id: "scroll/motion-allowances",
   group: "scroll",
   severity: "info",
   description:
-    "Reports each allow.roll, allow.spin and allow.fastMoves opt-out. Never lowers the score.",
+    'Reports each allow.* opt-out and reducedMotion.mode "none". Never lowers the score.',
   async run(ctx) {
     if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
-    const { allow } = await choreography(ctx.page);
-    return NAMES.filter((n) => allow?.[n] === true).map((n) => ({
+    const { allow, reducedMotion } = await choreography(ctx.page);
+    const keepsMotion = reducedMotion?.mode === "none";
+    const found = [
+      ...NAMES.filter((n) => allow?.[n] === true).map((n) => ({
+        message: `allow.${n} is true`,
+        fix: `remove allow.${n} unless this motion is intended. The matching check is skipped while it is set.`,
+        allowance: n,
+      })),
+      ...(keepsMotion
+        ? [
+            {
+              message: 'reducedMotion.mode is "none"',
+              fix: 'remove reducedMotion.mode "none" so reduced-motion users get the soft-fade default. Set allow.reducedMotion to keep full motion on purpose.',
+              allowance: "reducedMotion.mode",
+            },
+          ]
+        : []),
+    ];
+    return found.map((f) => ({
       rule: "scroll/motion-allowances",
       severity: "info" as const,
       viewport: ctx.viewport.name,
-      message: `Choreography opts out of a gentle-motion rule: allow.${n} is true on ${ctx.viewport.name}.`,
-      fix: `Fix: remove allow.${n} unless this motion is intended. The matching check is skipped while it is set.`,
-      evidence: { data: { allowance: n } },
+      message: `Choreography opts out of a gentle-motion rule: ${f.message} on ${ctx.viewport.name}.`,
+      fix: `Fix: ${f.fix}`,
+      evidence: { data: { allowance: f.allowance } },
     }));
   },
 };

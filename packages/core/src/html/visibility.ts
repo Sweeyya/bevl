@@ -33,7 +33,7 @@ export interface SectionStyle {
   active: boolean;
 }
 
-/** Style for one section; reduced motion drops the shift and switches instantly. */
+/** Style for one section; reduced motion drops the shift and keeps only the fade. */
 export function sectionStyle(
   progress: number,
   beats: number[],
@@ -42,6 +42,6 @@ export function sectionStyle(
 ): SectionStyle {
   const v = sectionVisibility(progress, beats, index);
   const active = activeSection(progress, beats) === index;
-  if (reducedMotion) return { opacity: active ? 1 : 0, translateY: 0, active };
+  if (reducedMotion) return { opacity: v, translateY: 0, active };
   return { opacity: v, translateY: (1 - v) * SHIFT_PX, active };
 }

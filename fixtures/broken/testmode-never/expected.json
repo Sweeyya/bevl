@@ -2,6 +2,7 @@
   "mustFail": ["load/ready"],
   "mayAlsoFail": [
     "a11y/keyboard-reaches-beats",
+    "a11y/reduced-motion",
     "budgets/draw-calls",
     "budgets/triangles",
     "html/section-text",

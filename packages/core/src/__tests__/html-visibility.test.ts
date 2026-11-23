@@ -35,12 +35,9 @@ describe("sectionStyle", () => {
     expect(s.opacity).toBeCloseTo(0.5);
     expect(s.translateY).toBeGreaterThan(0);
   });
-  it("switches instantly without shift under reduced motion", () => {
-    expect(sectionStyle(0.1, beats, 1, true)).toEqual({
-      opacity: 0,
-      translateY: 0,
-      active: false,
-    });
+  it("keeps only the fade, without shift, under reduced motion", () => {
+    const reduced = sectionStyle(0.125, beats, 1, true);
+    expect(reduced).toEqual({ ...sectionStyle(0.125, beats, 1, false), translateY: 0 });
     expect(sectionStyle(0.5, beats, 1, true)).toEqual({ opacity: 1, translateY: 0, active: true });
   });
 });

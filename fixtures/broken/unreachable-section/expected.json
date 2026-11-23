@@ -5,6 +5,7 @@
     "scroll/no-jumps",
     "scroll/no-roll",
     "scroll/snap-no-trap",
-    "scroll/snap-settles"
+    "scroll/snap-settles",
+    "a11y/reduced-motion"
   ]
 }

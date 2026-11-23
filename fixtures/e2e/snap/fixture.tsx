@@ -12,6 +12,7 @@ export const fixture = buildFixture(sections, (base) => ({
   ...base,
   beats: base.beats.map((b, i) => (i === noSnapBeat ? { ...b, snap: false } : b)),
   tracks: [...(base.tracks ?? []), PROBE_TRACK],
+  reducedMotion: { tracks: [PROBE_TRACK] },
   snap: {
     mode,
     ...(delay === undefined ? {} : { delay }),

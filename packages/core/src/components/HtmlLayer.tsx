@@ -15,14 +15,14 @@ const CSS = `
 [data-doodley-html] [data-doodley-sr]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 `;
 
-function prefersReducedMotion(): boolean {
-  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
-}
-
 /** Writes visibility straight to the DOM (no React state per frame). */
-export function applyHtmlLayer(root: HTMLElement | null, progress: number, beats: number[]): void {
+export function applyHtmlLayer(
+  root: HTMLElement | null,
+  progress: number,
+  beats: number[],
+  reduced: boolean,
+): void {
   if (!root) return;
-  const reduced = prefersReducedMotion();
   for (const el of root.querySelectorAll<HTMLElement>("[data-doodley-section]")) {
     const style = sectionStyle(progress, beats, Number(el.dataset.doodleyIndex), reduced);
     el.style.opacity = String(style.opacity);
@@ -40,6 +40,7 @@ export function HtmlLayerDriver({ layer }: { layer: RefObject<HTMLElement> }): n
         layer.current,
         ctx.getProgress(),
         ctx.choreography.beats.map((b) => b.at),
+        ctx.reducedMotion,
       );
   });
   return null;
@@ -97,6 +98,7 @@ export function HtmlLayer({ layerRef, content }: HtmlLayerProps): JSX.Element | 
         layerRef.current,
         ctx.getProgress(),
         ctx.choreography.beats.map((b) => b.at),
+        ctx.reducedMotion,
       );
   });
   if (!ctx) return null;
@@ -117,7 +119,7 @@ export function HtmlLayer({ layerRef, content }: HtmlLayerProps): JSX.Element | 
             onFocusSection={(index) => {
               const el = layerRef.current?.querySelector(`[data-doodley-index="${index}"]`);
               if ((el as HTMLElement | null)?.dataset.doodleyActive !== "true")
-                ctx.goToBeat(index, prefersReducedMotion());
+                ctx.goToBeat(index, ctx.reducedMotion);
             }}
           />
         ))}

@@ -138,16 +138,16 @@ The checker scrolls from top to bottom in 40 wheel steps (touch swipes on phone)
 
 axe can't see the 3D pixels behind text, so we add our own checks.
 
-| Rule id                       | Pass rule                                                                                                                                                | Severity |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `a11y/axe`                    | No serious or critical axe violations on the HTML layer                                                                                                  | error    |
-| `a11y/contrast-over-3d`       | For each text element, sample the rendered pixels behind it at every section. Contrast is at least 4.5:1 (3:1 for large text). Gives a `suggestedColor`. | error    |
-| `a11y/keyboard`               | Tab reaches the menu and every link. Enter starts the glide.                                                                                             | error    |
-| `a11y/keyboard-reaches-beats` | ArrowDown visits every beat in order, ArrowUp returns, Home and End reach the ends                                                                       | error    |
-| `a11y/focus-visible`          | Focused elements show a visible outline                                                                                                                  | error    |
-| `a11y/skip-link`              | There is a "skip to content" link                                                                                                                        | warn     |
-| `a11y/reduced-motion`         | With reduced motion on, the camera moves less than 10% as far while scrolling, and sections change with fades                                            | error    |
-| `a11y/canvas-hidden`          | The canvas has `aria-hidden="true"` or `role="img"` with a label                                                                                         | warn     |
+| Rule id                       | Pass rule                                                                                                                                                                                                                | Severity |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| `a11y/axe`                    | No serious or critical axe violations on the HTML layer                                                                                                                                                                  | error    |
+| `a11y/contrast-over-3d`       | For each text element, sample the rendered pixels behind it at every section. Contrast is at least 4.5:1 (3:1 for large text). Gives a `suggestedColor`.                                                                 | error    |
+| `a11y/keyboard`               | Tab reaches the menu and every link. Enter starts the glide.                                                                                                                                                             | error    |
+| `a11y/keyboard-reaches-beats` | ArrowDown visits every beat in order, ArrowUp returns, Home and End reach the ends                                                                                                                                       | error    |
+| `a11y/focus-visible`          | Focused elements show a visible outline                                                                                                                                                                                  | error    |
+| `a11y/skip-link`              | There is a "skip to content" link                                                                                                                                                                                        | warn     |
+| `a11y/reduced-motion`         | With reduced motion on, the camera moves less than 10% as far while scrolling (travel = metres plus radians), sections still change with fades, and the keyboard reaches every beat. Skipped with `allow.reducedMotion`. | error    |
+| `a11y/canvas-hidden`          | The canvas has `aria-hidden="true"` or `role="img"` with a label                                                                                                                                                         | warn     |
 
 ### 4.6 Budgets
 

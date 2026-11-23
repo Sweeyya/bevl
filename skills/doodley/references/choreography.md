@@ -22,7 +22,12 @@ When the user describes an experience, answer these questions in order. Ask the 
 - `layouts`: record of id to `{ arrange, radius?, spacing?, columns?, direction?, points?, facing?, center? }`. `facing` is `inward`, `outward` or `camera` (default). The id `sections` places the Section groups. Any other id is the `name` of a group in the scene and places that group's children. `alongPath` needs at least 2 `points`.
 - `input`: `{ fine?, coarse?, wheelMultiplier?, touchMultiplier?, smoothing? }`. Input kinds: `scroll`, `wheel`, `touch`, `drag`, `swipe-x`, `tap-advance`. Default is `["scroll"]` for both.
 - `snap`: `{ mode?, delay?, commit?, coarse? }`. Modes: `directional` (default), `nearest`, `strong`, `none`.
-- `allow`: `{ roll?, spin?, fastMoves? }`. Opt-outs only when the user asked for it. The checker reports each.
+- `allow`: `{ roll?, spin?, fastMoves?, reducedMotion? }`. Opt-outs only when the user asked for it. The checker reports each.
+- `reducedMotion`: optional `{ mode?, tracks?, behaviors? }`. Leave it out: when the user turns on reduced motion the camera already stays at its start pose, sections stand on the first section's spot and cross-fade, and object tracks and behaviors pause. Add `tracks` (same shape as `tracks[]`) for a gentle alternative, for example a tiny dolly, and `behaviors` for registered behaviors that are safe. Camera tracks here replace the frozen pose and `a11y/reduced-motion` holds them to under 10% of the normal travel. `mode: "none"` keeps full motion and fails the check unless `allow.reducedMotion` is set.
+
+```json
+"reducedMotion": { "tracks": [{ "target": "camera", "prop": "position", "keys": [{ "at": 0, "value": [0, 0, 6] }, { "at": 1, "value": [0, 0, 5.8] }] }] }
+```
 
 Limits that the checker enforces: the camera may move at most 1.5 m per scroll step, turn at most 15 degrees per step, and must not roll more than 2 degrees. If a beat gap is large, add camera keyframes or use `path: "curve"` instead of widening `fastMoves`.
 
@@ -182,5 +187,5 @@ For motion that keyframes cannot express (for example physics-like wobble), regi
 - Every section id appears once in `beats`, `at` ascending from 0 to 1.
 - Camera step per beat is small, or has curve and intermediate keys.
 - Every `target` name exists in the scene (an unknown target is silently skipped, so check the spelling).
-- No `allow` flags unless the user asked.
+- No `allow` flags unless the user asked, and no `reducedMotion.mode: "none"`.
 - Section text is real HTML, not 3D text.

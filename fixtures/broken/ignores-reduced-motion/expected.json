@@ -1,0 +1,4 @@
+{
+  "mustFail": ["a11y/reduced-motion"],
+  "mayAlsoFail": []
+}

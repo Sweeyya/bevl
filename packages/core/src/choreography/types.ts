@@ -108,6 +108,22 @@ export interface MotionAllowances {
   roll?: boolean;
   spin?: boolean;
   fastMoves?: boolean;
+  /** Needed with reducedMotion.mode "none", which keeps the full camera motion for people who asked for less. */
+  reducedMotion?: boolean;
+}
+
+/**
+ * What happens when the user turns on reduced motion.
+ * By default ("fade") the camera stays at its start pose, sections stand on the first
+ * section's spot and cross-fade, and object tracks and behaviors do not run.
+ */
+export interface ReducedMotionSpec {
+  /** "fade" (default) is the behavior above. "none" keeps the full choreography and needs allow.reducedMotion. */
+  mode?: "fade" | "none";
+  /** Extra tracks to run under reduced motion. Camera tracks here replace the frozen start pose and the checker holds them to the 10% limit. */
+  tracks?: Track[];
+  /** Registered behaviors that are safe to keep running under reduced motion. */
+  behaviors?: string[];
 }
 
 export interface Choreography {
@@ -121,6 +137,7 @@ export interface Choreography {
   input?: InputSpec;
   snap?: SnapSpec;
   allow?: MotionAllowances;
+  reducedMotion?: ReducedMotionSpec;
 }
 
 /** Context passed to behaviors each frame */

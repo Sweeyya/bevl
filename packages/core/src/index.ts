@@ -67,6 +67,7 @@ export type {
   LayoutArrange,
   LayoutSpec,
   MotionAllowances,
+  ReducedMotionSpec,
   SnapMode,
   SnapSettings,
   SnapSpec,
@@ -84,6 +85,8 @@ export type { DoodleyContextValue } from "./context.js";
 export { DoodleyContext } from "./context.js";
 // HTML layer visibility (pure helpers)
 export { activeSection, sectionVisibility } from "./html/visibility.js";
+// Reduced-motion preference (live, SSR-safe)
+export { useReducedMotion } from "./motion/preference.js";
 // Seeded random (use instead of Math.random in runtime code paths)
 export { makeRand } from "./rand.js";
 // Example choreographies for agents to start from
