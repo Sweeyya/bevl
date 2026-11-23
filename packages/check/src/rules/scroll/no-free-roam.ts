@@ -6,6 +6,7 @@ import {
   progress,
   requireCameraPose,
   scrollTo,
+  settleCamera,
   step,
   waitReady,
 } from "../../drive.js";
@@ -13,7 +14,6 @@ import type { Rule } from "../../rule.js";
 
 const MAX_OFFSET_M = 0.01;
 const MAX_OFFSET_DEG = 0.5;
-const SETTLE_FRAMES = 30;
 
 const rule: Rule = {
   id: "scroll/no-free-roam",
@@ -25,12 +25,12 @@ const rule: Rule = {
     if (!(await waitReady(page))) return [];
 
     await scrollTo(page, 0);
-    await step(page, SETTLE_FRAMES);
+    await settleCamera(page);
     const before = await requireCameraPose(page);
     const p0 = await progress(page);
 
     const offPath = async (): Promise<{ moved: number; turned: number }> => {
-      await step(page, SETTLE_FRAMES);
+      await settleCamera(page);
       const now = await requireCameraPose(page);
       return {
         moved: distance(before.position, now.position),

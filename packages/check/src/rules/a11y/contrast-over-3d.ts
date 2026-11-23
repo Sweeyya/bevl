@@ -29,8 +29,12 @@ function readTextBoxes(selector: string): TextBox[] {
       .trim();
     if (!own) continue;
     const style = getComputedStyle(el);
-    if (style.visibility === "hidden" || style.display === "none" || Number(style.opacity) === 0)
-      continue;
+    if (style.visibility === "hidden" || style.display === "none") continue;
+    let opacity = 1;
+    for (let node: HTMLElement | null = el; node; node = node.parentElement) {
+      opacity *= Number(getComputedStyle(node).opacity);
+    }
+    if (opacity < 0.1) continue;
     const r = el.getBoundingClientRect();
     const x = Math.max(0, r.left);
     const y = Math.max(0, r.top);
