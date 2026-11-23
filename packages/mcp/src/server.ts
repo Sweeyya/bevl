@@ -4,6 +4,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { VERSION } from "./index.js";
 import { applyRecipeTool, recommendRecipeTool } from "./recipe.js";
+import { captureShotsTool } from "./shots.js";
+import { dealArtDirectionTool, validateBriefTool } from "./taste.js";
 import {
   addSectionTool,
   applyBrandTool,
@@ -96,6 +98,14 @@ server.tool(
       .max(1024)
       .optional()
       .describe("Parent folder, relative to the project root (default: the root)"),
+    sections: z
+      .array(z.string().min(1).max(80))
+      .min(1)
+      .max(20)
+      .optional()
+      .describe(
+        "Section titles in order; ids are made from them (default: Hero, Features, Contact)",
+      ),
   },
   async (args) => text(await createSiteTool(args)),
 );
@@ -110,6 +120,12 @@ server.tool(
       .regex(/^[a-z][a-z0-9-]*$/)
       .describe("Section id: lowercase letters, numbers, dashes, starting with a letter"),
     title: z.string().min(1).max(80).describe("Section title shown in navigation"),
+    after: z
+      .string()
+      .max(40)
+      .regex(/^[a-z][a-z0-9-]*$/)
+      .optional()
+      .describe("Insert after this section id (default: append at the end)"),
     projectDir,
   },
   async (args) => text(await addSectionTool(args)),
@@ -158,6 +174,44 @@ server.tool(
     projectDir,
   },
   async (args) => text(await applyRecipeTool(args)),
+);
+
+server.tool(
+  "validate_brief",
+  "Check a toros.brief.json file inside the project. Returns every problem with a Fix line, or says the brief is valid. Read-only.",
+  { file: z.string().max(1024).describe("Path to the brief .json, relative to the project root") },
+  async (args) => text(await validateBriefTool(args)),
+);
+
+server.tool(
+  "deal_art_direction",
+  "Deal one of Toros's own art directions (palette, fonts, material and lighting mood, scroll styles, motion) for a brief, for sites with no brand. Deterministic for a seed and avoids directions in the brief history. With apply=true it writes src/brand.tokens.json and records direction and history in toros.brief.json.",
+  {
+    briefFile: z
+      .string()
+      .max(1024)
+      .describe("Path to the brief .json, relative to the project root"),
+    seed: z.number().int().min(0).max(2147483647).optional().describe("Seed (default 1)"),
+    apply: z.boolean().optional().describe("Write the tokens and update the brief"),
+    projectDir,
+  },
+  async (args) => text(await dealArtDirectionTool(args)),
+);
+
+server.tool(
+  "capture_shots",
+  "Open a local dev server URL (localhost by default) in a headless browser in test mode and save a PNG of every screen (one per beat) for desktop and/or phone, plus contact sheets and manifest.json, under <projectDir>/.toros/shots/<run-id>. Read the PNGs to look at the site. Never writes outside the project root.",
+  {
+    url: z.string().max(2048).describe("URL of the running site, e.g. http://localhost:3000"),
+    projectDir,
+    outDir: z
+      .string()
+      .max(1024)
+      .optional()
+      .describe("Output folder inside the project root (default: .toros/shots/<run-id>)"),
+    viewport: z.enum(["desktop", "phone", "both"]).optional().describe("Default: both"),
+  },
+  async (args) => text(await captureShotsTool(args)),
 );
 
 await server.connect(new StdioServerTransport());

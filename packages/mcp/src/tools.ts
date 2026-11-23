@@ -1,6 +1,6 @@
 import { formatReport, runCheck } from "@toros/check";
 import { optimizeGlb } from "@toros/optimizer";
-import { addSection, applyBrand, createSite, readTokenFile } from "@toros/tokens";
+import { addSection, applyBrand, brandFileHint, createSite, readTokenFile } from "@toros/tokens";
 import { assertSafeUrl, projectRoot, requireExtension, resolveInside } from "./guard.js";
 
 export interface CheckSiteArgs {
@@ -57,7 +57,7 @@ export async function optimizeAssets(
 
 export async function readBrandTokens(filePath: string, env: NodeJS.ProcessEnv = process.env) {
   const file = requireExtension(
-    resolveInside(projectRoot(env), filePath),
+    resolveInside(projectRoot(env), filePath, brandFileHint(filePath)),
     [".md", ".json"],
     "filePath",
   );
@@ -67,11 +67,13 @@ export async function readBrandTokens(filePath: string, env: NodeJS.ProcessEnv =
 export interface CreateSiteArgs {
   name: string;
   dir?: string | undefined;
+  sections?: string[] | undefined;
 }
 
 export interface AddSectionArgs {
   id: string;
   title: string;
+  after?: string | undefined;
   projectDir?: string | undefined;
 }
 
@@ -82,19 +84,37 @@ export interface ApplyBrandArgs {
 
 export async function createSiteTool(args: CreateSiteArgs, env: NodeJS.ProcessEnv = process.env) {
   const dir = resolveInside(projectRoot(env), args.dir ?? ".");
-  await createSite({ name: args.name, dir });
-  return `Created site "${args.name}" in ${dir}. Next: run pnpm install there, then pnpm dev.`;
+  const notes = await createSite({
+    name: args.name,
+    dir,
+    ...(args.sections !== undefined && { sections: args.sections }),
+  });
+  return [
+    `Created site "${args.name}" in ${dir}. Next: run pnpm install there, then pnpm dev.`,
+    ...notes,
+  ].join("\n");
 }
 
 export async function addSectionTool(args: AddSectionArgs, env: NodeJS.ProcessEnv = process.env) {
   const root = projectRoot(env);
   const dir = resolveInside(root, args.projectDir ?? ".");
-  return (await addSection({ dir, id: args.id, title: args.title })).join("\n");
+  return (
+    await addSection({
+      dir,
+      id: args.id,
+      title: args.title,
+      ...(args.after !== undefined && { after: args.after }),
+    })
+  ).join("\n");
 }
 
 export async function applyBrandTool(args: ApplyBrandArgs, env: NodeJS.ProcessEnv = process.env) {
   const root = projectRoot(env);
   const dir = resolveInside(root, args.projectDir ?? ".");
-  const file = requireExtension(resolveInside(root, args.file), [".md", ".json"], "file");
+  const file = requireExtension(
+    resolveInside(root, args.file, brandFileHint(args.file)),
+    [".md", ".json"],
+    "file",
+  );
   return (await applyBrand({ dir, file })).join("\n");
 }

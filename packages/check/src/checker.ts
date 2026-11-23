@@ -15,7 +15,7 @@ export interface CheckOptions {
   ruleId?: string;
 }
 
-const VIEWPORTS = [
+export const VIEWPORTS = [
   {
     name: "desktop",
     width: 1440,
@@ -35,7 +35,7 @@ const VIEWPORTS = [
 ] as const;
 
 /** Generate a short run ID: ISO timestamp + 4 random hex chars. */
-function makeRunId(): string {
+export function makeRunId(): string {
   const ts = `${new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19)}Z`;
   const suffix = Math.floor(Math.random() * 0xffff)
     .toString(16)

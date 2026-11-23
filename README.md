@@ -19,10 +19,10 @@ Toros is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and other
 | Core runtime (`@toros/core`)        | Works. Scroll choreography, six ready-made recipes, one progress value driven by scroll, wheel, touch, drag, swipe, tap and keyboard, snap-to-screen settling, a real HTML text layer (`<Section html={...}>`), brand tokens applied to materials, lights and fonts, a no-WebGL fallback, test mode and the `window.__toros` bridge. |
 | Checker (`@toros/check`)            | Works. 32 rules covering load, render, budgets, scroll, snapping, determinism, navigation, keyboard, HTML, SEO, contrast and brand. 27 broken fixtures prove the rules fail when they should, and browser end-to-end tests cover the real inputs.                                                                                    |
 | Accessibility layer (`@toros/a11y`) | Works. Nav bar, skip link and keyboard. Nav links glide to screens.                                                                                                                                                                                                                                                                  |
-| Token reader (`@toros/tokens`)      | Works. Reads `DESIGN.md` and design-token JSON, and holds the shared project commands (create, add-section, apply-brand).                                                                                                                                                                                                            |
+| Token reader (`@toros/tokens`)      | Works. Reads `DESIGN.md` and design-token JSON, holds the shared project commands (create, add-section, apply-brand), the brief file (`toros.brief.json`) and Toros's own taste library of six original art directions.                                                                                                              |
 | Optimizer (`@toros/optimizer`)      | Works for dedup, prune, weld, resample, instance and sparse with no extra packages. Draco (`--draco`) and WebP textures (`--textures`) are opt-in and need `draco3dgltf` or `sharp` installed. Not yet tested on models with textures.                                                                                               |
-| CLI (`@toros/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`, `recipe list                                                                                                                                                                                                                                                            | recommend | apply`. |
-| MCP server (`@toros/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`, `recommend_recipe`, `apply_recipe`. Confined to the project folder and to localhost.                                                                                                                                              |
+| CLI (`@toros/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`, `brief validate`, `taste list`, `taste deal`, `recipe list`, `recipe recommend`, `recipe apply`.                                                                                                                                                                        |
+| MCP server (`@toros/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`, `validate_brief`, `deal_art_direction`, `recommend_recipe`, `apply_recipe`. Confined to the project folder and to localhost.                                                                                                      |
 | Agent skill (`skills/toros`)        | Written, with a test that keeps its rule table in sync with the checker. Not yet tried with a real agent.                                                                                                                                                                                                                            |
 | Effects (`@toros/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                                                                                                                                                                             |
 | Mascot (`@toros/mascot`)            | Empty. Planned for V2.                                                                                                                                                                                                                                                                                                               |
@@ -143,6 +143,14 @@ toros check <url> [--viewport desktop|phone] [--rule <id>] [--json]
 - Test mode only works on `localhost` by default. To check a deployed preview, set `"testMode": "always"` in `toros.json`.
 
 Every rule and its severity is listed in [TESTING.md](TESTING.md).
+
+### Looking at the site
+
+```sh
+toros shots <url> [--out <dir>] [--viewport desktop|phone|both] [--json]
+```
+
+Opens the site in test mode, scrolls to every beat, waits for the camera to stop and saves one PNG per screen and viewport (`desktop-01-welcome.png`), a contact sheet per viewport (`desktop-contact-sheet.png`) and `manifest.json`. Files go to `.toros/shots/<run-id>` by default. An agent can read the PNGs to see what it built. The MCP tool is `capture_shots`.
 
 ## Using it from an agent (MCP)
 

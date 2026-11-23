@@ -1,7 +1,14 @@
 // Rule: a11y/contrast-over-3d
 // Pass: text over the rendered 3D scene has WCAG contrast (4.5:1, or 3:1 for large text) at every beat
 
-import { contrastRatio, type Rgb, requiredRatio, suggestedColor } from "../../contrast.js";
+import {
+  backingPanelColor,
+  contrastRatio,
+  hexToRgb,
+  type Rgb,
+  requiredRatio,
+  suggestedColor,
+} from "../../contrast.js";
 import { beatAnchors, scrollTo, step, waitReady } from "../../drive.js";
 import type { Finding } from "../../report.js";
 import type { Rule } from "../../rule.js";
@@ -88,6 +95,15 @@ async function samplePixels(
   );
 }
 
+function readBrandSurfaces(): string[] {
+  const brand = (
+    window as unknown as {
+      __toros?: { brand(): { colors: { surface: string; background: string } } | null };
+    }
+  ).__toros?.brand();
+  return brand ? [brand.colors.surface, brand.colors.background] : [];
+}
+
 const rule: Rule = {
   id: "a11y/contrast-over-3d",
   group: "a11y",
@@ -98,6 +114,9 @@ const rule: Rule = {
     if (!(await waitReady(page))) return [];
     const scale = await page.evaluate(() => window.devicePixelRatio);
     const anchors = await beatAnchors(page);
+    const surfaces = (await page.evaluate(readBrandSurfaces))
+      .map(hexToRgb)
+      .filter((c): c is Rgb => c !== null);
     const findings: Finding[] = [];
     const reported = new Set<string>();
 
@@ -134,7 +153,7 @@ const rule: Rule = {
           severity: "error",
           viewport: viewport.name,
           message: `"${b.text}" has contrast ${ratio.toFixed(1)}:1 over the 3D scene at progress ${anchor.toFixed(2)} on ${viewport.name} (needs ${required}:1).`,
-          fix: `Fix: change the text color to ${suggestedColor(worst)} or add a solid backing panel behind it.`,
+          fix: `Fix: keep the brand and put a backing panel behind the text: background: ${backingPanelColor(b.color, surfaces, worst)}; padding: 1rem; border-radius: 0.5rem. If it still fails, raise the opacity, or as a second option change the text color to ${suggestedColor(worst)}.`,
           evidence: {
             data: { ratio, required, suggestedColor: suggestedColor(worst), progress: anchor },
           },

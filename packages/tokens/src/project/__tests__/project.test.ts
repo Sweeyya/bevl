@@ -124,7 +124,76 @@ describe("addSection", () => {
   });
 });
 
+describe("addSection --after", () => {
+  it("inserts after the given section in toros.json and App.tsx", async () => {
+    const { dir } = await site();
+    await addSection({ dir, id: "menu", title: "Menu", after: "hero" });
+    const ids = JSON.parse(read(join(dir, "toros.json"))).sections.map((s: { id: string }) => s.id);
+    expect(ids).toEqual(["hero", "menu", "features", "contact"]);
+    const app = read(join(dir, "src/App.tsx"));
+    expect(app.indexOf('id="hero"')).toBeLessThan(app.indexOf('id="menu"'));
+    expect(app.indexOf('id="menu"')).toBeLessThan(app.indexOf('id="features"'));
+  });
+  it("can insert after the last section and rejects unknown ids", async () => {
+    const { dir } = await site();
+    await addSection({ dir, id: "end", title: "End", after: "contact" });
+    const app = read(join(dir, "src/App.tsx"));
+    expect(app.indexOf('id="contact"')).toBeLessThan(app.indexOf('id="end"'));
+    expect(app.indexOf('id="end"')).toBeLessThan(app.indexOf("<ambientLight"));
+    await expect(addSection({ dir, id: "x", title: "X", after: "nope" })).rejects.toThrow(
+      /does not exist/,
+    );
+  });
+  it("places the new beat between neighbours", async () => {
+    const { dir } = await site({
+      name: "s",
+      sections: [
+        { id: "a", title: "A" },
+        { id: "b", title: "B" },
+      ],
+      choreography: {
+        beats: [
+          { id: "a", at: 0 },
+          { id: "b", at: 1 },
+        ],
+      },
+    });
+    await addSection({ dir, id: "m", title: "M", after: "a" });
+    const beats = JSON.parse(read(join(dir, "toros.json"))).choreography.beats;
+    expect(beats).toEqual([
+      { id: "a", at: 0 },
+      { id: "m", at: 0.5 },
+      { id: "b", at: 1 },
+    ]);
+  });
+});
+
 describe("applyBrand", () => {
+  it("fails with accepted formats when a typography section has no readable font", async () => {
+    const { dir } = await site();
+    writeFileSync(join(dir, "DESIGN.md"), "## Typography\n\nWe like friendly letters.\n");
+    await expect(applyBrand({ dir, file: "DESIGN.md" })).rejects.toThrow(
+      /Fix:[\s\S]*Headings: Georgia, serif/,
+    );
+  });
+  it("only warns when the file has no font information at all", async () => {
+    const { dir } = await site();
+    writeFileSync(join(dir, "DESIGN.md"), "- primary: #112233\n");
+    expect((await applyBrand({ dir, file: "DESIGN.md" })).join("\n")).toMatch(/Warning/);
+  });
+  it("fails for token JSON with font keys but no readable font", async () => {
+    const { dir } = await site();
+    writeFileSync(join(dir, "t.json"), JSON.stringify({ font: { size: { $value: "16px" } } }));
+    await expect(applyBrand({ dir, file: "t.json" })).rejects.toThrow(/typography/);
+  });
+  it("tells you the exact cp command when the file is outside the project", async () => {
+    const { base, dir } = await site();
+    const file = join(base, "DESIGN.md");
+    writeFileSync(file, "- primary: #112233\n");
+    await expect(applyBrand({ dir, file })).rejects.toThrow(
+      /cp ".*DESIGN.md" \.\/DESIGN\.md[\s\S]*\.md or \.json/,
+    );
+  });
   it("writes tokens, sets brand and reports defaults", async () => {
     const { dir } = await site();
     writeFileSync(join(dir, "DESIGN.md"), "# Brand\n- primary: #112233\n- accent: #ff0000\n");

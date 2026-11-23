@@ -27,3 +27,18 @@ export function suggestedColor(background: Rgb): "#000000" | "#ffffff" {
 export function requiredRatio(fontSizePx: number, fontWeight: number): number {
   return fontSizePx >= 24 || (fontSizePx >= 18.66 && fontWeight >= 700) ? 3 : 4.5;
 }
+
+export function hexToRgb(hex: string): Rgb | null {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  const n = m?.[1] ? Number.parseInt(m[1], 16) : null;
+  return n === null ? null : [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+/** CSS color for a backing panel: the candidate that reads best against the text, at 0.75 opacity. */
+export function backingPanelColor(text: Rgb, candidates: Rgb[], fallback: Rgb): string {
+  const [r, g, b] = candidates.reduce(
+    (best, c) => (contrastRatio(text, c) > contrastRatio(text, best) ? c : best),
+    candidates[0] ?? fallback,
+  );
+  return `rgba(${r}, ${g}, ${b}, 0.75)`;
+}

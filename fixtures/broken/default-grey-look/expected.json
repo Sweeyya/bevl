@@ -1,0 +1,5 @@
+{
+  "mustFail": ["brand/not-default-look"],
+  "mayAlsoFail": ["a11y/contrast-over-3d"],
+  "fixContains": { "brand/not-default-look": "toros taste deal" }
+}
