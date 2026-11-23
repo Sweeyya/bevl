@@ -14,14 +14,13 @@ First real trial (an agent building a coffee roaster site from only the skill): 
 
 ## 2. Decisions waiting on you
 
-| Decision                           | Options                                                                                                    | Why it matters                                                        |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| How the runtime reaches a site     | A: publish `@toros/*` to npm. B: copy the runtime into each site. Mix: publish the tools, copy the runtime | A fresh site cannot install today, because nothing is on npm          |
-| The `@toros` npm scope             | Create the organization on npmjs.com                                                                       | Scope ownership cannot be checked without logging in                  |
-| License                            | MIT, Apache-2.0, or other                                                                                  | There is no LICENSE file, so nobody may legally reuse the code        |
-| Spectr                             | Keep or remove                                                                                             | It came from the original plan and is not being built (see section 9) |
-| Dependabot                         | Keep or turn off                                                                                           | Its commits show `dependabot[bot]` as an author                       |
-| GitHub repo description and topics | Write them                                                                                                 | Both are empty today                                                  |
+| Decision                           | Options                                                                                                    | Why it matters                                                 |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| How the runtime reaches a site     | A: publish `@toros/*` to npm. B: copy the runtime into each site. Mix: publish the tools, copy the runtime | A fresh site cannot install today, because nothing is on npm   |
+| The `@toros` npm scope             | Create the organization on npmjs.com                                                                       | Scope ownership cannot be checked without logging in           |
+| License                            | MIT, Apache-2.0, or other                                                                                  | There is no LICENSE file, so nobody may legally reuse the code |
+| Dependabot                         | Keep or turn off                                                                                           | Its commits show `dependabot[bot]` as an author                |
+| GitHub repo description and topics | Write them                                                                                                 | Both are empty today                                           |
 
 ## 3. Next up, in order
 
@@ -30,6 +29,8 @@ First real trial (an agent building a coffee roaster site from only the skill): 
 3. **Re-run the trial** with a real agent.
 4. **Distribution and first npm publish** (section 4).
 5. **Training sessions and the prompt compiler** (section 5).
+
+Taste, intake and quiet agents (the plan for brand-less prompts, house taste, auto-chosen scroll styles and agents that speak only at the end): `docs/plans/taste-and-intake.md`.
 
 ## 4. Publishing to npm
 
@@ -95,11 +96,7 @@ Recommended order: Level 1 first, then Level 2 with a hand-made or Mesh2Motion c
 
 The glass material and shader background are scaffolds. The palette waits on your design references. Do not describe effects as finished until then.
 
-## 9. Spectr
-
-Spectr appears in `PROJECT_PLAN.md` as the planned launch demo, in `TESTING.md` as the first golden task and the real-iPhone check, in `docs/BUILD_PLAN.md` as task T3.1, and in the README's "not done yet" list. It was in the original plan and nothing was ever built for it. If it is not the demo, replace it with Toros's own example (the coffee roaster site from the trial is a candidate) and remove the references.
-
-## 10. Other backlog
+## 9. Other backlog
 
 - Rules: `html/order-matches` and `brand/tokens-used` are not built.
 - `render/not-blank` counts the nav bar as page content, so its broken fixture passes only because the nav is just under the 5% threshold. It should measure the canvas alone.

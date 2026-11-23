@@ -84,7 +84,7 @@ These rules are built into the engine. Every feature has to follow them. **`chec
 - **Checker:** `toros check` loads the site in a real browser, scrolls it, clicks the menu, takes pictures and gives a score from 0 to 100 with a fix for every problem.
 - **MCP server:** tools to create a site, add a section, apply a brand, optimize assets **and check the site**.
 - **Skill:** a SKILL.md so agents know when to use us, and that they must run `check` before they say they are done.
-- **Demo:** the Spectr landing page rebuilt in 3D, with its check report.
+- **Demo:** one example site built from a brand file, with its check report.
 
 ### Scroll choreography (replaces camera modes)
 
@@ -169,7 +169,7 @@ toros/
     docs/          docs website
     playground/    live demos to try things
   examples/
-    spectr/        our first demo site
+    demo/          our first demo site
   fixtures/
     broken/        small sites that are broken on purpose, one problem each
   golden/
@@ -369,7 +369,7 @@ Stars don't matter for listing. Good demos bring stars.
 
 - One package per task.
 - Every task has a clear spec, tests and a "done means" line.
-  - Example: "Done means the glass hero renders, passes the screenshot test, stays under budget and the Spectr demo still scores 90 or more."
+  - Example: "Done means the glass hero renders, passes the screenshot test, stays under budget and the demo site still scores 90 or more."
 - Every new feature comes with the `check` rule that tests it and a broken fixture for that rule.
 - Run several Devin tasks at once.
 - Review everything Devin makes.
@@ -397,7 +397,7 @@ Fill this in together:
 | **Thu night** | Write the spec and APIs. Set up monorepo, CI and release pipeline. Write AGENTS.md, ARCHITECTURE.md and TESTING.md. **Pick budget numbers.**                                  |
 | **Fri**       | Core runtime with test mode, tokens to materials, HTML layer. **`check` skeleton: load, blank screen, console errors, budgets, report and score.**                            |
 | **Sat**       | Optimizer CLI, MCP server, skill, effects pack, mascot motion. **`check` scroll, menu, HTML layer, contrast, reduced motion and keyboard rules, plus their broken fixtures.** |
-| **Sun**       | Spectr demo, docs site, speed checks in CI. **Screenshot tests, golden tasks, Spectr scores 90 or more.**                                                                     |
+| **Sun**       | Demo site, docs site, speed checks in CI. **Screenshot tests, golden tasks, the demo scores 90 or more.**                                                                     |
 | **Mon**       | Polish. README with GIF and a sample check report. Publish to npm. List on MCP Registry and skills.sh.                                                                        |
 | **Tue**       | Launch posts.                                                                                                                                                                 |
 

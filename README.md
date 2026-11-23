@@ -27,7 +27,7 @@ Toros is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and other
 | Effects (`@toros/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                                                                                                                                                                             |
 | Mascot (`@toros/mascot`)            | Empty. Planned for V2.                                                                                                                                                                                                                                                                                                               |
 
-Not done yet: the `html/order-matches` rule, Linux screenshot baselines for the visual tests, the Spectr demo, golden agent tasks, and publishing to npm.
+Not done yet: the `html/order-matches` rule, Linux screenshot baselines for the visual tests, a demo site, golden agent tasks, and publishing to npm.
 
 Both examples (`examples/basic` and `examples/recipes`) score 100/100.
 
