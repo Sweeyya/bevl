@@ -11,11 +11,11 @@ export function projectRoot(env: NodeJS.ProcessEnv = process.env): string {
   return realpathSync(resolve(env[ROOT_ENV] ?? process.cwd()));
 }
 
-export function resolveInside(root: string, p: string): string {
+export function resolveInside(root: string, p: string, hint?: string): string {
   return resolveWithin(
     root,
     p,
-    `use a path inside the project, or set ${ROOT_ENV} to the folder you want to allow`,
+    hint ?? `use a path inside the project, or set ${ROOT_ENV} to the folder you want to allow`,
   );
 }
 
