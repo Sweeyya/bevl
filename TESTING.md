@@ -21,7 +21,7 @@ The big idea: **we test the sites we make the same way a picky user would.** Loa
 | 5   | Speed tests (Lighthouse CI + 3D budgets) | built demos                         | every PR                   |
 | 6   | Accessibility tests (axe + our own)      | inside `check`                      | every PR                   |
 | 7   | MCP golden tasks                         | `golden/tasks/` through Claude Code | nightly, before release    |
-| 8   | Human check on a real iPhone             | Spectr demo                         | daily                      |
+| 8   | Human check on a real iPhone             | The demo site                       | daily                      |
 
 ---
 
@@ -218,7 +218,7 @@ Load speed on a phone is tested with Lighthouse CI in `perf.yml` (§6), not insi
 {
   "runId": "2026-11-20T10-00-00Z-ab12",
   "tool": { "name": "toros", "version": "0.1.0" },
-  "project": "spectr",
+  "project": "demo",
   "seed": 1,
   "renderer": { "desktop": "ANGLE (Apple M2)", "phone": "ANGLE (Apple M2)" },
   "score": 93,
@@ -330,7 +330,7 @@ Rule: **every new check rule ships with its broken fixture in the same PR.**
 
 Five fixed prompts run through Claude Code with our MCP and skill, in a clean temp folder. Drafts:
 
-1. "Make a 3D landing page for Spectr using this DESIGN.md." (we give the file)
+1. "Make a 3D landing page for a coffee roaster using this DESIGN.md." (we give the file)
 2. "Make a 4-section portfolio site for a product designer using these design tokens." (we give the JSON)
 3. "Add a pricing section to this site." (we give a finished site)
 4. "Switch this site to this new brand kit." (we give a site and a new kit)
@@ -358,7 +358,7 @@ How to run Claude Code without a person in the loop: use its non-interactive pri
 
 ## 10. Human check (daily, real iPhone)
 
-Open the Spectr demo on a real iPhone, then answer each item yes or no in the PR or the daily note:
+Open the demo site on a real iPhone, then answer each item yes or no in the PR or the daily note:
 
 1. It loads in under 3 seconds on mobile data.
 2. Scrolling feels smooth. No stutter, no jumps.

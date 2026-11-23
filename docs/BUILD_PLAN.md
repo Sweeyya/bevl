@@ -69,7 +69,7 @@ Every task has an id, a lane, what it depends on, and a "done means" line. **A t
 
 | Id   | Lane | Task                                                                 | Depends on | Done means                                                          |
 | ---- | ---- | -------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------- |
-| T3.1 | D    | Spectr demo in `examples/spectr`                                     | T2.5, T2.6 | Scores 90 or more on desktop and phone; passes the iPhone checklist |
+| T3.1 | D    | Demo site in `examples/demo`                                         | T2.5, T2.6 | Scores 90 or more on desktop and phone; passes the iPhone checklist |
 | T3.2 | D    | `visual.yml`: screenshot tests in the pinned Playwright Docker image | T1.2, T3.1 | Baselines committed; CI compares them                               |
 | T3.3 | D    | `perf.yml`: Lighthouse CI phone profile + 3D budgets                 | T3.1       | CI fails a PR that adds a heavy model                               |
 | T3.4 | D    | Golden tasks (5 prompts) + `golden.yml` nightly                      | T2.8       | All 5 score 90 or more locally                                      |

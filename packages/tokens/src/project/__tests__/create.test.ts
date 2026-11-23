@@ -16,7 +16,7 @@ afterAll(() => {
 
 describe("validateSiteName", () => {
   it("accepts ordinary names", () => {
-    for (const n of ["my-site", "Spectr 3D", "a", "site_2"]) expect(validateSiteName(n)).toBe(n);
+    for (const n of ["my-site", "Coffee 3D", "a", "site_2"]) expect(validateSiteName(n)).toBe(n);
   });
   it("rejects path tricks, markup and empty names", () => {
     for (const n of [
@@ -59,8 +59,8 @@ describe("createSite", () => {
 describe("createSite scaffold", () => {
   it("wires brand tokens, the a11y overlay and a package.json", async () => {
     const dir = tmp();
-    await createSite({ name: "Spectr 3D", dir });
-    const site = join(dir, "Spectr 3D");
+    await createSite({ name: "Coffee 3D", dir });
+    const site = join(dir, "Coffee 3D");
     const app = readFileSync(join(site, "src", "App.tsx"), "utf8");
     expect(app).toContain('import brand from "./brand.tokens.json"');
     expect(app).toContain("brand={brand}");
@@ -68,7 +68,7 @@ describe("createSite scaffold", () => {
     expect(JSON.parse(readFileSync(join(site, "src", "brand.tokens.json"), "utf8"))).toHaveProperty(
       "colors.primary",
     );
-    expect(JSON.parse(readFileSync(join(site, "package.json"), "utf8")).name).toBe("spectr-3d");
+    expect(JSON.parse(readFileSync(join(site, "package.json"), "utf8")).name).toBe("coffee-3d");
     expect(readFileSync(join(site, "index.html"), "utf8")).toContain('name="description"');
   });
   it("refuses to overwrite an existing site", async () => {
