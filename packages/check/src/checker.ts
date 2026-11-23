@@ -66,6 +66,7 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
 
   const allRuleIds = activeRules.map((r) => r.id);
   const allFindings: import("./report.js").Finding[] = [];
+  const timings: import("./report.js").RuleTiming[] = [];
   const renderers: { desktop?: string; phone?: string } = {};
 
   const browser = await chromium.launch({ headless: true }).catch((err) => {
@@ -137,6 +138,7 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
               errors;
           }, consoleErrors)
           .catch(() => undefined);
+        const started = performance.now();
         const findings = await rule.run(ruleCtx).catch((err) => [
           {
             rule: rule.id,
@@ -147,6 +149,11 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
           },
         ]);
         allFindings.push(...findings);
+        timings.push({
+          rule: rule.id,
+          viewport: viewport.name,
+          ms: Math.round(performance.now() - started),
+        });
       }
 
       await context.close();
@@ -168,6 +175,7 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
     passed,
     groups,
     findings: allFindings,
+    timings,
     artifacts: [] as string[],
   };
   const report: Report =

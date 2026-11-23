@@ -112,7 +112,15 @@ function BridgeInstaller({
 
   // Wire live getters on every render so they always reflect current state
   const state = bridgeStateRef.current;
-  state.advance = (ms) => advance(ms / 1000);
+  state.advance = (ms, render = true) => {
+    const draw = gl.render;
+    if (!render) gl.render = (() => {}) as typeof gl.render;
+    try {
+      advance(ms / 1000);
+    } finally {
+      gl.render = draw;
+    }
+  };
   state.getCamera = (): CameraState => ({
     position: { x: camera.position.x, y: camera.position.y, z: camera.position.z },
     quaternion: {
