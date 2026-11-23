@@ -39,10 +39,29 @@ interface TorosSiteProps {
   overlay?: ReactNode;
   /** Replaces the built-in static page shown when WebGL is unavailable. */
   fallback?: ReactNode;
+  /**
+   * Put section text on a brand surface panel so it stays readable over the 3D scene. On by
+   * default when `brand` is given. Style it with the CSS variables --toros-panel-bg, -text,
+   * -border, -radius, -padding, -shadow, -width and -align (flex-start, center, flex-end).
+   */
+  panel?: boolean;
 }
 
 const BRAND_HEADING_CSS =
   "[data-toros-scroller] :is(h1,h2,h3,h4,h5,h6){font-family:var(--toros-font-heading)}";
+
+function panelVars({ colors, radiusBase, spacingBase }: BrandTokens): Record<string, string> {
+  return {
+    "--toros-panel-bg": `color-mix(in srgb, ${colors.surface} 94%, transparent)`,
+    "--toros-panel-text": colors.text,
+    "--toros-panel-border": `2px solid ${colors.accent}`,
+    "--toros-panel-radius": `${radiusBase * 2}px`,
+    "--toros-panel-padding": `${spacingBase * 3}px ${spacingBase * 4}px`,
+    "--toros-panel-shadow": "0 12px 40px rgba(0,0,0,0.35)",
+    "--toros-panel-width": "32rem",
+    "--toros-panel-align": "center",
+  };
+}
 
 const IDENTITY_QUAT: Quat = { x: 0, y: 0, z: 0, w: 1 };
 /** The config's choreography if valid, otherwise the default (errors go to console.error). */
@@ -188,6 +207,7 @@ export function TorosSite({
   children,
   overlay,
   fallback,
+  panel = true,
 }: TorosSiteProps): JSX.Element {
   const [webgl] = useState(hasWebGL);
   const { testMode } = parseTestParams(config);
@@ -245,6 +265,7 @@ export function TorosSite({
         "--toros-text": tokens.colors.text,
         "--toros-font-heading": fontStack(tokens.fonts.heading),
         "--toros-font-body": fontStack(tokens.fonts.body),
+        ...(panel ? panelVars(tokens) : {}),
       } as CSSProperties)
     : {};
 

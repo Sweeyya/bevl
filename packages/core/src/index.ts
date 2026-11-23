@@ -74,12 +74,15 @@ export type {
   Track,
   Vec3Tuple,
 } from "./choreography/types.js";
+export { BackdropLights } from "./components/BackdropLights.js";
 export { BrandLights } from "./components/BrandLights.js";
 export { BrandMaterial } from "./components/BrandMaterial.js";
+export { ScreenFrame } from "./components/ScreenFrame.js";
 export { ScrollCamera } from "./components/ScrollCamera.js";
 export { Section } from "./components/Section.js";
 // React components
 export { TorosSite } from "./components/TorosSite.js";
+export { World } from "./components/World.js";
 // Context
 export type { TorosContextValue } from "./context.js";
 export { TorosContext } from "./context.js";
@@ -94,3 +97,7 @@ export type { Recipe, RecipeName } from "./recipes/index.js";
 export { getRecipe, recipeChoreography, recipeNames, recipes } from "./recipes/index.js";
 export type { RecipeInput, RecipeKind, RecipeRanking } from "./recipes/recommend.js";
 export { recommendRecipes } from "./recipes/recommend.js";
+export { useWorldPlan } from "./world/context.js";
+// Set dressing helpers (pure)
+export type { Mood, WorldKind, WorldPlan } from "./world/plan.js";
+export { moodOf, planWorld } from "./world/plan.js";
