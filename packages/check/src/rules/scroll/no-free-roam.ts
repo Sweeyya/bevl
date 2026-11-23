@@ -7,7 +7,6 @@ import {
   requireCameraPose,
   scrollTo,
   settleCamera,
-  step,
   waitReady,
 } from "../../drive.js";
 import type { Rule } from "../../rule.js";
