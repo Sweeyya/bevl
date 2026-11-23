@@ -48,7 +48,7 @@ const DEFAULT_HTML = (name: string) => `<!doctype html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(name)}</title>
-    <meta name="description" content="${escapeHtml(name)} — built with Bevl" />
+    <meta name="description" content="${escapeHtml(name)} — built with Toros" />
     <style>* { margin:0; padding:0; box-sizing:border-box; } html,body,#root { height:100%; }</style>
   </head>
   <body>
@@ -67,17 +67,17 @@ if (!root) throw new Error("No #root element");
 createRoot(root).render(<StrictMode><App /></StrictMode>);
 `;
 
-const DEFAULT_APP = `import { BevlA11y } from "@bevl/a11y";
-import { BevlSite, Section } from "@bevl/core";
+const DEFAULT_APP = `import { TorosA11y } from "@toros/a11y";
+import { TorosSite, Section } from "@toros/core";
 import brand from "./brand.tokens.json";
-import config from "../bevl.json";
+import config from "../toros.json";
 
 export default function App() {
   return (
-    <BevlSite
+    <TorosSite
       config={config}
       brand={brand}
-      overlay={<BevlA11y config={{ sections: config.sections }} />}
+      overlay={<TorosA11y config={{ sections: config.sections }} />}
     >
       <Section id="hero" title="Hero">
         <mesh>
@@ -99,7 +99,7 @@ export default function App() {
       </Section>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1} />
-    </BevlSite>
+    </TorosSite>
   );
 }
 `;
@@ -143,8 +143,8 @@ const DEFAULT_PACKAGE = (name: string) =>
       type: "module",
       scripts: { dev: "vite", build: "vite build", preview: "vite preview" },
       dependencies: {
-        "@bevl/a11y": "0.1.0",
-        "@bevl/core": "0.1.0",
+        "@toros/a11y": "0.1.0",
+        "@toros/core": "0.1.0",
         react: "18.3.1",
         "react-dom": "18.3.1",
         three: "0.169.0",
@@ -166,11 +166,11 @@ export async function createSite(opts: CreateOptions): Promise<void> {
   const parent = resolve(opts.dir);
   const base = resolve(parent, name);
   if (!base.startsWith(parent + sep)) throw new Error(`Site folder would be outside ${parent}.`);
-  if (existsSync(join(base, "bevl.json"))) {
-    throw new Error(`A Bevl site already exists at ${base}. Fix: choose a different name.`);
+  if (existsSync(join(base, "toros.json"))) {
+    throw new Error(`A Toros site already exists at ${base}. Fix: choose a different name.`);
   }
   await mkdir(join(base, "src"), { recursive: true });
-  await writeFile(join(base, "bevl.json"), DEFAULT_CONFIG(name));
+  await writeFile(join(base, "toros.json"), DEFAULT_CONFIG(name));
   await writeFile(join(base, "index.html"), DEFAULT_HTML(name));
   await writeFile(join(base, "vite.config.ts"), DEFAULT_VITE_CONFIG);
   await writeFile(join(base, "package.json"), `${DEFAULT_PACKAGE(name)}\n`);

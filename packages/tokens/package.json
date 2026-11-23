@@ -1,5 +1,5 @@
 {
-  "name": "@bevl/tokens",
+  "name": "@toros/tokens",
   "version": "0.1.0",
   "description": "Reads design systems. Turns tokens into 3D materials and lights.",
   "type": "module",

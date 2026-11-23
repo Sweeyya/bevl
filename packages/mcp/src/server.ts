@@ -13,7 +13,7 @@ import {
 } from "./tools.js";
 
 const server = new McpServer({
-  name: "bevl",
+  name: "toros",
   version: VERSION,
 });
 
@@ -21,7 +21,7 @@ const text = (t: string) => ({ content: [{ type: "text" as const, text: t }] });
 
 server.tool(
   "check_site",
-  "Open a local dev server URL (localhost by default) in a headless browser, run the Bevl checks, and return a scored report (0-100). Writes a report file under <projectDir>/.bevl/reports.",
+  "Open a local dev server URL (localhost by default) in a headless browser, run the Toros checks, and return a scored report (0-100). Writes a report file under <projectDir>/.toros/reports.",
   {
     url: z.string().max(2048).describe("URL of the running site, e.g. http://localhost:3000"),
     projectDir: z
@@ -84,7 +84,7 @@ const projectDir = z
 
 server.tool(
   "create_site",
-  "Scaffold a new Bevl site in <dir>/<name> (dir defaults to the project root). Writes bevl.json, package.json, tsconfig.json, vite.config.ts, index.html and src/{main,App}.tsx plus src/brand.tokens.json (default tokens). Refuses to overwrite an existing site; never writes outside the project root.",
+  "Scaffold a new Toros site in <dir>/<name> (dir defaults to the project root). Writes toros.json, package.json, tsconfig.json, vite.config.ts, index.html and src/{main,App}.tsx plus src/brand.tokens.json (default tokens). Refuses to overwrite an existing site; never writes outside the project root.",
   {
     name: z
       .string()
@@ -101,7 +101,7 @@ server.tool(
 
 server.tool(
   "add_section",
-  "Add a section to a Bevl project: appends it to bevl.json (and a beat to its choreography, rescaling existing beats) and inserts a placeholder <Section> before <ambientLight in src/App.tsx when that line exists. Refuses duplicate ids. Edits only bevl.json and src/App.tsx inside the project.",
+  "Add a section to a Toros project: appends it to toros.json (and a beat to its choreography, rescaling existing beats) and inserts a placeholder <Section> before <ambientLight in src/App.tsx when that line exists. Refuses duplicate ids. Edits only toros.json and src/App.tsx inside the project.",
   {
     id: z
       .string()
@@ -116,7 +116,7 @@ server.tool(
 
 server.tool(
   "apply_brand",
-  'Parse a DESIGN.md or token .json file inside the project, write the tokens to <projectDir>/src/brand.tokens.json and set "brand" in bevl.json to the file\'s relative path. Edits only those two files.',
+  'Parse a DESIGN.md or token .json file inside the project, write the tokens to <projectDir>/src/brand.tokens.json and set "brand" in toros.json to the file\'s relative path. Edits only those two files.',
   {
     file: z
       .string()

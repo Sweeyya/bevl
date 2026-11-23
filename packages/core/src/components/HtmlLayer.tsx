@@ -1,18 +1,18 @@
 import { useFrame } from "@react-three/fiber";
 import type { ReactNode, RefObject } from "react";
 import { useContext, useLayoutEffect, useRef, useState } from "react";
-import { BevlContext } from "../context.js";
+import { TorosContext } from "../context.js";
 import type { SectionConfig } from "../contract.js";
 import { sectionStyle } from "../html/visibility.js";
 
 const HEADING = "h1,h2,h3,h4,h5,h6";
 
 const CSS = `
-[data-bevl-html] [data-bevl-section]{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:8vh 8vw;max-width:100%;font-family:var(--bevl-font-body,system-ui,sans-serif);color:var(--bevl-text,#fff);pointer-events:none;outline:none}
-[data-bevl-html] [data-bevl-section]>div{max-width:40rem}
-[data-bevl-html] [data-bevl-active="true"] :is(a,button,input,select,textarea,summary){pointer-events:auto}
-[data-bevl-html] [data-bevl-section]:focus-within{opacity:1!important}
-[data-bevl-html] [data-bevl-sr]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[data-toros-html] [data-toros-section]{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:8vh 8vw;max-width:100%;font-family:var(--toros-font-body,system-ui,sans-serif);color:var(--toros-text,#fff);pointer-events:none;outline:none}
+[data-toros-html] [data-toros-section]>div{max-width:40rem}
+[data-toros-html] [data-toros-active="true"] :is(a,button,input,select,textarea,summary){pointer-events:auto}
+[data-toros-html] [data-toros-section]:focus-within{opacity:1!important}
+[data-toros-html] [data-toros-sr]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 `;
 
 /** Writes visibility straight to the DOM (no React state per frame). */
@@ -23,17 +23,17 @@ export function applyHtmlLayer(
   reduced: boolean,
 ): void {
   if (!root) return;
-  for (const el of root.querySelectorAll<HTMLElement>("[data-bevl-section]")) {
-    const style = sectionStyle(progress, beats, Number(el.dataset.bevlIndex), reduced);
+  for (const el of root.querySelectorAll<HTMLElement>("[data-toros-section]")) {
+    const style = sectionStyle(progress, beats, Number(el.dataset.torosIndex), reduced);
     el.style.opacity = String(style.opacity);
     el.style.transform = reduced ? "" : `translateY(${style.translateY}px)`;
-    el.dataset.bevlActive = String(style.active);
+    el.dataset.torosActive = String(style.active);
   }
 }
 
 /** Lives inside the Canvas so the frame loop keeps the DOM layer in step with progress. */
 export function HtmlLayerDriver({ layer }: { layer: RefObject<HTMLElement> }): null {
-  const ctx = useContext(BevlContext);
+  const ctx = useContext(TorosContext);
   useFrame(() => {
     if (ctx)
       applyHtmlLayer(
@@ -66,16 +66,16 @@ function SectionHtml({
   return (
     <section
       id={`section-${section.id}`}
-      data-bevl-section={section.id}
-      data-bevl-title={section.title}
-      data-bevl-index={index}
+      data-toros-section={section.id}
+      data-toros-title={section.title}
+      data-toros-index={index}
       aria-labelledby={ownHeading ? undefined : headingId}
       aria-label={ownHeading ? section.title : undefined}
       tabIndex={-1}
       onFocus={() => onFocusSection(index)}
     >
       {!ownHeading && (
-        <h2 id={headingId} data-bevl-sr>
+        <h2 id={headingId} data-toros-sr>
           {section.title}
         </h2>
       )}
@@ -91,7 +91,7 @@ interface HtmlLayerProps {
 
 /** One `<main>` with a landmark `<section>` per config section; all text stays in the DOM in reading order. */
 export function HtmlLayer({ layerRef, content }: HtmlLayerProps): JSX.Element | null {
-  const ctx = useContext(BevlContext);
+  const ctx = useContext(TorosContext);
   useLayoutEffect(() => {
     if (ctx)
       applyHtmlLayer(
@@ -105,7 +105,7 @@ export function HtmlLayer({ layerRef, content }: HtmlLayerProps): JSX.Element | 
   return (
     <div
       ref={layerRef}
-      data-bevl-html
+      data-toros-html
       style={{ position: "fixed", inset: 0, zIndex: 2, pointerEvents: "none" }}
     >
       <style>{CSS}</style>
@@ -117,8 +117,8 @@ export function HtmlLayer({ layerRef, content }: HtmlLayerProps): JSX.Element | 
             index={i}
             content={content.get(s.id)}
             onFocusSection={(index) => {
-              const el = layerRef.current?.querySelector(`[data-bevl-index="${index}"]`);
-              if ((el as HTMLElement | null)?.dataset.bevlActive !== "true")
+              const el = layerRef.current?.querySelector(`[data-toros-index="${index}"]`);
+              if ((el as HTMLElement | null)?.dataset.torosActive !== "true")
                 ctx.goToBeat(index, ctx.reducedMotion);
             }}
           />

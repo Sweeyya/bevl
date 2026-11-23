@@ -1,6 +1,6 @@
-# Working in the Bevl repo
+# Working in the Toros repo
 
-Bevl turns any brand into a fast, accessible 3D website, used from Claude, ChatGPT, Cursor or Lovable through an MCP. Every site it makes comes tested by `bevl check`.
+Toros turns any brand into a fast, accessible 3D website, used from Claude, ChatGPT, Cursor or Lovable through an MCP. Every site it makes comes tested by `toros check`.
 
 Read these first, in order:
 

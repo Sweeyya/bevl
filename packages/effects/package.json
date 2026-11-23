@@ -1,5 +1,5 @@
 {
-  "name": "@bevl/effects",
+  "name": "@toros/effects",
   "version": "0.1.0",
   "description": "Glass, shader backgrounds and other visual effects.",
   "type": "module",
@@ -21,7 +21,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@bevl/core": "workspace:*"
+    "@toros/core": "workspace:*"
   },
   "devDependencies": {
     "@react-three/fiber": "8.18.0",

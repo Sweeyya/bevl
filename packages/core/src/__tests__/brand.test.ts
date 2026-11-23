@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { BoxGeometry, Mesh, MeshStandardMaterial, Scene } from "three";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_BRAND, fontStack, resolveBrand, useBrand } from "../brand.js";
-import { BevlContext, type BevlContextValue } from "../context.js";
+import { TorosContext, type TorosContextValue } from "../context.js";
 import { collectMaterials } from "../materials.js";
 
 describe("resolveBrand", () => {
@@ -39,7 +39,7 @@ function Probe(): null {
 }
 
 describe("useBrand", () => {
-  it("falls back to defaults outside BevlSite", () => {
+  it("falls back to defaults outside TorosSite", () => {
     renderToStaticMarkup(createElement(Probe));
     expect(probed).toBe(DEFAULT_BRAND.colors.primary);
   });
@@ -50,8 +50,8 @@ describe("useBrand", () => {
     };
     renderToStaticMarkup(
       createElement(
-        BevlContext.Provider,
-        { value: value as BevlContextValue },
+        TorosContext.Provider,
+        { value: value as TorosContextValue },
         createElement(Probe),
       ),
     );

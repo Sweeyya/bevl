@@ -25,7 +25,7 @@ let root = "";
 let outside = "";
 
 beforeAll(() => {
-  base = realpathSync(mkdtempSync(join(tmpdir(), "bevl-guard-")));
+  base = realpathSync(mkdtempSync(join(tmpdir(), "toros-guard-")));
   root = join(base, "project");
   outside = join(base, "outside");
   mkdirSync(root);
@@ -88,7 +88,7 @@ describe("assertSafeUrl", () => {
     }
   });
   it("always blocks cloud metadata, even with the remote opt-in", () => {
-    const env = { BEVL_ALLOW_REMOTE: "1" };
+    const env = { TOROS_ALLOW_REMOTE: "1" };
     for (const u of [
       "http://169.254.169.254/latest/meta-data/",
       "http://metadata.google.internal/",
@@ -104,7 +104,7 @@ describe("assertSafeUrl", () => {
 });
 
 describe("tool handlers refuse unsafe input before doing any work", () => {
-  const env = () => ({ BEVL_PROJECT_ROOT: root });
+  const env = () => ({ TOROS_PROJECT_ROOT: root });
   it("check_site rejects bad URLs and project dirs outside the root", async () => {
     await expect(checkSite({ url: "file:///etc/passwd" }, env())).rejects.toThrow(/scheme/);
     await expect(checkSite({ url: "http://169.254.169.254/" }, env())).rejects.toThrow(/blocked/);
@@ -137,7 +137,7 @@ describe("tool handlers refuse unsafe input before doing any work", () => {
       await expect(createSiteTool({ name }, env())).rejects.toThrow(/Invalid site name/);
     }
     await createSiteTool({ name: "made", dir: "sites" }, env());
-    expect(existsSync(join(root, "sites", "made", "bevl.json"))).toBe(true);
+    expect(existsSync(join(root, "sites", "made", "toros.json"))).toBe(true);
     await expect(createSiteTool({ name: "made", dir: "sites" }, env())).rejects.toThrow(
       /already exists/,
     );
@@ -163,7 +163,7 @@ describe("tool handlers refuse unsafe input before doing any work", () => {
       applyBrandTool({ file: "link/secret.json", projectDir: "p" }, env()),
     ).rejects.toThrow(/outside/);
     await expect(
-      applyBrandTool({ file: "p/bevl.json", projectDir: "p" }, env()),
+      applyBrandTool({ file: "p/toros.json", projectDir: "p" }, env()),
     ).resolves.toContain("brand.tokens.json");
     await expect(applyBrandTool({ file: "DESIGN.md", projectDir: "p" }, env())).rejects.toThrow(
       /outside the project root/,

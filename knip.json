@@ -40,5 +40,5 @@
   "ignore": ["examples/**", "fixtures/**"],
   "ignoreExportsUsedInFile": true,
   "ignoreBinaries": [],
-  "ignoreDependencies": ["@bevl/core", "@bevl/tokens", "@react-three/drei"]
+  "ignoreDependencies": ["@toros/core", "@toros/tokens", "@react-three/drei"]
 }

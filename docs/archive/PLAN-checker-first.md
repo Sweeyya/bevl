@@ -1,16 +1,16 @@
-# Bevl — Full Project Plan
+# Toros — Full Project Plan
 
-Bevl is a framework that lets AI coding agents (Claude Code, Codex, Cursor, …) build **3D interactive websites**, then **check them and play through them automatically**, and get a **score**.
+Toros is a framework that lets AI coding agents (Claude Code, Codex, Cursor, …) build **3D interactive websites**, then **check them and play through them automatically**, and get a **score**.
 
 Think "HyperFrames, but for interactive 3D sites instead of videos":
 
 - HyperFrames: write HTML → seek a paused timeline frame by frame → identical video every time → checkable.
-- Bevl: write a scene with the Bevl runtime → run it on a controlled clock with recorded input → identical behaviour every time → checkable, playable, scorable.
+- Toros: write a scene with the Toros runtime → run it on a controlled clock with recorded input → identical behaviour every time → checkable, playable, scorable.
 
 The same score serves two audiences:
 
 1. **People building sites** — the agent finds and fixes broken interactions, blank canvases, slow scenes and off-style colours before the person sees them.
-2. **AI training (the startup)** — the score is a verifiable reward, so a Bevl task + its hidden play-throughs is an RL environment for agents (and later, multi-agent RL with builder / artist / critic roles).
+2. **AI training (the startup)** — the score is a verifiable reward, so a Toros task + its hidden play-throughs is an RL environment for agents (and later, multi-agent RL with builder / artist / critic roles).
 
 This file is the map of the whole project. The detailed build spec for the first step is `docs/STEP1_SPEC.md`. How an agent should work in this repo is in `AGENTS.md`.
 
@@ -18,7 +18,7 @@ This file is the map of the whole project. The detailed build spec for the first
 
 ## 1. The one idea everything rests on: determinism
 
-A Bevl scene must behave **exactly the same** on every run, given the same seed and the same input.
+A Toros scene must behave **exactly the same** on every run, given the same seed and the same input.
 
 - The runtime owns the clock. In `test` mode time only moves when the engine calls `step(ms)`.
 - Randomness comes only from a seeded RNG.
@@ -29,43 +29,43 @@ If this holds, `check`, `snapshot` and `play` give the same results every time, 
 
 ---
 
-## 2. Full component map (HyperFrames → Bevl)
+## 2. Full component map (HyperFrames → Toros)
 
-| #   | HyperFrames part                                                     | Bevl equivalent                                                                                                                                                                                                       | Step                     |
-| --- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| 1   | Composition format + 12-rule contract                                | **Bevl project format + contract** (`bevl.json`, `scene.js`, `index.html`, declared objects, interactions, state, budgets)                                                                                            | 1                        |
-| 2   | Engine / producer (seekable page → frames)                           | **`@bevl/runtime`** (browser: deterministic clock, RNG, object registry, interactions, state, test bridge) + **`@bevl/engine`** (Node: Playwright drives the bridge, input, screenshots, metrics)                     | 1                        |
-| 3   | CLI (`init`, `check`, `snapshot`, `preview`, `render`, …)            | **`bevl` CLI**: `init`, `lint`, `check`, `snapshot`, `play`, `preview`, `doctor`, `info`                                                                                                                              | 1                        |
-| 4   | `@hyperframes/lint`                                                  | **`@bevl/lint`** — static contract rules                                                                                                                                                                              | 1                        |
-| 5   | `check` (lint, runtime, layout, contrast)                            | **`@bevl/checks`** — load, render, motion, budgets, interactions, layout, a11y, style                                                                                                                                 | 1                        |
-| 6   | `snapshot`                                                           | `bevl snapshot` — PNGs at times, scroll positions, named cameras, viewports                                                                                                                                           | 1                        |
-| 7   | — (new)                                                              | **`bevl play`** — scripted play-throughs + seeded explore bot                                                                                                                                                         | 1                        |
-| 8   | — (new)                                                              | **Score** — 0–100 with module breakdown, hard gates, deterministic                                                                                                                                                    | 1                        |
-| 9   | Frame presets (`FRAME.md` + showcase)                                | **Style packs** (`STYLE.md` + `style.json` + `showcase/`)                                                                                                                                                             | 1 (3 seed styles)        |
-| 10  | Skills (9)                                                           | **Skills**: `bevl`, `bevl-cli` (step 1); `bevl-registry`, `asset-use`, `reverse-any-site`, `style-sampling`, `figma-to-bevl`, `r3f-to-bevl` (later)                                                                   | 1 → 2                    |
-| 11  | MCP server + webMCP                                                  | **`@bevl/mcp`** — exposes `init`, `lint`, `check`, `play`, `snapshot`, `info` as MCP tools                                                                                                                            | 1 (minimal) → 2          |
-| 12  | Registry: 210 blocks + 239 components + `add`/`catalog`              | **Registry**: 3D blocks (hero scenes, product viewer, globe, particle field, scroll camera, portal, gallery room) and components (orbit controls, loaders, overlay UI, shaders, post-fx) + `bevl add`, `bevl catalog` | 1 (≈20 seeds) → 2 (100+) |
-| 13  | `capture <url>`                                                      | `bevl capture <url>` — turn a live site into a starting project (palette, fonts, copy, layout)                                                                                                                        | 2                        |
-| 14  | `history` / `undo`                                                   | `bevl history` — every write recorded, undoable, "what did the person change"                                                                                                                                         | 2                        |
-| 15  | `media-use`                                                          | **`asset-use`** — get 3D models (Poly Haven, Sketchfab, generators), textures, HDRIs, sound; optimise with glTF tooling                                                                                               | 2                        |
-| 16  | `reverse-any-video`                                                  | **`reverse-any-site`** — rebuild a 3D site, compared snapshot by snapshot                                                                                                                                             | 2                        |
-| 17  | `style-sampling`                                                     | **`style-sampling`** — new site in a proven style                                                                                                                                                                     | 2                        |
-| 18  | Studio (desktop app + server)                                        | **Bevl Studio** — scene tree, move objects, edit camera paths and plays; agent sees the selection                                                                                                                     | 3                        |
-| 19  | Player web component                                                 | **`<bevl-player>`** — embed a Bevl scene in any page                                                                                                                                                                  | 3                        |
-| 20  | SDK (headless editing)                                               | **`@bevl/sdk`** — programmatic scene edits                                                                                                                                                                            | 3                        |
-| 21  | Share / publish                                                      | `bevl build`, `bevl share` — static build and a hosted link                                                                                                                                                           | 2                        |
-| 22  | Cloud render (Lambda, Cloud Run, paid cloud)                         | **Cloud runs** — many checks/plays in parallel; doubles as the **RL environment runner**                                                                                                                              | 3                        |
-| 23  | Docs site + catalog                                                  | Docs site + public catalog with live demos                                                                                                                                                                            | 2                        |
-| 24  | Distribution (Claude plugin marketplace, `npx skills`, Codex plugin) | Same channels                                                                                                                                                                                                         | 1 (`npx`) → 2 (plugins)  |
-| 25  | Telemetry + feedback                                                 | Opt-in telemetry + `bevl feedback`; with consent, failing cases become new training tasks                                                                                                                             | 3                        |
-| 26  | — (new, startup)                                                     | **RL environment package**: task sets, hidden plays, reward, adapters for agent-RL libraries, multi-agent roles                                                                                                       | 3 → 4                    |
+| #   | HyperFrames part                                                     | Toros equivalent                                                                                                                                                                                                        | Step                     |
+| --- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| 1   | Composition format + 12-rule contract                                | **Toros project format + contract** (`toros.json`, `scene.js`, `index.html`, declared objects, interactions, state, budgets)                                                                                            | 1                        |
+| 2   | Engine / producer (seekable page → frames)                           | **`@toros/runtime`** (browser: deterministic clock, RNG, object registry, interactions, state, test bridge) + **`@toros/engine`** (Node: Playwright drives the bridge, input, screenshots, metrics)                     | 1                        |
+| 3   | CLI (`init`, `check`, `snapshot`, `preview`, `render`, …)            | **`toros` CLI**: `init`, `lint`, `check`, `snapshot`, `play`, `preview`, `doctor`, `info`                                                                                                                               | 1                        |
+| 4   | `@hyperframes/lint`                                                  | **`@toros/lint`** — static contract rules                                                                                                                                                                               | 1                        |
+| 5   | `check` (lint, runtime, layout, contrast)                            | **`@toros/checks`** — load, render, motion, budgets, interactions, layout, a11y, style                                                                                                                                  | 1                        |
+| 6   | `snapshot`                                                           | `toros snapshot` — PNGs at times, scroll positions, named cameras, viewports                                                                                                                                            | 1                        |
+| 7   | — (new)                                                              | **`toros play`** — scripted play-throughs + seeded explore bot                                                                                                                                                          | 1                        |
+| 8   | — (new)                                                              | **Score** — 0–100 with module breakdown, hard gates, deterministic                                                                                                                                                      | 1                        |
+| 9   | Frame presets (`FRAME.md` + showcase)                                | **Style packs** (`STYLE.md` + `style.json` + `showcase/`)                                                                                                                                                               | 1 (3 seed styles)        |
+| 10  | Skills (9)                                                           | **Skills**: `toros`, `toros-cli` (step 1); `toros-registry`, `asset-use`, `reverse-any-site`, `style-sampling`, `figma-to-toros`, `r3f-to-toros` (later)                                                                | 1 → 2                    |
+| 11  | MCP server + webMCP                                                  | **`@toros/mcp`** — exposes `init`, `lint`, `check`, `play`, `snapshot`, `info` as MCP tools                                                                                                                             | 1 (minimal) → 2          |
+| 12  | Registry: 210 blocks + 239 components + `add`/`catalog`              | **Registry**: 3D blocks (hero scenes, product viewer, globe, particle field, scroll camera, portal, gallery room) and components (orbit controls, loaders, overlay UI, shaders, post-fx) + `toros add`, `toros catalog` | 1 (≈20 seeds) → 2 (100+) |
+| 13  | `capture <url>`                                                      | `toros capture <url>` — turn a live site into a starting project (palette, fonts, copy, layout)                                                                                                                         | 2                        |
+| 14  | `history` / `undo`                                                   | `toros history` — every write recorded, undoable, "what did the person change"                                                                                                                                          | 2                        |
+| 15  | `media-use`                                                          | **`asset-use`** — get 3D models (Poly Haven, Sketchfab, generators), textures, HDRIs, sound; optimise with glTF tooling                                                                                                 | 2                        |
+| 16  | `reverse-any-video`                                                  | **`reverse-any-site`** — rebuild a 3D site, compared snapshot by snapshot                                                                                                                                               | 2                        |
+| 17  | `style-sampling`                                                     | **`style-sampling`** — new site in a proven style                                                                                                                                                                       | 2                        |
+| 18  | Studio (desktop app + server)                                        | **Toros Studio** — scene tree, move objects, edit camera paths and plays; agent sees the selection                                                                                                                      | 3                        |
+| 19  | Player web component                                                 | **`<toros-player>`** — embed a Toros scene in any page                                                                                                                                                                  | 3                        |
+| 20  | SDK (headless editing)                                               | **`@toros/sdk`** — programmatic scene edits                                                                                                                                                                             | 3                        |
+| 21  | Share / publish                                                      | `toros build`, `toros share` — static build and a hosted link                                                                                                                                                           | 2                        |
+| 22  | Cloud render (Lambda, Cloud Run, paid cloud)                         | **Cloud runs** — many checks/plays in parallel; doubles as the **RL environment runner**                                                                                                                                | 3                        |
+| 23  | Docs site + catalog                                                  | Docs site + public catalog with live demos                                                                                                                                                                              | 2                        |
+| 24  | Distribution (Claude plugin marketplace, `npx skills`, Codex plugin) | Same channels                                                                                                                                                                                                           | 1 (`npx`) → 2 (plugins)  |
+| 25  | Telemetry + feedback                                                 | Opt-in telemetry + `toros feedback`; with consent, failing cases become new training tasks                                                                                                                              | 3                        |
+| 26  | — (new, startup)                                                     | **RL environment package**: task sets, hidden plays, reward, adapters for agent-RL libraries, multi-agent roles                                                                                                         | 3 → 4                    |
 
 ---
 
 ## 3. Repository layout (target)
 
 ```
-bevl/
+toros/
   AGENTS.md                 how agents work in this repo
   CLAUDE.md                 imports AGENTS.md
   README.md
@@ -73,13 +73,13 @@ bevl/
   pnpm-workspace.yaml
   tsconfig.base.json
   packages/
-    runtime/                @bevl/runtime   (browser)
-    engine/                 @bevl/engine    (Node, Playwright)
-    lint/                   @bevl/lint
-    checks/                 @bevl/checks    (checks + scoring)
-    cli/                    bevl            (the CLI binary)
-    mcp/                    @bevl/mcp
-    schema/                 @bevl/schema    (JSON schemas + TS types for bevl.json, plays, reports, style.json)
+    runtime/                @toros/runtime   (browser)
+    engine/                 @toros/engine    (Node, Playwright)
+    lint/                   @toros/lint
+    checks/                 @toros/checks    (checks + scoring)
+    cli/                    toros            (the CLI binary)
+    mcp/                    @toros/mcp
+    schema/                 @toros/schema    (JSON schemas + TS types for toros.json, plays, reports, style.json)
     # later: studio/, studio-server/, player/, sdk/, cloud/, rl/ (Python)
   styles/
     <style-name>/STYLE.md, style.json, showcase/
@@ -87,8 +87,8 @@ bevl/
     blocks/<name>/          full sections / scenes
     components/<name>/      small reusable pieces
   skills/
-    bevl/SKILL.md (+ references/)
-    bevl-cli/SKILL.md (+ references/)
+    toros/SKILL.md (+ references/)
+    toros-cli/SKILL.md (+ references/)
   examples/
     product-viewer/  scroll-story/  mini-room/
   fixtures/
@@ -117,22 +117,22 @@ Done when: the acceptance criteria in `STEP1_SPEC.md` §12 all pass.
 
 ### Step 2 — Grow
 
-- Registry to 100+ items with `bevl add` / `bevl catalog`, quality bar, demo page per item.
+- Registry to 100+ items with `toros add` / `toros catalog`, quality bar, demo page per item.
 - `capture <url>`, `history` / `undo`, `build`, `share`.
-- Skills: `bevl-registry`, `asset-use`, `reverse-any-site`, `style-sampling`, `figma-to-bevl`, `r3f-to-bevl`.
+- Skills: `toros-registry`, `asset-use`, `reverse-any-site`, `style-sampling`, `figma-to-toros`, `r3f-to-toros`.
 - Asset pipeline: model/texture/HDRI search + import, glTF optimisation, budget-aware.
 - MCP: all CLI jobs as tools; snapshot returns images.
 - Distribution: Claude Code plugin marketplace entry, `npx skills add`, Codex plugin zip.
 - Docs site with live catalog.
-- Public gallery of before/after (agent alone vs agent + Bevl) — this is the main proof for users.
+- Public gallery of before/after (agent alone vs agent + Toros) — this is the main proof for users.
 
 ### Step 3 — Scale + training
 
-- Studio (desktop app) with selection context for agents, `<bevl-player>`, `@bevl/sdk`.
+- Studio (desktop app) with selection context for agents, `<toros-player>`, `@toros/sdk`.
 - Cloud runs: many isolated sessions in parallel (containers), queue, artifacts.
 - **RL environment package**:
   - Task = prompt + style + required interactions + budgets + **hidden** plays.
-  - Reward = Bevl score from hidden plays + checks; hard gates on lint/determinism.
+  - Reward = Toros score from hidden plays + checks; hard gates on lint/determinism.
   - Anti-reward-hacking: hidden plays, the agent cannot edit plays/budgets/checker, determinism verified by re-run, contract lint must pass, randomised seeds/viewports at eval.
   - Adapters for existing agent-RL environment libraries/standards (verify their current APIs when building; candidates seen in research: PrimeIntellect `verifiers`, NVIDIA NeMo Gym, OpenReward standard, Harbor tasks).
   - Baseline eval: run several models through the task set, publish scores.
@@ -148,7 +148,7 @@ Done when: the acceptance criteria in `STEP1_SPEC.md` §12 all pass.
 
 ## 5. What is deliberately NOT in scope (for now)
 
-- React Three Fiber as the primary authoring format (Step 1 is vanilla three.js through the runtime; an `r3f-to-bevl` path comes later).
+- React Three Fiber as the primary authoring format (Step 1 is vanilla three.js through the runtime; an `r3f-to-toros` path comes later).
 - WebGPU-only features (keep WebGL2 as baseline; WebGPU optional later).
 - Our own 3D model generator (use existing sources/generators via `asset-use`).
 - Hosting a paid cloud before Step 3.
@@ -161,4 +161,4 @@ Done when: the acceptance criteria in `STEP1_SPEC.md` §12 all pass.
 - **Determinism leaks**: any `Date.now`, `Math.random`, timer, or CDN fetch breaks repeatability. Lint must catch them and the determinism test must run in CI.
 - **Scope**: HyperFrames is a company project with ~10.5k files. Ship each step so it is useful alone.
 - **Demand is unproven**: 3D-website agent skills on GitHub have stayed small (3–4.3k stars as of Nov 2026). The before/after gallery in Step 2 is the test of demand — build it early.
-- **Name**: `bevl` is free on npm (checked Nov 18 2026). The GitHub username `bevl` is taken, so the repo lives under the founder's account or a differently named org. Claim the npm name and `@bevl` scope early.
+- **Name**: `toros` is free on npm (checked Nov 18 2026). The GitHub username `toros` is taken, so the repo lives under the founder's account or a differently named org. Claim the npm name and `@toros` scope early.

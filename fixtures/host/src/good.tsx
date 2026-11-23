@@ -1,9 +1,9 @@
-import { BevlA11y } from "@bevl/a11y";
-import type { BevlConfig, Choreography } from "@bevl/core";
-import { defaultChoreography, Section } from "@bevl/core";
+import { TorosA11y } from "@toros/a11y";
+import type { Choreography, TorosConfig } from "@toros/core";
+import { defaultChoreography, Section } from "@toros/core";
 import type { Fixture } from "./fixture.js";
 
-export const config: BevlConfig = {
+export const config: TorosConfig = {
   name: "Fixture baseline",
   sections: [
     { id: "hero", title: "Hero" },
@@ -12,15 +12,15 @@ export const config: BevlConfig = {
   ],
 };
 
-export function withChoreography(patch: Partial<Choreography>): BevlConfig {
+export function withChoreography(patch: Partial<Choreography>): TorosConfig {
   const base = defaultChoreography(config.sections.map((s) => s.id));
   return { ...config, choreography: { ...base, ...patch } };
 }
 
-export const overlay = <BevlA11y config={{ sections: config.sections }} />;
+export const overlay = <TorosA11y config={{ sections: config.sections }} />;
 
 export const head = {
-  title: "Bevl fixture",
+  title: "Toros fixture",
   description: "A three-section baseline site used by the broken fixtures.",
 };
 

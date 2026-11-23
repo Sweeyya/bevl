@@ -3,19 +3,19 @@
   "extends": ["//"],
   "tasks": {
     "check:examples": {
-      "dependsOn": ["^build", "@bevl/core#build", "@bevl/a11y#build"],
+      "dependsOn": ["^build", "@toros/core#build", "@toros/a11y#build"],
       "cache": false
     },
     "test:determinism": {
-      "dependsOn": ["^build", "@bevl/core#build", "@bevl/a11y#build"],
+      "dependsOn": ["^build", "@toros/core#build", "@toros/a11y#build"],
       "cache": false
     },
     "test:visual": {
-      "dependsOn": ["^build", "@bevl/core#build", "@bevl/a11y#build"],
+      "dependsOn": ["^build", "@toros/core#build", "@toros/a11y#build"],
       "cache": false
     },
     "test:perf": {
-      "dependsOn": ["^build", "@bevl/core#build", "@bevl/a11y#build"],
+      "dependsOn": ["^build", "@toros/core#build", "@toros/a11y#build"],
       "cache": false
     }
   }

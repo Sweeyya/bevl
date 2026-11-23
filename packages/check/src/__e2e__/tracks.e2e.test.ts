@@ -27,7 +27,7 @@ const read = (o: Opened): Promise<Readout> =>
       spinnerY: scene.getObjectByName("spinner").rotation.y,
       opacity: scene.getObjectByName("ghost").material.opacity,
       liftY: scene.getObjectByName("lifter").position.y,
-      cameraZ: window.__bevl?.camera().position.z ?? Number.NaN,
+      cameraZ: window.__toros?.camera().position.z ?? Number.NaN,
     };
   });
 

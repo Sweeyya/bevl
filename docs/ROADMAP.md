@@ -14,14 +14,14 @@ First real trial (an agent building a coffee roaster site from only the skill): 
 
 ## 2. Decisions waiting on you
 
-| Decision                           | Options                                                                                                   | Why it matters                                                        |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| How the runtime reaches a site     | A: publish `@bevl/*` to npm. B: copy the runtime into each site. Mix: publish the tools, copy the runtime | A fresh site cannot install today, because nothing is on npm          |
-| The `@bevl` npm scope              | Create the organization on npmjs.com                                                                      | Scope ownership cannot be checked without logging in                  |
-| License                            | MIT, Apache-2.0, or other                                                                                 | There is no LICENSE file, so nobody may legally reuse the code        |
-| Spectr                             | Keep or remove                                                                                            | It came from the original plan and is not being built (see section 9) |
-| Dependabot                         | Keep or turn off                                                                                          | Its commits show `dependabot[bot]` as an author                       |
-| GitHub repo description and topics | Write them                                                                                                | Both are empty today                                                  |
+| Decision                           | Options                                                                                                    | Why it matters                                                        |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| How the runtime reaches a site     | A: publish `@toros/*` to npm. B: copy the runtime into each site. Mix: publish the tools, copy the runtime | A fresh site cannot install today, because nothing is on npm          |
+| The `@toros` npm scope             | Create the organization on npmjs.com                                                                       | Scope ownership cannot be checked without logging in                  |
+| License                            | MIT, Apache-2.0, or other                                                                                  | There is no LICENSE file, so nobody may legally reuse the code        |
+| Spectr                             | Keep or remove                                                                                             | It came from the original plan and is not being built (see section 9) |
+| Dependabot                         | Keep or turn off                                                                                           | Its commits show `dependabot[bot]` as an author                       |
+| GitHub repo description and topics | Write them                                                                                                 | Both are empty today                                                  |
 
 ## 3. Next up, in order
 
@@ -33,12 +33,12 @@ First real trial (an agent building a coffee roaster site from only the skill): 
 
 ## 4. Publishing to npm
 
-How people would use it once published: the MCP server by adding `npx -y @bevl/mcp` to their AI tool's settings, and the CLI with `npx @bevl/cli check <url>`. A plain `npx bevl` needs an unscoped package named `bevl`, which is free on npm today. The skill is separate and is distributed as files from GitHub or skills.sh.
+How people would use it once published: the MCP server by adding `npx -y @toros/mcp` to their AI tool's settings, and the CLI with `npx @toros/cli check <url>`. A plain `npx toros` needs an unscoped package named `toros`, which is free on npm today. The skill is separate and is distributed as files from GitHub or skills.sh.
 
 Steps (proposal, based on npm's documentation, read 2026-11-23):
 
 1. Make an npm account and turn on two-factor authentication.
-2. Create the `bevl` organization on npmjs.com. If the name is taken, pick another scope before anything is published.
+2. Create the `toros` organization on npmjs.com. If the name is taken, pick another scope before anything is published.
 3. Finish the prerequisites: a license, `repository`, `files` and `publishConfig` in each package, and the distribution decision above.
 4. **Publish each package once by hand** with `npm login` and `npm publish --access public`. npm's trusted publishing only works for packages that already exist, so the first version of every package must be published manually.
 5. On npmjs.com, for each package, add a trusted publisher: GitHub Actions, repo `Sweeyya/bevl`, workflow `release.yml`. After that the Release workflow publishes with no stored token, with provenance.
@@ -51,9 +51,9 @@ I can prepare steps 3, 6 and 7. Steps 1, 2 and 4 need your npm login.
 
 Plan: `docs/plans/prompt-compiler.md`. Build 3 to 5 sites with an AI while recording every prompt, question, correction, score and rating, then turn what was needed into one intake form and a compiled prompt per target AI.
 
-You can start recording now. The recording phase does not depend on Bevl being finished: build sites you like with any AI and keep the raw material. Runs that use Bevl are more useful after the trial fix PR and the distribution decision, because today a site made outside this repo cannot install.
+You can start recording now. The recording phase does not depend on Toros being finished: build sites you like with any AI and keep the raw material. Runs that use Toros are more useful after the trial fix PR and the distribution decision, because today a site made outside this repo cannot install.
 
-Per session, keep: the first prompt, every follow-up and correction, the final result, the check score if Bevl was used, time and token use, a 1 to 5 rating, and screenshots. Keep the transcripts private.
+Per session, keep: the first prompt, every follow-up and correction, the final result, the check score if Toros was used, time and token use, a 1 to 5 rating, and screenshots. Keep the transcripts private.
 
 ## 6. RAG for style and brand interpretation (proposal, not built)
 
@@ -97,7 +97,7 @@ The glass material and shader background are scaffolds. The palette waits on you
 
 ## 9. Spectr
 
-Spectr appears in `PROJECT_PLAN.md` as the planned launch demo, in `TESTING.md` as the first golden task and the real-iPhone check, in `docs/BUILD_PLAN.md` as task T3.1, and in the README's "not done yet" list. It was in the original plan and nothing was ever built for it. If it is not the demo, replace it with Bevl's own example (the coffee roaster site from the trial is a candidate) and remove the references.
+Spectr appears in `PROJECT_PLAN.md` as the planned launch demo, in `TESTING.md` as the first golden task and the real-iPhone check, in `docs/BUILD_PLAN.md` as task T3.1, and in the README's "not done yet" list. It was in the original plan and nothing was ever built for it. If it is not the demo, replace it with Toros's own example (the coffee roaster site from the trial is a candidate) and remove the references.
 
 ## 10. Other backlog
 

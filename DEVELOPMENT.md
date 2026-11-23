@@ -5,7 +5,7 @@
 ```sh
 # 1. Clone the repo
 git clone https://github.com/Sweeyya/bevl.git
-cd bevl
+cd toros
 
 # 2. Install pnpm (if not already installed)
 npm install -g pnpm@12.20.0
@@ -55,7 +55,7 @@ Run the slow checks before merging anything that touches the checker, the runtim
 | `pnpm test:visual -- --update` | Remake the baselines for your platform (`tools/__screenshots__/<platform>/`)                |
 | `pnpm test:perf`               | Lighthouse CI (phone profile, 3 runs, median) on each built example                         |
 
-These scripts live in `tools/` (`@bevl/tools`, private). They need Chromium: `pnpm --filter @bevl/check exec playwright install chromium`.
+These scripts live in `tools/` (`@toros/tools`, private). They need Chromium: `pnpm --filter @toros/check exec playwright install chromium`.
 
 ### Screenshot baselines
 
@@ -89,13 +89,13 @@ See TESTING.md §11.
 
 ## Debugging test mode
 
-Add `?bevl-test` to any site URL. Open the console and inspect `window.__bevl`.
+Add `?toros-test` to any site URL. Open the console and inspect `window.__toros`.
 
 ## Debugging the checker
 
 ```sh
 # Run check on a specific site with verbose output
-bevl check --rule load/ready
-bevl check --viewport desktop
-bevl check --json > report.json
+toros check --rule load/ready
+toros check --viewport desktop
+toros check --json > report.json
 ```

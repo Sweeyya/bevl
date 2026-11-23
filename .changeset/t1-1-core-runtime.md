@@ -1,5 +1,5 @@
 ---
-"@bevl/core": minor
+"@toros/core": minor
 ---
 
-Add 3D camera path, scroll-driven camera, BevlSite and Section components
+Add 3D camera path, scroll-driven camera, TorosSite and Section components

@@ -1,5 +1,5 @@
 /**
- * @bevl/check
+ * @toros/check
  *
  * The checker. Runs the site in a real browser, tests every design rule and
  * performance budget, and writes a scored report (0-100).

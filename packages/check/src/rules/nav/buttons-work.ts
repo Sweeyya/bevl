@@ -31,7 +31,7 @@ const rule: Rule = {
           const probe = { mutations: 0, hash: location.hash } as Probe;
           const meaningful = (m: MutationRecord): boolean =>
             m.type !== "attributes" ||
-            !["style", "data-bevl-active"].includes(m.attributeName ?? "");
+            !["style", "data-toros-active"].includes(m.attributeName ?? "");
           probe.observer = new MutationObserver((r) => {
             probe.mutations += r.filter(meaningful).length;
           });

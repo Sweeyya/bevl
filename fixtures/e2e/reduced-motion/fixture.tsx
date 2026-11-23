@@ -1,4 +1,4 @@
-import { Section } from "@bevl/core";
+import { Section } from "@toros/core";
 import { buildFixture, sectionList } from "../../host/src/e2e.js";
 
 const sections = sectionList(3);

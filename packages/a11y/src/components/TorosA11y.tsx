@@ -1,4 +1,4 @@
-import { BevlContext } from "@bevl/core";
+import { TorosContext } from "@toros/core";
 import { useContext } from "react";
 import { useReducedMotion } from "../hooks/useReducedMotion.js";
 import type { A11yConfig } from "../types.js";
@@ -55,8 +55,8 @@ const STYLES = {
   } as React.CSSProperties,
 };
 
-export function BevlA11y({ config }: Props): JSX.Element | null {
-  const ctx = useContext(BevlContext);
+export function TorosA11y({ config }: Props): JSX.Element | null {
+  const ctx = useContext(TorosContext);
   const reducedMotion = useReducedMotion();
   const sections = config.sections;
   const skipLabel = config.skipLinkLabel ?? "Skip to content";

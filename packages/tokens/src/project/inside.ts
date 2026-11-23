@@ -26,8 +26,8 @@ export function resolveInside(
 }
 
 export function projectDirOf(dir: string): string {
-  if (!existsSync(resolve(dir, "bevl.json"))) {
-    throw new Error(`No bevl.json in ${resolve(dir)}. Fix: pass the folder of a Bevl project.`);
+  if (!existsSync(resolve(dir, "toros.json"))) {
+    throw new Error(`No toros.json in ${resolve(dir)}. Fix: pass the folder of a Toros project.`);
   }
   return realpathSync(resolve(dir));
 }

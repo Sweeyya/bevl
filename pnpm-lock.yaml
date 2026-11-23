@@ -205,10 +205,10 @@ importers:
 
   examples/basic:
     dependencies:
-      '@bevl/a11y':
+      '@toros/a11y':
         specifier: workspace:*
         version: link:../../packages/a11y
-      '@bevl/core':
+      '@toros/core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -239,10 +239,10 @@ importers:
 
   examples/recipes:
     dependencies:
-      '@bevl/a11y':
+      '@toros/a11y':
         specifier: workspace:*
         version: link:../../packages/a11y
-      '@bevl/core':
+      '@toros/core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -273,15 +273,15 @@ importers:
 
   fixtures/host:
     dependencies:
-      '@bevl/a11y':
-        specifier: workspace:*
-        version: link:../../packages/a11y
-      '@bevl/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@react-three/fiber':
         specifier: 8.18.0
         version: 8.18.0(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.187.0)
+      '@toros/a11y':
+        specifier: workspace:*
+        version: link:../../packages/a11y
+      '@toros/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -313,7 +313,7 @@ importers:
 
   packages/a11y:
     dependencies:
-      '@bevl/core':
+      '@toros/core':
         specifier: workspace:*
         version: link:../core
       react:
@@ -357,13 +357,13 @@ importers:
 
   packages/cli:
     dependencies:
-      '@bevl/check':
+      '@toros/check':
         specifier: workspace:*
         version: link:../check
-      '@bevl/optimizer':
+      '@toros/optimizer':
         specifier: workspace:*
         version: link:../optimizer
-      '@bevl/tokens':
+      '@toros/tokens':
         specifier: workspace:*
         version: link:../tokens
       commander:
@@ -419,7 +419,7 @@ importers:
 
   packages/effects:
     dependencies:
-      '@bevl/core':
+      '@toros/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -453,7 +453,7 @@ importers:
 
   packages/mascot:
     dependencies:
-      '@bevl/core':
+      '@toros/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -466,18 +466,18 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@bevl/check':
-        specifier: workspace:*
-        version: link:../check
-      '@bevl/optimizer':
-        specifier: workspace:*
-        version: link:../optimizer
-      '@bevl/tokens':
-        specifier: workspace:*
-        version: link:../tokens
       '@modelcontextprotocol/sdk':
         specifier: 1.32.2
         version: 1.32.2(supports-color@7.2.0)(zod@4.6.7)
+      '@toros/check':
+        specifier: workspace:*
+        version: link:../check
+      '@toros/optimizer':
+        specifier: workspace:*
+        version: link:../optimizer
+      '@toros/tokens':
+        specifier: workspace:*
+        version: link:../tokens
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -528,12 +528,12 @@ importers:
 
   tools:
     dependencies:
-      '@bevl/check':
-        specifier: workspace:*
-        version: link:../packages/check
       '@lhci/cli':
         specifier: 0.16.1
         version: 0.16.1(@types/node@26.6.6)(rollup@4.68.4)(supports-color@7.2.0)
+      '@toros/check':
+        specifier: workspace:*
+        version: link:../packages/check
       pixelmatch:
         specifier: 7.2.0
         version: 7.2.0

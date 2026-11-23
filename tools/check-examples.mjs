@@ -1,4 +1,4 @@
-import { formatReport, runCheck } from "@bevl/check";
+import { formatReport, runCheck } from "@toros/check";
 import { buildAndServe, listExamples } from "./lib.mjs";
 
 const MIN_SCORE = 90;

@@ -11,7 +11,7 @@
       "dependsOn": ["^build"],
       "inputs": ["src/**", "tsconfig.json", "../../tsconfig.base.json"]
     },
-    "@bevl/fixtures-host#typecheck": {
+    "@toros/fixtures-host#typecheck": {
       "dependsOn": ["^build"],
       "inputs": ["src/**", "tsconfig.json", "../broken/**", "../../tsconfig.base.json"]
     },

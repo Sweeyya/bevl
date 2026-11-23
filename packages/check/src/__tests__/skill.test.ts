@@ -4,18 +4,18 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import rules from "../rules/index.js";
 
-const skillDir = resolve(dirname(fileURLToPath(import.meta.url)), "../../../../skills/bevl");
+const skillDir = resolve(dirname(fileURLToPath(import.meta.url)), "../../../../skills/toros");
 const read = (file: string): string => readFileSync(join(skillDir, file), "utf8");
 const skill = read("SKILL.md");
 
-describe("bevl agent skill", () => {
+describe("toros agent skill", () => {
   it("has valid frontmatter", () => {
     const match = /^---\n([\s\S]*?)\n---\n/.exec(skill);
     expect(match).not.toBeNull();
     const front = match?.[1] ?? "";
     const name = /^name:\s*(.+)$/m.exec(front)?.[1]?.trim() ?? "";
     const description = /^description:\s*(.+)$/m.exec(front)?.[1]?.trim() ?? "";
-    expect(name).toBe("bevl");
+    expect(name).toBe("toros");
     expect(name).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
     expect(description.length).toBeGreaterThan(0);
     expect(description.length).toBeLessThanOrEqual(1024);

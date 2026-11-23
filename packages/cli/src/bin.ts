@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { resolve } from "node:path";
-import { addSection, applyBrand, createSite } from "@bevl/tokens";
+import { addSection, applyBrand, createSite } from "@toros/tokens";
 import { Command } from "commander";
 import { checkSite } from "./commands/check.js";
 import { optimizeAssets } from "./commands/optimize.js";
@@ -8,11 +8,11 @@ import { VERSION } from "./index.js";
 
 const program = new Command();
 
-program.name("bevl").description("Generate, check, and optimize 3D websites.").version(VERSION);
+program.name("toros").description("Generate, check, and optimize 3D websites.").version(VERSION);
 
 program
   .command("create <name>")
-  .description("Scaffold a new Bevl site")
+  .description("Scaffold a new Toros site")
   .option("-d, --dir <dir>", "Parent directory", process.cwd())
   .action(async (name: string, opts: { dir: string }) => {
     await createSite({ name, dir: opts.dir });
@@ -21,7 +21,7 @@ program
 
 program
   .command("add-section <id> <title>")
-  .description("Add a section to bevl.json (and src/App.tsx when it can)")
+  .description("Add a section to toros.json (and src/App.tsx when it can)")
   .option("-d, --dir <dir>", "Project folder", process.cwd())
   .action(async (id: string, title: string, opts: { dir: string }) => {
     const notes = await addSection({ dir: opts.dir, id, title });

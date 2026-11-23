@@ -1,4 +1,4 @@
-import { optimizeGlb } from "@bevl/optimizer";
+import { optimizeGlb } from "@toros/optimizer";
 
 export interface OptimizeCommandOptions {
   input: string;

@@ -1,5 +1,5 @@
 {
-  "name": "@bevl/tools",
+  "name": "@toros/tools",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     "test:perf": "node perf.mjs"
   },
   "dependencies": {
-    "@bevl/check": "workspace:*",
+    "@toros/check": "workspace:*",
     "@lhci/cli": "0.16.1",
     "pixelmatch": "7.2.0",
     "playwright": "1.65.1",

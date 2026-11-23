@@ -108,7 +108,7 @@ function snapshot(dir: string): string[] {
 beforeAll(async () => {
   if (!existsSync(SERVER))
     throw new Error("packages/mcp/dist/server.js is missing. Run pnpm build first.");
-  sandbox = realpathSync(mkdtempSync(join(tmpdir(), "bevl-mcp-e2e-")));
+  sandbox = realpathSync(mkdtempSync(join(tmpdir(), "toros-mcp-e2e-")));
   root = join(sandbox, "project");
   outside = join(sandbox, "outside");
   mkdirSync(root);
@@ -145,7 +145,7 @@ beforeAll(async () => {
     new StdioClientTransport({
       command: process.execPath,
       args: [SERVER],
-      env: { ...getDefaultEnvironment(), ...passthrough, BEVL_PROJECT_ROOT: root },
+      env: { ...getDefaultEnvironment(), ...passthrough, TOROS_PROJECT_ROOT: root },
       stderr: "pipe",
     }),
   );
@@ -171,7 +171,7 @@ describe("tool list", () => {
     expect(byName.get("optimize_assets")?.description).toMatch(/\.glb/);
     expect(byName.get("optimize_assets")?.description).toMatch(/never writes outside/i);
     expect(byName.get("check_site")?.description).toMatch(/localhost/i);
-    expect(byName.get("check_site")?.description).toMatch(/\.bevl\/reports/);
+    expect(byName.get("check_site")?.description).toMatch(/\.toros\/reports/);
   });
 
   it("bounds every input: strings have limits or enums, numbers have ranges", async () => {
@@ -240,7 +240,7 @@ describe("safe input", () => {
     });
     expect(res.isError, res.text).toBe(false);
     expect(res.text).toMatch(/Score: \d+\/100/);
-    const reports = join(root, ".bevl", "reports");
+    const reports = join(root, ".toros", "reports");
     expect(existsSync(reports)).toBe(true);
     expect(readdirSync(reports).length).toBeGreaterThan(0);
   });
@@ -272,7 +272,7 @@ describe("hostile input", () => {
     }
     expect(snapshot(outside)).toEqual(before);
     expect(existsSync(join(outside, "written.glb"))).toBe(false);
-    expect(existsSync(join(outside, ".bevl"))).toBe(false);
+    expect(existsSync(join(outside, ".toros"))).toBe(false);
   });
 
   it("refuses wrong file types", async () => {
@@ -302,7 +302,7 @@ describe("hostile input", () => {
       const res = await call("check_site", { url });
       expect(res.isError, `${url} should fail`).toBe(true);
     }
-    expect(existsSync(join(root, ".bevl", "reports", "..", "..", "etc"))).toBe(false);
+    expect(existsSync(join(root, ".toros", "reports", "..", "..", "etc"))).toBe(false);
   });
 
   it("rejects ruleId injection and out-of-range arguments", async () => {

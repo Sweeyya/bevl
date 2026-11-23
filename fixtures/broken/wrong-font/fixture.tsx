@@ -14,7 +14,7 @@ const overlay = (
         fontFamily: "'Courier New', monospace",
       }}
     >
-      Bevl fixture
+      Toros fixture
     </h2>
   </>
 );

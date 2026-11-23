@@ -13,7 +13,7 @@ export async function applyBrand(opts: ApplyBrandOptions): Promise<string[]> {
   const root = projectDirOf(opts.dir);
   const source = resolveInside(root, opts.file, "put the brand file inside the project folder");
   const tokens = await readTokenFile(source);
-  const configPath = resolveInside(root, "bevl.json");
+  const configPath = resolveInside(root, "toros.json");
   const config = await readConfig(configPath);
 
   await writeJson(resolveInside(root, "src/brand.tokens.json"), tokens);

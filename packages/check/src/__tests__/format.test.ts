@@ -5,7 +5,7 @@ import type { Report } from "../report.js";
 function makeReport(overrides: Partial<Report> = {}): Report {
   return {
     runId: "2026-01-01T00-00-00Z-ab12",
-    tool: { name: "bevl", version: "0.1.0" },
+    tool: { name: "toros", version: "0.1.0" },
     project: "test-project",
     seed: 1,
     score: 100,

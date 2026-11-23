@@ -25,7 +25,7 @@ export async function readConfig(path: string): Promise<ProjectConfig> {
     sections.every((s) => isObject(s) && typeof s.id === "string" && typeof s.title === "string");
   if (!isObject(data) || !ok) {
     throw new Error(
-      `${path} must be an object with a "sections" array of { id, title }. Fix: repair bevl.json.`,
+      `${path} must be an object with a "sections" array of { id, title }. Fix: repair toros.json.`,
     );
   }
   const beats = isObject(data.choreography) ? data.choreography.beats : undefined;
@@ -37,7 +37,7 @@ export async function readConfig(path: string): Promise<ProjectConfig> {
     )
   ) {
     throw new Error(
-      `${path} has a "choreography" without a valid "beats" array. Fix: repair bevl.json.`,
+      `${path} has a "choreography" without a valid "beats" array. Fix: repair toros.json.`,
     );
   }
   return data as ProjectConfig;

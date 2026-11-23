@@ -1,20 +1,20 @@
 /**
- * Bevl shared contracts.
+ * Toros shared contracts.
  *
- * Contract A: BevlConfig — the bevl.json every project has.
- * Contract B: BevlBridge — window.__bevl exposed in test mode.
+ * Contract A: TorosConfig — the toros.json every project has.
+ * Contract B: TorosBridge — window.__toros exposed in test mode.
  *
  * If either contract changes, update ARCHITECTURE.md first.
  */
 
 import type { Choreography } from "./choreography/types.js";
 
-// ─── Contract A: bevl.json ────────────────────────────────────────────────
+// ─── Contract A: toros.json ────────────────────────────────────────────────
 
-/** Where `?bevl-test` is honored: "localhost" (default), "always" (e.g. checking a preview URL), or "never". */
+/** Where `?toros-test` is honored: "localhost" (default), "always" (e.g. checking a preview URL), or "never". */
 export type TestModeSetting = "localhost" | "always" | "never";
 
-export interface BevlConfig {
+export interface TorosConfig {
   /** Project name, used in reports */
   name: string;
   /** Path to the brand/token file (DESIGN.md or design-token JSON) */
@@ -27,9 +27,9 @@ export interface BevlConfig {
    * See docs/adr/003-scroll-choreography.md.
    */
   choreography?: Choreography;
-  /** Where the test bridge may be switched on with ?bevl-test. Default "localhost". */
+  /** Where the test bridge may be switched on with ?toros-test. Default "localhost". */
   testMode?: TestModeSetting;
-  /** Performance budgets. Defaults come from bevl.budgets.json */
+  /** Performance budgets. Defaults come from toros.budgets.json */
   budgets?: Partial<Budgets>;
   /** Viewports to test. Defaults: desktop + phone */
   viewports?: ViewportConfig[];
@@ -66,7 +66,7 @@ export interface ViewportConfig {
   hasTouch: boolean;
 }
 
-/** Brand tokens passed to BevlSite. Structurally identical to BrandTokens in @bevl/tokens. */
+/** Brand tokens passed to TorosSite. Structurally identical to BrandTokens in @toros/tokens. */
 export interface BrandTokens {
   colors: {
     primary: string;
@@ -82,9 +82,9 @@ export interface BrandTokens {
   radiusBase: number;
 }
 
-// ─── Contract B: window.__bevl ────────────────────────────────────────────
+// ─── Contract B: window.__toros ────────────────────────────────────────────
 
-export interface BevlBridge {
+export interface TorosBridge {
   /** Resolves when scene, assets and fonts are loaded */
   ready: Promise<void>;
   /** Advance time by ms. Returns the new time and frame number. */
@@ -110,7 +110,7 @@ export interface BevlBridge {
   /** Mascot state if present */
   mascot(): MascotState | null;
   /** Ordered event log */
-  events(): BevlEvent[];
+  events(): TorosEvent[];
 }
 
 export interface SectionState {
@@ -158,7 +158,7 @@ export type MaterialState = { name: string; colors: string[] };
 export type TextMeshState = { text: string; charCount: number };
 export type MascotState = { visible: boolean; screenBox: Box2; state: string };
 export type Box2 = { x: number; y: number; width: number; height: number };
-export type BevlEvent =
+export type TorosEvent =
   | { type: "section-entered"; sectionId: string; time: number }
   | { type: "nav-clicked"; target: string; time: number }
   | { type: "glide-start"; from: string; to: string; time: number }

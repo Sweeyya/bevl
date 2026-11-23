@@ -1,5 +1,5 @@
 /**
- * @bevl/effects
+ * @toros/effects
  *
  * Glass, shader backgrounds and other visual effects.
  */

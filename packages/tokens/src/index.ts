@@ -1,5 +1,5 @@
 /**
- * @bevl/tokens
+ * @toros/tokens
  *
  * Reads design systems (DESIGN.md or design-token JSON).
  * Turns tokens into 3D materials and lights.

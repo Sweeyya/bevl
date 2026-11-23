@@ -32,21 +32,21 @@ async function capture(browser, url, viewport) {
   const { name: _name, width, height, ...device } = viewport;
   const context = await browser.newContext({ ...device, viewport: { width, height } });
   const page = await context.newPage();
-  await page.goto(`${url}?bevl-test&seed=1`);
-  await page.waitForFunction(() => "__bevl" in window, undefined, { timeout: 30_000 });
-  await page.evaluate(() => window.__bevl.ready);
-  const anchors = await page.evaluate(() => window.__bevl.sections().map((s) => s.anchor));
+  await page.goto(`${url}?toros-test&seed=1`);
+  await page.waitForFunction(() => "__toros" in window, undefined, { timeout: 30_000 });
+  await page.evaluate(() => window.__toros.ready);
+  const anchors = await page.evaluate(() => window.__toros.sections().map((s) => s.anchor));
   const first = anchors[0] ?? 0;
   const second = anchors[1] ?? 1;
   const positions = [0, (first + second) / 2, anchors.at(-1) ?? 1];
   const shots = [];
   for (const [i, fraction] of positions.entries()) {
     await page.evaluate(async (f) => {
-      const el = document.querySelector("[data-bevl-scroller]");
+      const el = document.querySelector("[data-toros-scroller]");
       if (el) el.scrollTop = f * (el.scrollHeight - el.clientHeight);
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     }, fraction);
-    await page.evaluate((n) => window.__bevl.step((n * 1000) / 60), FRAMES_TO_SETTLE);
+    await page.evaluate((n) => window.__toros.step((n * 1000) / 60), FRAMES_TO_SETTLE);
     shots.push({ index: i, png: await page.screenshot() });
   }
   await context.close();

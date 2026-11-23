@@ -1,10 +1,10 @@
 {
-  "name": "@bevl/cli",
+  "name": "@toros/cli",
   "version": "0.1.0",
-  "description": "Command line tool: bevl create, add-section, apply-brand, optimize, check.",
+  "description": "Command line tool: toros create, add-section, apply-brand, optimize, check.",
   "type": "module",
   "bin": {
-    "bevl": "./dist/bin.js"
+    "toros": "./dist/bin.js"
   },
   "exports": {
     ".": {
@@ -24,9 +24,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@bevl/check": "workspace:*",
-    "@bevl/optimizer": "workspace:*",
-    "@bevl/tokens": "workspace:*",
+    "@toros/check": "workspace:*",
+    "@toros/optimizer": "workspace:*",
+    "@toros/tokens": "workspace:*",
     "commander": "15.1.0"
   },
   "devDependencies": {

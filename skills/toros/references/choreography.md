@@ -31,11 +31,11 @@ When the user describes an experience, answer these questions in order. Ask the 
 
 Limits that the checker enforces: the camera may move at most 1.5 m per scroll step, turn at most 15 degrees per step, and must not roll more than 2 degrees. If a beat gap is large, add camera keyframes or use `path: "curve"` instead of widening `fastMoves`.
 
-Invalid choreography falls back to the default and logs `[bevl] invalid choreography: <path>: <message>. Fix: ...` to the console. Read the message: it names the field.
+Invalid choreography falls back to the default and logs `[toros] invalid choreography: <path>: <message>. Fix: ...` to the console. Read the message: it names the field.
 
 ## Recipes (starting points)
 
-`@bevl/core` exports `recipes`: `fly-through`, `sphere-of-screens`, `carousel`, `room`, `horizontal-gallery` and `orbit-product`. Each has a `description` and `whenToUse`, and `recipes["carousel"].create(sectionIds)` returns a ready `Choreography` for any section count. Start from one when it matches, then edit it. The worked examples below work without recipes.
+`@toros/core` exports `recipes`: `fly-through`, `sphere-of-screens`, `carousel`, `room`, `horizontal-gallery` and `orbit-product`. Each has a `description` and `whenToUse`, and `recipes["carousel"].create(sectionIds)` returns a ready `Choreography` for any section count. Start from one when it matches, then edit it. The worked examples below work without recipes.
 
 ## Worked example 1: fly through (the default)
 
@@ -75,7 +75,7 @@ Invalid choreography falls back to the default and logs `[bevl] invalid choreogr
 
 ## Worked example 2: inside a sphere of screens
 
-"I am inside a sphere with screens on the inside and they spin around me." The camera stands still at the center. The sections form a ring facing inward, and the camera look target sweeps from screen to screen, which reads as the screens spinning past. Use `ring` for a belt of screens, or `onSphere` for a full sphere (compute look targets with `layoutPositions(spec, count)` from `@bevl/core`, which returns the same positions the runtime uses).
+"I am inside a sphere with screens on the inside and they spin around me." The camera stands still at the center. The sections form a ring facing inward, and the camera look target sweeps from screen to screen, which reads as the screens spinning past. Use `ring` for a belt of screens, or `onSphere` for a full sphere (compute look targets with `layoutPositions(spec, count)` from `@toros/core`, which returns the same positions the runtime uses).
 
 ```json
 {

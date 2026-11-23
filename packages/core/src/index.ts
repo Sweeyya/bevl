@@ -1,5 +1,5 @@
 /**
- * @bevl/core
+ * @toros/core
  *
  * 3D runtime: sections, scroll camera path, design rules, test mode and test bridge.
  * See ARCHITECTURE.md for the full contract between core and check.
@@ -8,9 +8,6 @@
 export const VERSION = "0.1.0";
 
 export type {
-  BevlBridge,
-  BevlConfig,
-  BevlEvent,
   Box2,
   BrandTokens,
   Budgets,
@@ -24,6 +21,9 @@ export type {
   SectionState,
   TestModeSetting,
   TextMeshState,
+  TorosBridge,
+  TorosConfig,
+  TorosEvent,
   Vec3,
   ViewportConfig,
 } from "./contract.js";
@@ -74,15 +74,15 @@ export type {
   Track,
   Vec3Tuple,
 } from "./choreography/types.js";
-// React components
-export { BevlSite } from "./components/BevlSite.js";
 export { BrandLights } from "./components/BrandLights.js";
 export { BrandMaterial } from "./components/BrandMaterial.js";
 export { ScrollCamera } from "./components/ScrollCamera.js";
 export { Section } from "./components/Section.js";
+// React components
+export { TorosSite } from "./components/TorosSite.js";
 // Context
-export type { BevlContextValue } from "./context.js";
-export { BevlContext } from "./context.js";
+export type { TorosContextValue } from "./context.js";
+export { TorosContext } from "./context.js";
 // HTML layer visibility (pure helpers)
 export { activeSection, sectionVisibility } from "./html/visibility.js";
 // Reduced-motion preference (live, SSR-safe)

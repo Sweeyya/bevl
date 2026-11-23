@@ -16,13 +16,13 @@ import { createSite } from "../create.js";
 
 const bases: string[] = [];
 async function site(config?: object | string) {
-  const base = realpathSync(mkdtempSync(join(tmpdir(), "bevl-proj-")));
+  const base = realpathSync(mkdtempSync(join(tmpdir(), "toros-proj-")));
   bases.push(base);
   await createSite({ name: "s", dir: base });
   const dir = join(base, "s");
   if (config !== undefined) {
     writeFileSync(
-      join(dir, "bevl.json"),
+      join(dir, "toros.json"),
       typeof config === "string" ? config : JSON.stringify(config),
     );
   }
@@ -34,10 +34,10 @@ afterAll(() => {
 const read = (p: string) => readFileSync(p, "utf8");
 
 describe("addSection", () => {
-  it("appends to bevl.json and inserts a section before ambientLight", async () => {
+  it("appends to toros.json and inserts a section before ambientLight", async () => {
     const { dir } = await site();
     await addSection({ dir, id: "pricing", title: "Pricing" });
-    const cfg = JSON.parse(read(join(dir, "bevl.json")));
+    const cfg = JSON.parse(read(join(dir, "toros.json")));
     expect(cfg.sections.at(-1)).toEqual({ id: "pricing", title: "Pricing" });
     const app = read(join(dir, "src/App.tsx"));
     expect(app.indexOf('id="pricing"')).toBeLessThan(app.indexOf("<ambientLight"));
@@ -51,9 +51,9 @@ describe("addSection", () => {
   });
   it("refuses duplicates and leaves files untouched", async () => {
     const { dir } = await site();
-    const before = read(join(dir, "bevl.json"));
+    const before = read(join(dir, "toros.json"));
     await expect(addSection({ dir, id: "hero", title: "Again" })).rejects.toThrow(/already exists/);
-    expect(read(join(dir, "bevl.json"))).toBe(before);
+    expect(read(join(dir, "toros.json"))).toBe(before);
   });
   it("rejects bad ids and titles", async () => {
     const { dir } = await site();
@@ -81,7 +81,7 @@ describe("addSection", () => {
       },
     });
     const notes = await addSection({ dir, id: "d", title: "D" });
-    const beats = JSON.parse(read(join(dir, "bevl.json"))).choreography.beats;
+    const beats = JSON.parse(read(join(dir, "toros.json"))).choreography.beats;
     expect(beats.map((b: { id: string }) => b.id)).toEqual(["a", "b", "c", "d"]);
     expect(beats.map((b: { at: number }) => b.at)).toEqual([0, 0.375, 0.75, 1]);
     expect(notes.join(" ")).toMatch(/keyframes/);
@@ -98,7 +98,7 @@ describe("addSection", () => {
     rmSync(join(dir, "src/App.tsx"));
     expect((await addSection({ dir, id: "z", title: "Z" })).join(" ")).toMatch(/Could not find/);
   });
-  it("rejects malformed bevl.json and non-projects", async () => {
+  it("rejects malformed toros.json and non-projects", async () => {
     const bad = await site("{nope");
     await expect(addSection({ dir: bad.dir, id: "z", title: "Z" })).rejects.toThrow(
       /not valid JSON/,
@@ -108,7 +108,7 @@ describe("addSection", () => {
     const beats = await site({ sections: [], choreography: { beats: 3 } });
     await expect(addSection({ dir: beats.dir, id: "z", title: "Z" })).rejects.toThrow(/beats/);
     await expect(addSection({ dir: bad.base, id: "z", title: "Z" })).rejects.toThrow(
-      /No bevl.json/,
+      /No toros.json/,
     );
   });
   it("will not write through a symlink that leaves the project", async () => {
@@ -129,16 +129,16 @@ describe("applyBrand", () => {
     writeFileSync(join(dir, "DESIGN.md"), "# Brand\n- primary: #112233\n- accent: #ff0000\n");
     const lines = await applyBrand({ dir, file: join(dir, "DESIGN.md") });
     expect(JSON.parse(read(join(dir, "src/brand.tokens.json"))).colors.primary).toBe("#112233");
-    expect(JSON.parse(read(join(dir, "bevl.json"))).brand).toBe("DESIGN.md");
+    expect(JSON.parse(read(join(dir, "toros.json"))).brand).toBe("DESIGN.md");
     expect(lines.join("\n")).toMatch(/Warning:.*heading font/);
   });
   it("is idempotent", async () => {
     const { dir } = await site();
     writeFileSync(join(dir, "DESIGN.md"), "- primary: #112233\n");
     await applyBrand({ dir, file: "DESIGN.md" });
-    const first = read(join(dir, "bevl.json"));
+    const first = read(join(dir, "toros.json"));
     await applyBrand({ dir, file: "DESIGN.md" });
-    expect(read(join(dir, "bevl.json"))).toBe(first);
+    expect(read(join(dir, "toros.json"))).toBe(first);
   });
   it("refuses files outside the project and symlink escapes", async () => {
     const { base, dir } = await site();
@@ -148,7 +148,7 @@ describe("applyBrand", () => {
     symlinkSync(join(base, "secret.md"), join(dir, "link.md"));
     await expect(applyBrand({ dir, file: "link.md" })).rejects.toThrow(/outside/);
   });
-  it("rejects a missing file and malformed bevl.json", async () => {
+  it("rejects a missing file and malformed toros.json", async () => {
     const { dir } = await site();
     await expect(applyBrand({ dir, file: "nope.md" })).rejects.toThrow();
     const bad = await site("{nope");

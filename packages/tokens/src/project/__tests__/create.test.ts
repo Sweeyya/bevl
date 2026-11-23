@@ -6,7 +6,7 @@ import { createSite, escapeHtml, validateSiteName } from "../create.js";
 
 const dirs: string[] = [];
 const tmp = () => {
-  const d = mkdtempSync(join(tmpdir(), "bevl-create-"));
+  const d = mkdtempSync(join(tmpdir(), "toros-create-"));
   dirs.push(d);
   return d;
 };
@@ -46,7 +46,7 @@ describe("createSite", () => {
   it("writes the project inside the parent folder", async () => {
     const dir = tmp();
     await createSite({ name: "demo", dir });
-    expect(existsSync(join(dir, "demo", "bevl.json"))).toBe(true);
+    expect(existsSync(join(dir, "demo", "toros.json"))).toBe(true);
     expect(readFileSync(join(dir, "demo", "index.html"), "utf8")).toContain("<title>demo</title>");
   });
   it("refuses a name that would escape the parent folder", async () => {
@@ -64,7 +64,7 @@ describe("createSite scaffold", () => {
     const app = readFileSync(join(site, "src", "App.tsx"), "utf8");
     expect(app).toContain('import brand from "./brand.tokens.json"');
     expect(app).toContain("brand={brand}");
-    expect(app).toContain("overlay={<BevlA11y");
+    expect(app).toContain("overlay={<TorosA11y");
     expect(JSON.parse(readFileSync(join(site, "src", "brand.tokens.json"), "utf8"))).toHaveProperty(
       "colors.primary",
     );

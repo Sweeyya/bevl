@@ -44,7 +44,7 @@ jobs:
       - uses: ./.github/setup
 
       - name: Install Playwright Chromium
-        run: pnpm --filter @bevl/check exec playwright install chromium --with-deps
+        run: pnpm --filter @toros/check exec playwright install chromium --with-deps
 
       - name: Build
         run: pnpm build

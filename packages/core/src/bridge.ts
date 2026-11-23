@@ -1,13 +1,11 @@
 /**
- * window.__bevl test bridge.
- * Populated by BevlSite when ?bevl-test is in the URL.
+ * window.__toros test bridge.
+ * Populated by TorosSite when ?toros-test is in the URL.
  * Only active in test mode — never shipped to production users.
  */
 
 import type { Choreography } from "./choreography/types.js";
 import type {
-  BevlBridge,
-  BevlEvent,
   BrandTokens,
   CameraState,
   MascotState,
@@ -15,6 +13,8 @@ import type {
   SceneStats,
   SectionState,
   TextMeshState,
+  TorosBridge,
+  TorosEvent,
 } from "./contract.js";
 
 /** Mutable refs updated by BridgeInstaller after the canvas mounts */
@@ -32,14 +32,14 @@ export interface BridgeState {
   getMaterials: () => MaterialState[];
   getTextMeshes: () => TextMeshState[];
   getMascot: () => MascotState | null;
-  getEvents: () => BevlEvent[];
-  pushEvent: (e: BevlEvent) => void;
+  getEvents: () => TorosEvent[];
+  pushEvent: (e: TorosEvent) => void;
   resolveReady: () => void;
 }
 
 const FRAME_MS = 1000 / 60;
 
-export function installBridge(state: BridgeState): BevlBridge {
+export function installBridge(state: BridgeState): TorosBridge {
   let time = 0;
   let frame = 0;
 
@@ -52,7 +52,7 @@ export function installBridge(state: BridgeState): BevlBridge {
   // Also set it now so if it's called before the promise body runs (unlikely but safe)
   state.resolveReady = _resolve;
 
-  const bridge: BevlBridge = {
+  const bridge: TorosBridge = {
     ready,
     step(ms: number) {
       const steps = Math.max(1, Math.round(ms / FRAME_MS));
@@ -80,10 +80,10 @@ export function installBridge(state: BridgeState): BevlBridge {
   return bridge;
 }
 
-export function exposeBridge(bridge: BevlBridge): void {
-  (window as unknown as { __bevl: BevlBridge }).__bevl = bridge;
+export function exposeBridge(bridge: TorosBridge): void {
+  (window as unknown as { __toros: TorosBridge }).__toros = bridge;
 }
 
 export function removeBridge(): void {
-  delete (window as unknown as { __bevl?: unknown }).__bevl;
+  delete (window as unknown as { __toros?: unknown }).__toros;
 }

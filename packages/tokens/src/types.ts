@@ -1,4 +1,4 @@
-/** Parsed brand token output — what the rest of Bevl consumes */
+/** Parsed brand token output — what the rest of Toros consumes */
 export interface BrandTokens {
   /** Primary palette — hex strings e.g. "#1A1A2E" */
   colors: {
