@@ -1,5 +1,5 @@
 {
-  "name": "@doodley/mcp",
+  "name": "@bevl/mcp",
   "version": "0.1.0",
   "description": "The MCP server that agents call to create, check, and optimize sites.",
   "type": "module",
@@ -10,7 +10,7 @@
     }
   },
   "bin": {
-    "doodley-mcp": "./dist/server.js"
+    "bevl-mcp": "./dist/server.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,9 +25,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@doodley/check": "workspace:*",
-    "@doodley/optimizer": "workspace:*",
-    "@doodley/tokens": "workspace:*",
+    "@bevl/check": "workspace:*",
+    "@bevl/optimizer": "workspace:*",
+    "@bevl/tokens": "workspace:*",
     "@modelcontextprotocol/sdk": "1.32.2",
     "zod": "4.6.7"
   },

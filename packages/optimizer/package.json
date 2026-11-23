@@ -1,5 +1,5 @@
 {
-  "name": "@doodley/optimizer",
+  "name": "@bevl/optimizer",
   "version": "0.1.0",
   "description": "Shrinks models and textures. Enforces the performance budget.",
   "type": "module",

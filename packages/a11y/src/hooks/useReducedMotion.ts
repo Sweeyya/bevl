@@ -1,1 +1,1 @@
-export { useReducedMotion } from "@doodley/core";
+export { useReducedMotion } from "@bevl/core";

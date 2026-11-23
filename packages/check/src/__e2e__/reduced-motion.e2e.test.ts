@@ -25,10 +25,10 @@ const read = (o: Opened): Promise<Reading> =>
       };
     };
     return {
-      camera: window.__doodley?.camera().position ?? { x: Number.NaN, y: 0, z: 0 },
+      camera: window.__bevl?.camera().position ?? { x: Number.NaN, y: 0, z: 0 },
       active:
-        document.querySelector<HTMLElement>('[data-doodley-section][data-doodley-active="true"]')
-          ?.dataset.doodleySection ?? null,
+        document.querySelector<HTMLElement>('[data-bevl-section][data-bevl-active="true"]')?.dataset
+          .bevlSection ?? null,
       sections: ids.map((id) => {
         const g = scene.getObjectByName(`section-${id}`);
         const m = g.children[0]?.material;
@@ -67,7 +67,7 @@ const travelled = (a: Reading["camera"], b: Reading["camera"]): number =>
 describe("reduced motion", () => {
   it("keeps the camera still, stages the sections and fades them", async () => {
     const o = await openReduced();
-    expect(await o.page.evaluate(() => window.__doodley?.motion().reducedMotion)).toBe(true);
+    expect(await o.page.evaluate(() => window.__bevl?.motion().reducedMotion)).toBe(true);
     const start = await read(o);
     expect(start.active).toBe("s1");
     expect(start.sections.map((s) => s.visible)).toEqual([true, false, false]);

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useContext, useLayoutEffect, useRef } from "react";
 import type { Group } from "three";
-import { DoodleyContext } from "../context.js";
+import { BevlContext } from "../context.js";
 
 interface SectionProps {
   id: string;
@@ -12,7 +12,7 @@ interface SectionProps {
 }
 
 export function Section({ id, title, html, children }: SectionProps): JSX.Element {
-  const ctx = useContext(DoodleyContext);
+  const ctx = useContext(BevlContext);
   const ref = useRef<Group>(null);
 
   const index = ctx ? ctx.sections.findIndex((s) => s.id === id) : 0;
@@ -36,7 +36,7 @@ export function Section({ id, title, html, children }: SectionProps): JSX.Elemen
       ref={ref}
       position={[x, y, z]}
       name={`section-${id}`}
-      userData={{ doodleySection: id, doodleyTitle: title }}
+      userData={{ bevlSection: id, bevlTitle: title }}
     >
       {children}
     </group>

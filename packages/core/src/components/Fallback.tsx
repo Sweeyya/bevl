@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { DoodleyConfig } from "../contract.js";
+import type { BevlConfig } from "../contract.js";
 
 export function hasWebGL(): boolean {
   if (typeof document === "undefined") return true;
@@ -12,11 +12,11 @@ export function Fallback({
   config,
   children,
 }: {
-  config: DoodleyConfig;
+  config: BevlConfig;
   children?: ReactNode;
 }): JSX.Element {
   return (
-    <main data-doodley-fallback>
+    <main data-bevl-fallback>
       {children ?? (
         <>
           <h1>{config.name}</h1>

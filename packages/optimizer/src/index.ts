@@ -1,5 +1,5 @@
 /**
- * @doodley/optimizer
+ * @bevl/optimizer
  *
  * Shrinks models and textures. Enforces the performance budget.
  */

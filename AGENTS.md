@@ -1,6 +1,6 @@
-# Working in the Doodley repo
+# Working in the Bevl repo
 
-Doodley turns any brand into a fast, accessible 3D website, used from Claude, ChatGPT, Cursor or Lovable through an MCP. Every site it makes comes tested by `doodley check`.
+Bevl turns any brand into a fast, accessible 3D website, used from Claude, ChatGPT, Cursor or Lovable through an MCP. Every site it makes comes tested by `bevl check`.
 
 Read these first, in order:
 

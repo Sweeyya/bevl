@@ -43,8 +43,8 @@ function travel(poses: CameraPose[]): number {
 const activeId = (page: Page): Promise<string | null> =>
   page.evaluate(
     () =>
-      document.querySelector<HTMLElement>('[data-doodley-section][data-doodley-active="true"]')
-        ?.dataset.doodleySection ?? null,
+      document.querySelector<HTMLElement>('[data-bevl-section][data-bevl-active="true"]')?.dataset
+        .bevlSection ?? null,
   );
 
 async function settledSweep(

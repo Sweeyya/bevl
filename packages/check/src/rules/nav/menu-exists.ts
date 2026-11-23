@@ -16,8 +16,8 @@ const rule: Rule = {
     const sections = await page.evaluate(
       () =>
         (
-          window as unknown as { __doodley?: { sections(): Array<{ id: string }> } }
-        ).__doodley?.sections() ?? [],
+          window as unknown as { __bevl?: { sections(): Array<{ id: string }> } }
+        ).__bevl?.sections() ?? [],
     );
     const linked = new Set(controls.filter((c) => c.visible).map((c) => c.sectionId));
     const missing = sections.map((s) => s.id).filter((id) => !linked.has(id));
@@ -31,7 +31,7 @@ const rule: Rule = {
           controls.length === 0
             ? `No <nav> with links found on ${viewport.name}.`
             : `The <nav> has no visible link for: ${missing.join(", ")} on ${viewport.name}.`,
-        fix: 'Fix: add <DoodleyA11y config={{ sections }} /> as the DoodleySite overlay, or a <nav> with one link per section (href="#section-<id>").',
+        fix: 'Fix: add <BevlA11y config={{ sections }} /> as the BevlSite overlay, or a <nav> with one link per section (href="#section-<id>").',
         evidence: { data: { missing } },
       },
     ];

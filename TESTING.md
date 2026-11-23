@@ -1,8 +1,8 @@
-# Doodley: Testing
+# Bevl: Testing
 
 This file is the full testing plan. `PROJECT_PLAN.md` §11 is the short version.
 
-The big idea: **we test the sites we make the same way a picky user would.** Load it, look at it, scroll it, click the menu, use the keyboard, turn on reduced motion, use a phone. Then give a score and a fix for every problem. That tester is `doodley check`, and we use it in three places:
+The big idea: **we test the sites we make the same way a picky user would.** Load it, look at it, scroll it, click the menu, use the keyboard, turn on reduced motion, use a phone. Then give a score and a fix for every problem. That tester is `bevl check`, and we use it in three places:
 
 1. The user's agent runs it (through the MCP or the CLI) and fixes problems before the user sees them.
 2. Our CI runs it on every example and demo.
@@ -15,7 +15,7 @@ The big idea: **we test the sites we make the same way a picky user would.** Loa
 | #   | Layer                                    | Runs where                          | When                       |
 | --- | ---------------------------------------- | ----------------------------------- | -------------------------- |
 | 1   | Unit tests (Vitest)                      | every package                       | every PR                   |
-| 2   | `doodley check`                          | users' projects, our examples       | every agent loop, every PR |
+| 2   | `bevl check`                             | users' projects, our examples       | every agent loop, every PR |
 | 3   | Broken fixtures                          | `fixtures/broken/`                  | every PR                   |
 | 4   | Screenshot tests                         | demos and examples                  | every PR                   |
 | 5   | Speed tests (Lighthouse CI + 3D budgets) | built demos                         | every PR                   |
@@ -25,17 +25,17 @@ The big idea: **we test the sites we make the same way a picky user would.** Loa
 
 ---
 
-## 2. Test mode (in `@doodley/core`)
+## 2. Test mode (in `@bevl/core`)
 
 Screenshots and checks are only useful if the site does the same thing every run. Test mode makes that true.
 
-- Turn it on with the URL `?doodley-test` (and optional `&seed=<n>`, default `1`).
+- Turn it on with the URL `?bevl-test` (and optional `&seed=<n>`, default `1`).
 - The R3F canvas uses `frameloop="never"`. Time only moves when the test calls `step(ms)`, which calls `advance()` in fixed steps of 1000/60 ms. Check how `advance()` works in the R3F version we pin and write it down in `docs/adr/002-test-mode.md`.
 - All randomness in our packages goes through a seeded random function. No `Math.random`, `Date.now` or timers in our runtime code paths.
 - Assets load from the project folder only. No CDN at runtime.
 - Fonts must finish loading before `ready` resolves.
 
-### 2.1 Test bridge: `window.__doodley` (test mode only)
+### 2.1 Test bridge: `window.__bevl` (test mode only)
 
 | Member         | What it gives                                                                |
 | -------------- | ---------------------------------------------------------------------------- |
@@ -54,16 +54,16 @@ The checker moves the site only with **real browser input** (mouse wheel, touch,
 
 ---
 
-## 3. How `doodley check` runs
+## 3. How `bevl check` runs
 
-1. Lint the project config (`doodley.json`, tokens file, assets exist). Stop if this fails.
+1. Lint the project config (`bevl.json`, tokens file, assets exist). Stop if this fails.
 2. Build or serve the project. Start headless Chromium through Playwright.
 3. For each viewport:
    - **desktop:** 1440 × 900, dpr 1
    - **phone:** 390 × 844, dpr 3, touch on
-4. Open `?doodley-test`, wait for `ready`, record the WebGL renderer name (GPU or software).
+4. Open `?bevl-test`, wait for `ready`, record the WebGL renderer name (GPU or software).
 5. Run every rule in §4.
-6. Write `.doodley/reports/<runId>/report.json`, pictures, and a short summary.
+6. Write `.bevl/reports/<runId>/report.json`, pictures, and a short summary.
 7. Print the score. Every problem prints `✗ <message>` and `Fix: <what to do>`.
 
 Flags: `--json`, `--viewport <name>`, `--rule <id>` (run one rule), `--verify-determinism` (run twice and compare), `--update-baselines` (screenshots only).
@@ -78,16 +78,16 @@ Each rule has a stable id, a default severity (`error`, `warn`, `info`), a pass 
 
 ### 4.1 Load and render
 
-| Rule id                | Pass rule                                                                                        | Severity |
-| ---------------------- | ------------------------------------------------------------------------------------------------ | -------- |
-| `load/ready`           | `ready` resolves within the `readyMs` budget                                                     | error    |
-| `load/console-errors`  | No console errors or page errors                                                                 | error    |
-| `load/failed-requests` | No failed network requests                                                                       | error    |
-| `load/webgl`           | WebGL2 works. Record the renderer. Software renderer is `info`.                                  | error    |
-| `render/not-blank`     | Picture is not one flat color, not all black, not magenta                                        | error    |
-| `render/resolution`    | Canvas pixel size equals CSS size × dpr (±1 px)                                                  | warn     |
-| `render/no-nan`        | No object has NaN position, rotation or scale                                                    | error    |
-| `render/fallback`      | With WebGL turned off, the static fallback (`[data-doodley-fallback]`) shows every section title | error    |
+| Rule id                | Pass rule                                                                                     | Severity |
+| ---------------------- | --------------------------------------------------------------------------------------------- | -------- |
+| `load/ready`           | `ready` resolves within the `readyMs` budget                                                  | error    |
+| `load/console-errors`  | No console errors or page errors                                                              | error    |
+| `load/failed-requests` | No failed network requests                                                                    | error    |
+| `load/webgl`           | WebGL2 works. Record the renderer. Software renderer is `info`.                               | error    |
+| `render/not-blank`     | Picture is not one flat color, not all black, not magenta                                     | error    |
+| `render/resolution`    | Canvas pixel size equals CSS size × dpr (±1 px)                                               | warn     |
+| `render/no-nan`        | No object has NaN position, rotation or scale                                                 | error    |
+| `render/fallback`      | With WebGL turned off, the static fallback (`[data-bevl-fallback]`) shows every section title | error    |
 
 ### 4.2 Scroll (design rules 1, 3, 4)
 
@@ -121,18 +121,18 @@ The checker scrolls from top to bottom in 40 wheel steps (touch swipes on phone)
 
 ### 4.4 HTML layer and search (design rule 2)
 
-| Rule id                  | Pass rule                                                                                                                                | Severity       |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| `html/section-text`      | Every 3D section has a DOM section with a heading and text                                                                               | error          |
-| `html/order-matches`     | DOM section order matches the 3D section order                                                                                           | error          |
-| `html/no-canvas-copy`    | No 3D text mesh holds more than 40 characters (body copy belongs in HTML). A mesh counts as text when `userData.doodleyText` is a string | error          |
-| `html/text-faces-viewer` | HTML text is not rotated more than 5°                                                                                                    | warn           |
-| `html/static-content`    | The raw HTML (before JavaScript runs) contains every section heading                                                                     | warn at launch |
-| `seo/title`              | Page has a title                                                                                                                         | error          |
-| `seo/meta-description`   | Page has a meta description                                                                                                              | warn           |
-| `seo/one-h1`             | Exactly one `h1`                                                                                                                         | warn           |
-| `seo/img-alt`            | Every image has alt text                                                                                                                 | error          |
-| `seo/lang`               | `<html>` has a `lang`                                                                                                                    | warn           |
+| Rule id                  | Pass rule                                                                                                                             | Severity       |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `html/section-text`      | Every 3D section has a DOM section with a heading and text                                                                            | error          |
+| `html/order-matches`     | DOM section order matches the 3D section order                                                                                        | error          |
+| `html/no-canvas-copy`    | No 3D text mesh holds more than 40 characters (body copy belongs in HTML). A mesh counts as text when `userData.bevlText` is a string | error          |
+| `html/text-faces-viewer` | HTML text is not rotated more than 5°                                                                                                 | warn           |
+| `html/static-content`    | The raw HTML (before JavaScript runs) contains every section heading                                                                  | warn at launch |
+| `seo/title`              | Page has a title                                                                                                                      | error          |
+| `seo/meta-description`   | Page has a meta description                                                                                                           | warn           |
+| `seo/one-h1`             | Exactly one `h1`                                                                                                                      | warn           |
+| `seo/img-alt`            | Every image has alt text                                                                                                              | error          |
+| `seo/lang`               | `<html>` has a `lang`                                                                                                                 | warn           |
 
 ### 4.5 Accessibility (design rule 6)
 
@@ -217,7 +217,7 @@ Load speed on a phone is tested with Lighthouse CI in `perf.yml` (§6), not insi
 ```json
 {
   "runId": "2026-11-20T10-00-00Z-ab12",
-  "tool": { "name": "doodley", "version": "0.1.0" },
+  "tool": { "name": "bevl", "version": "0.1.0" },
   "project": "spectr",
   "seed": 1,
   "renderer": { "desktop": "ANGLE (Apple M2)", "phone": "ANGLE (Apple M2)" },
@@ -233,7 +233,7 @@ Load speed on a phone is tested with Lighthouse CI in `perf.yml` (§6), not insi
       "message": "Heading contrast is 2.8:1 over the glass background",
       "fix": "Change the heading color to #1A1A2E or add a solid backing panel",
       "evidence": {
-        "screenshot": ".doodley/reports/.../pricing-phone.png",
+        "screenshot": ".bevl/reports/.../pricing-phone.png",
         "data": { "ratio": 2.8 }
       }
     }
@@ -246,7 +246,7 @@ The report has a JSON Schema in `packages/check/schema/report.schema.json`. The 
 
 ---
 
-## 6. Starting numbers (argue about these, then lock them in `doodley.budgets.json`)
+## 6. Starting numbers (argue about these, then lock them in `bevl.budgets.json`)
 
 | Budget                                            | Desktop | Phone   |
 | ------------------------------------------------- | ------- | ------- |
@@ -268,7 +268,7 @@ Lighthouse (phone profile, 3 runs, median), in `lighthouserc.json`:
 | Total Blocking Time      | 300 ms or less |
 | Performance score        | 0.8 or more    |
 
-The table above is the target. `doodley.budgets.json` keeps the target numbers. What `pnpm test:perf` enforces today (`lighthouserc.json`, `tools/perf.mjs`) is a measured starting point for the example, because the example is client-rendered and loads one 1.1 MB (303 KB gzip) script before anything paints:
+The table above is the target. `bevl.budgets.json` keeps the target numbers. What `pnpm test:perf` enforces today (`lighthouserc.json`, `tools/perf.mjs`) is a measured starting point for the example, because the example is client-rendered and loads one 1.1 MB (303 KB gzip) script before anything paints:
 
 | Metric                   | Enforced now | Why                                                                                                                                                                                                                                                                |
 | ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -351,7 +351,7 @@ How to run Claude Code without a person in the loop: use its non-interactive pri
 - Compare with pixelmatch. A test fails if more than 0.5% of pixels differ.
 - Implemented in `tools/visual.mjs`. Per example and viewport it takes 3 pictures: page top, halfway between the first two sections, and the last section. Time moves only through `step()`. Pixelmatch per-pixel threshold is 0.1.
 - Baselines are stored per platform in `tools/__screenshots__/<platform>/` because fonts and software WebGL differ between macOS and Linux. A missing baseline fails the run.
-- CI runs on `ubuntu-latest` with the Playwright Chromium pinned by `@doodley/check` and compares with `linux` baselines. Those are made only by the "Update visual baselines" workflow (same runner), never by hand. Locally, `pnpm test:visual -- --update` makes baselines for your own platform.
+- CI runs on `ubuntu-latest` with the Playwright Chromium pinned by `@bevl/check` and compares with `linux` baselines. Those are made only by the "Update visual baselines" workflow (same runner), never by hand. Locally, `pnpm test:visual -- --update` makes baselines for your own platform.
 - A PR that changes baselines must show old and new pictures in the PR description.
 
 ---

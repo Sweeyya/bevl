@@ -71,7 +71,7 @@ jobs:
           restore-keys: playwright-chromium-${{ runner.os }}-
 
       - name: Install Playwright Chromium
-        run: pnpm --filter @doodley/check exec playwright install chromium --with-deps
+        run: pnpm --filter @bevl/check exec playwright install chromium --with-deps
 
       - name: Run e2e tests
         run: pnpm test:e2e

@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { formatReport, runCheck } from "@doodley/check";
+import { formatReport, runCheck } from "@bevl/check";
 
 export interface CheckCommandOptions {
   url: string;

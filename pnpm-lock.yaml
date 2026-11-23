@@ -205,10 +205,10 @@ importers:
 
   examples/basic:
     dependencies:
-      '@doodley/a11y':
+      '@bevl/a11y':
         specifier: workspace:*
         version: link:../../packages/a11y
-      '@doodley/core':
+      '@bevl/core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -239,10 +239,10 @@ importers:
 
   examples/recipes:
     dependencies:
-      '@doodley/a11y':
+      '@bevl/a11y':
         specifier: workspace:*
         version: link:../../packages/a11y
-      '@doodley/core':
+      '@bevl/core':
         specifier: workspace:*
         version: link:../../packages/core
       react:
@@ -273,10 +273,10 @@ importers:
 
   fixtures/host:
     dependencies:
-      '@doodley/a11y':
+      '@bevl/a11y':
         specifier: workspace:*
         version: link:../../packages/a11y
-      '@doodley/core':
+      '@bevl/core':
         specifier: workspace:*
         version: link:../../packages/core
       '@react-three/fiber':
@@ -313,7 +313,7 @@ importers:
 
   packages/a11y:
     dependencies:
-      '@doodley/core':
+      '@bevl/core':
         specifier: workspace:*
         version: link:../core
       react:
@@ -357,13 +357,13 @@ importers:
 
   packages/cli:
     dependencies:
-      '@doodley/check':
+      '@bevl/check':
         specifier: workspace:*
         version: link:../check
-      '@doodley/optimizer':
+      '@bevl/optimizer':
         specifier: workspace:*
         version: link:../optimizer
-      '@doodley/tokens':
+      '@bevl/tokens':
         specifier: workspace:*
         version: link:../tokens
       commander:
@@ -419,7 +419,7 @@ importers:
 
   packages/effects:
     dependencies:
-      '@doodley/core':
+      '@bevl/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -453,7 +453,7 @@ importers:
 
   packages/mascot:
     dependencies:
-      '@doodley/core':
+      '@bevl/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -466,13 +466,13 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@doodley/check':
+      '@bevl/check':
         specifier: workspace:*
         version: link:../check
-      '@doodley/optimizer':
+      '@bevl/optimizer':
         specifier: workspace:*
         version: link:../optimizer
-      '@doodley/tokens':
+      '@bevl/tokens':
         specifier: workspace:*
         version: link:../tokens
       '@modelcontextprotocol/sdk':
@@ -528,7 +528,7 @@ importers:
 
   tools:
     dependencies:
-      '@doodley/check':
+      '@bevl/check':
         specifier: workspace:*
         version: link:../packages/check
       '@lhci/cli':

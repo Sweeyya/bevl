@@ -1,8 +1,8 @@
-# Doodley
+# Bevl
 
 Turn any brand into a fast, accessible 3D website, from inside the AI tool you already use.
 
-Doodley is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and others). You give the agent a brand kit, design tokens or a `DESIGN.md`. It generates a scroll-driven 3D site as source code **in your own repo**, then runs `doodley check` in a real browser and keeps fixing problems until the score is 90 or higher. You own the code and can deploy it anywhere.
+Bevl is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and others). You give the agent a brand kit, design tokens or a `DESIGN.md`. It generates a scroll-driven 3D site as source code **in your own repo**, then runs `bevl check` in a real browser and keeps fixing problems until the score is 90 or higher. You own the code and can deploy it anywhere.
 
 > **Status: early development.** Nothing is published to npm yet. The core pieces work end to end from a source checkout, but expect rough edges. See [What works today](#what-works-today) for what is and is not done.
 
@@ -10,22 +10,22 @@ Doodley is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and oth
 
 - **It is a website, not a game.** Scrolling (or swiping, or tapping) moves the camera. Text stays real HTML. Navigation is a normal menu. The keyboard always works.
 - **You describe the motion, it happens.** There is no fixed list of camera modes. A site describes its own scroll experience as data: a camera flying forward, a ring of screens spinning around a still camera, a room you turn inside of, or anything else you can express as keyframes.
-- **Every site comes tested.** `doodley check` loads the site in Chromium on a desktop and a phone profile, scrolls it, presses keys, and returns a score from 0 to 100. Every failure comes with a `Fix:` line an agent can act on.
+- **Every site comes tested.** `bevl check` loads the site in Chromium on a desktop and a phone profile, scrolls it, presses keys, and returns a score from 0 to 100. Every failure comes with a `Fix:` line an agent can act on.
 
 ## What works today
 
-| Area                                  | Status                                                                                                                                                                                                                                                                                                                                 |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Core runtime (`@doodley/core`)        | Works. Scroll choreography, six ready-made recipes, one progress value driven by scroll, wheel, touch, drag, swipe, tap and keyboard, snap-to-screen settling, a real HTML text layer (`<Section html={...}>`), brand tokens applied to materials, lights and fonts, a no-WebGL fallback, test mode and the `window.__doodley` bridge. |
-| Checker (`@doodley/check`)            | Works. 32 rules covering load, render, budgets, scroll, snapping, determinism, navigation, keyboard, HTML, SEO, contrast and brand. 27 broken fixtures prove the rules fail when they should, and browser end-to-end tests cover the real inputs.                                                                                      |
-| Accessibility layer (`@doodley/a11y`) | Works. Nav bar, skip link and keyboard. Nav links glide to screens.                                                                                                                                                                                                                                                                    |
-| Token reader (`@doodley/tokens`)      | Works. Reads `DESIGN.md` and design-token JSON, and holds the shared project commands (create, add-section, apply-brand).                                                                                                                                                                                                              |
-| Optimizer (`@doodley/optimizer`)      | Works for dedup, prune, weld, resample, instance and sparse with no extra packages. Draco (`--draco`) and WebP textures (`--textures`) are opt-in and need `draco3dgltf` or `sharp` installed. Not yet tested on models with textures.                                                                                                 |
-| CLI (`@doodley/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`.                                                                                                                                                                                                                                                                           |
-| MCP server (`@doodley/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`. Confined to the project folder and to localhost.                                                                                                                                                                                    |
-| Agent skill (`skills/doodley`)        | Written, with a test that keeps its rule table in sync with the checker. Not yet tried with a real agent.                                                                                                                                                                                                                              |
-| Effects (`@doodley/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                                                                                                                                                                               |
-| Mascot (`@doodley/mascot`)            | Empty. Planned for V2.                                                                                                                                                                                                                                                                                                                 |
+| Area                               | Status                                                                                                                                                                                                                                                                                                                              |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Core runtime (`@bevl/core`)        | Works. Scroll choreography, six ready-made recipes, one progress value driven by scroll, wheel, touch, drag, swipe, tap and keyboard, snap-to-screen settling, a real HTML text layer (`<Section html={...}>`), brand tokens applied to materials, lights and fonts, a no-WebGL fallback, test mode and the `window.__bevl` bridge. |
+| Checker (`@bevl/check`)            | Works. 32 rules covering load, render, budgets, scroll, snapping, determinism, navigation, keyboard, HTML, SEO, contrast and brand. 27 broken fixtures prove the rules fail when they should, and browser end-to-end tests cover the real inputs.                                                                                   |
+| Accessibility layer (`@bevl/a11y`) | Works. Nav bar, skip link and keyboard. Nav links glide to screens.                                                                                                                                                                                                                                                                 |
+| Token reader (`@bevl/tokens`)      | Works. Reads `DESIGN.md` and design-token JSON, and holds the shared project commands (create, add-section, apply-brand).                                                                                                                                                                                                           |
+| Optimizer (`@bevl/optimizer`)      | Works for dedup, prune, weld, resample, instance and sparse with no extra packages. Draco (`--draco`) and WebP textures (`--textures`) are opt-in and need `draco3dgltf` or `sharp` installed. Not yet tested on models with textures.                                                                                              |
+| CLI (`@bevl/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`.                                                                                                                                                                                                                                                                        |
+| MCP server (`@bevl/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`. Confined to the project folder and to localhost.                                                                                                                                                                                 |
+| Agent skill (`skills/bevl`)        | Written, with a test that keeps its rule table in sync with the checker. Not yet tried with a real agent.                                                                                                                                                                                                                           |
+| Effects (`@bevl/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                                                                                                                                                                            |
+| Mascot (`@bevl/mascot`)            | Empty. Planned for V2.                                                                                                                                                                                                                                                                                                              |
 
 Not done yet: the `html/order-matches` rule, Linux screenshot baselines for the visual tests, the Spectr demo, golden agent tasks, and publishing to npm.
 
@@ -36,8 +36,8 @@ Both examples (`examples/basic` and `examples/recipes`) score 100/100.
 You need Node 22+ and pnpm 12.
 
 ```sh
-git clone https://github.com/Sweeyya/doodley.git
-cd doodley
+git clone https://github.com/Sweeyya/bevl.git
+cd bevl
 pnpm install
 pnpm build
 
@@ -55,7 +55,7 @@ In a second terminal, check it:
 node packages/cli/dist/bin.js check http://localhost:3042 --project-dir examples/basic
 ```
 
-You get a score, a list of failures with fixes, and a report in `.doodley/reports/<run>/report.json`.
+You get a score, a list of failures with fixes, and a report in `.bevl/reports/<run>/report.json`.
 
 Other commands:
 
@@ -66,7 +66,7 @@ node packages/cli/dist/bin.js optimize model.glb # shrink a model
 
 ## Describing scroll behavior
 
-A site is a `DoodleyConfig` (usually `doodley.json`). If you give it no `choreography`, it flies forward one screen per section. To do something else, add one:
+A site is a `BevlConfig` (usually `bevl.json`). If you give it no `choreography`, it flies forward one screen per section. To do something else, add one:
 
 ```json
 {
@@ -112,10 +112,10 @@ Bad specs are rejected with the field path and a fix, for example `beats[2].id "
 
 ### Recipes
 
-You don't have to write a choreography from scratch. `@doodley/core` exports `recipes` for common experiences: `fly-through`, `sphere-of-screens`, `carousel`, `room`, `horizontal-gallery` and `orbit-product`. Each one works for 1 to 12 sections.
+You don't have to write a choreography from scratch. `@bevl/core` exports `recipes` for common experiences: `fly-through`, `sphere-of-screens`, `carousel`, `room`, `horizontal-gallery` and `orbit-product`. Each one works for 1 to 12 sections.
 
 ```ts
-import { recipes } from "@doodley/core";
+import { recipes } from "@bevl/core";
 const choreography = recipes["room"].create(sections.map((s) => s.id));
 ```
 
@@ -124,13 +124,13 @@ Start from a recipe and edit it. `examples/recipes` renders any of them: `?recip
 ## The checker
 
 ```sh
-doodley check <url> [--viewport desktop|phone] [--rule <id>] [--json]
+bevl check <url> [--viewport desktop|phone] [--rule <id>] [--json]
 ```
 
 - "Done" means a score of 90 or more and no errors.
 - Hard gates: if `load/ready`, `render/not-blank` or `scroll/reaches-every-section` fails, the score is 0.
-- It runs in test mode (`?doodley-test`): a clock the checker controls and seeded randomness, so the same site gives the same result every run.
-- Test mode only works on `localhost` by default. To check a deployed preview, set `"testMode": "always"` in `doodley.json`.
+- It runs in test mode (`?bevl-test`): a clock the checker controls and seeded randomness, so the same site gives the same result every run.
+- Test mode only works on `localhost` by default. To check a deployed preview, set `"testMode": "always"` in `bevl.json`.
 
 Every rule and its severity is listed in [TESTING.md](TESTING.md).
 
@@ -141,10 +141,10 @@ The MCP server is not on npm yet. From a source checkout, point your agent at th
 ```json
 {
   "mcpServers": {
-    "doodley": {
+    "bevl": {
       "command": "node",
-      "args": ["/absolute/path/to/doodley/packages/mcp/dist/server.js"],
-      "env": { "DOODLEY_PROJECT_ROOT": "/absolute/path/to/your/project" }
+      "args": ["/absolute/path/to/bevl/packages/mcp/dist/server.js"],
+      "env": { "BEVL_PROJECT_ROOT": "/absolute/path/to/your/project" }
     }
   }
 }
@@ -152,8 +152,8 @@ The MCP server is not on npm yet. From a source checkout, point your agent at th
 
 The server treats every tool input as untrusted:
 
-- Files are only read or written inside `DOODLEY_PROJECT_ROOT` (default: the working directory). `../` and symlink escapes are rejected.
-- `check_site` only opens `http(s)` URLs on localhost. To allow remote sites, set `DOODLEY_ALLOW_REMOTE=1`. Cloud metadata addresses are always blocked.
+- Files are only read or written inside `BEVL_PROJECT_ROOT` (default: the working directory). `../` and symlink escapes are rejected.
+- `check_site` only opens `http(s)` URLs on localhost. To allow remote sites, set `BEVL_ALLOW_REMOTE=1`. Cloud metadata addresses are always blocked.
 - Tools only touch the file types they expect (`.glb`, `.md`, `.json`).
 
 ## Repo layout
@@ -167,7 +167,7 @@ The server treats every tool input as untrusted:
 | `packages/optimizer` | `.glb` shrinker                                     |
 | `packages/effects`   | Visual effects (scaffold)                           |
 | `packages/mascot`    | Mascot motion (V2)                                  |
-| `packages/cli`       | The `doodley` command                               |
+| `packages/cli`       | The `bevl` command                                  |
 | `packages/mcp`       | The MCP server                                      |
 | `examples/basic`     | A three-section example that scores 100             |
 | `fixtures/`          | Tiny broken sites, each of which must fail one rule |

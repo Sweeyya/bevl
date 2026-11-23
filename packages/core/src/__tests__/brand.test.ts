@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { BoxGeometry, Mesh, MeshStandardMaterial, Scene } from "three";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_BRAND, fontStack, resolveBrand, useBrand } from "../brand.js";
-import { DoodleyContext, type DoodleyContextValue } from "../context.js";
+import { BevlContext, type BevlContextValue } from "../context.js";
 import { collectMaterials } from "../materials.js";
 
 describe("resolveBrand", () => {
@@ -39,7 +39,7 @@ function Probe(): null {
 }
 
 describe("useBrand", () => {
-  it("falls back to defaults outside DoodleySite", () => {
+  it("falls back to defaults outside BevlSite", () => {
     renderToStaticMarkup(createElement(Probe));
     expect(probed).toBe(DEFAULT_BRAND.colors.primary);
   });
@@ -50,8 +50,8 @@ describe("useBrand", () => {
     };
     renderToStaticMarkup(
       createElement(
-        DoodleyContext.Provider,
-        { value: value as DoodleyContextValue },
+        BevlContext.Provider,
+        { value: value as BevlContextValue },
         createElement(Probe),
       ),
     );

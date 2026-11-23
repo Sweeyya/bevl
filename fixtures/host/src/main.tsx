@@ -1,4 +1,4 @@
-import { DoodleySite } from "@doodley/core";
+import { BevlSite } from "@bevl/core";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import type { Fixture, Head } from "./fixture.js";
@@ -37,13 +37,13 @@ const Scene = fixture.Scene;
 
 createRoot(rootEl).render(
   <StrictMode>
-    <DoodleySite
+    <BevlSite
       config={fixture.config}
       brand={fixture.brand}
       overlay={fixture.overlay}
       fallback={fixture.fallback}
     >
       {Scene ? <Scene /> : null}
-    </DoodleySite>
+    </BevlSite>
   </StrictMode>,
 );

@@ -17,7 +17,7 @@ labels: bug
 
 ## Check report
 
-<!-- Paste the output of: doodley check --json -->
+<!-- Paste the output of: bevl check --json -->
 
 ```json
 
@@ -27,5 +27,5 @@ labels: bug
 
 - OS:
 - Node version:
-- doodley version:
+- bevl version:
 - Browser:

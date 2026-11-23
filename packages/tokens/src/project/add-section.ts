@@ -48,7 +48,7 @@ export async function addSection(opts: AddSectionOptions): Promise<string[]> {
   const id = validateSectionId(opts.id);
   const title = validateSectionTitle(opts.title);
   const root = projectDirOf(opts.dir);
-  const configPath = resolveInside(root, "doodley.json");
+  const configPath = resolveInside(root, "bevl.json");
   const config = await readConfig(configPath);
   if (config.sections.some((s) => s.id === id)) {
     throw new Error(`Section "${id}" already exists. Fix: choose a different id.`);
@@ -81,7 +81,7 @@ export async function addSection(opts: AddSectionOptions): Promise<string[]> {
     notes.push(`Inserted a placeholder <Section id="${id}"> into src/App.tsx.`);
   } else {
     notes.push(
-      `Could not find "<ambientLight" in src/App.tsx. Fix: add <Section id="${id}" title={${JSON.stringify(title)}}> with your 3D content inside <DoodleySite> yourself.`,
+      `Could not find "<ambientLight" in src/App.tsx. Fix: add <Section id="${id}" title={${JSON.stringify(title)}}> with your 3D content inside <BevlSite> yourself.`,
     );
   }
   await writeJson(configPath, config);

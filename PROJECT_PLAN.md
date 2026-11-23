@@ -1,8 +1,8 @@
-# Doodley: Project Plan
+# Bevl: Project Plan
 
 This file explains the whole idea and every file in our repo. Read it before you write code.
 
-The name is **Doodley**. The CLI is `doodley`. Packages are `@doodley/<name>`.
+The name is **Bevl**. The CLI is `bevl`. Packages are `@bevl/<name>`.
 
 The full testing plan is in `TESTING.md`. Read it before you write any test or any feature.
 
@@ -69,7 +69,7 @@ These rules are built into the engine. Every feature has to follow them. **`chec
 4. **Motion is gentle by default.** No camera spins or tilts, smooth easing and a speed limit. A spec can opt out on purpose with `allow`, and the report shows the opt-out.
 5. **Navigation is normal.** A real menu and real buttons. Clicking a link glides the camera to that section.
 6. **Reduced motion mode.** If the user turns on reduced motion, we use soft fades.
-7. **Test mode is repeatable.** With `?doodley-test`, the site runs on a clock we control and uses seeded randomness. The same test gives the same pictures every time.
+7. **Test mode is repeatable.** With `?bevl-test`, the site runs on a clock we control and uses seeded randomness. The same test gives the same pictures every time.
 
 ---
 
@@ -81,7 +81,7 @@ These rules are built into the engine. Every feature has to follow them. **`chec
 - **Brand tokens in:** read design token JSON or a DESIGN.md file. Turn colors, fonts and material style into 3D materials and lighting.
 - **Optimizer CLI:** one command that compresses and simplifies models.
 - **Effects pack:** glass and a shader background.
-- **Checker:** `doodley check` loads the site in a real browser, scrolls it, clicks the menu, takes pictures and gives a score from 0 to 100 with a fix for every problem.
+- **Checker:** `bevl check` loads the site in a real browser, scrolls it, clicks the menu, takes pictures and gives a score from 0 to 100 with a fix for every problem.
 - **MCP server:** tools to create a site, add a section, apply a brand, optimize assets **and check the site**.
 - **Skill:** a SKILL.md so agents know when to use us, and that they must run `check` before they say they are done.
 - **Demo:** the Spectr landing page rebuilt in 3D, with its check report.
@@ -147,14 +147,14 @@ We use a **monorepo**: one repo with many small packages. People can install onl
 | `mascot`    | Mascot motion and behaviors.                                                                                 |
 | `check`     | **The checker. Runs the site in a browser, tests every design rule and budget, and writes a scored report.** |
 | `mcp`       | The MCP server that agents call.                                                                             |
-| `cli`       | Command line tool. Examples: `doodley optimize scene.glb`, `doodley check`                                   |
+| `cli`       | Command line tool. Examples: `bevl optimize scene.glb`, `bevl check`                                         |
 
 ---
 
 ## 9. Repo Map
 
 ```
-doodley/
+bevl/
   packages/
     core/
     tokens/
@@ -175,7 +175,7 @@ doodley/
   golden/
     tasks/         the 5 MCP golden task prompts and their expected checks
   skills/
-    doodley/
+    bevl/
       SKILL.md
   docs/
     adr/           decision records
@@ -229,7 +229,7 @@ doodley/
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `AGENTS.md`                 | Main rules for every agent (Devin, Codex, Cursor). Build commands, test commands, code style, folders to never touch, commit rules.                                                                                                                        |
 | `CLAUDE.md`                 | Short. First line is `@AGENTS.md` so Claude reads the same rules. Add Claude only notes here.                                                                                                                                                              |
-| `skills/doodley/SKILL.md`   | Tells agents when to use our tool and the work loop: build, run `check`, fix, run `check` again. The description should match how people ask. Example: "Use when the user wants a 3D website, a 3D landing page, an animated mascot or a branded 3D site." |
+| `skills/bevl/SKILL.md`      | Tells agents when to use our tool and the work loop: build, run `check`, fix, run `check` again. The description should match how people ask. Example: "Use when the user wants a 3D website, a 3D landing page, an animated mascot or a branded 3D site." |
 | `apps/docs/public/llms.txt` | Short summary of our docs for AI tools to read.                                                                                                                                                                                                            |
 
 ### 10.2 Engineering Docs
@@ -272,7 +272,7 @@ doodley/
 | `.github/dependabot.yml` | Bot that keeps dependencies updated.                                                    |
 | `server.json`            | Our listing info for the official MCP Registry.                                         |
 | `lighthouserc.json`      | Lighthouse CI budgets for the demos.                                                    |
-| `doodley.budgets.json`   | Default 3D budgets (triangles, draw calls, texture MB, model MB, load time).            |
+| `bevl.budgets.json`      | Default 3D budgets (triangles, draw calls, texture MB, model MB, load time).            |
 
 ### 10.5 CI Workflows (`.github/workflows/`)
 
@@ -294,7 +294,7 @@ CI runs checks on every PR. A PR can't merge until all checks pass.
 3D output is hard to test with unit tests alone. We use 8 layers. Full details, every rule and every number are in `TESTING.md`.
 
 1. **Unit tests:** pure logic. Token to material mapping, budget math, camera path math, MCP tool inputs.
-2. **The checker (`doodley check`):** the main test. It runs the site in a real browser and tests every design rule, the HTML layer, accessibility, brand colors and budgets. It gives a score and a fix for each problem. Users' agents run it, our CI runs it, and our MCP runs it.
+2. **The checker (`bevl check`):** the main test. It runs the site in a real browser and tests every design rule, the HTML layer, accessibility, brand colors and budgets. It gives a score and a fix for each problem. Users' agents run it, our CI runs it, and our MCP runs it.
 3. **Broken fixtures:** a small site for each kind of problem (blank screen, jumpy camera, text in the canvas, low contrast, over budget, and more). Each one must fail its check. This tests the tester.
 4. **Screenshot tests:** in test mode, so pictures are the same every run. If a picture changes, the test fails and shows the difference.
 5. **Speed tests:** Lighthouse on a phone profile plus 3D budgets. Fail the PR if the site gets too heavy or too slow.
@@ -332,10 +332,10 @@ Order to do these:
 
 1. **npm:** publish packages with good keywords (threejs, react three fiber, mcp, 3d website, mascot, testing).
 2. **Official MCP Registry:** add `server.json` and run `mcp-publisher publish`. Our name will start with `io.github.sweeyya/`. Other directories copy from it.
-3. **skills.sh:** so people can run `npx skills add sweeyya/doodley`.
+3. **skills.sh:** so people can run `npx skills add sweeyya/bevl`.
 4. **Claude directory:** submit our plugin bundle (skills plus MCP) from GitHub once docs and demos look polished.
 5. **GitHub topics:** threejs, react three fiber, mcp, 3d, webgl.
-6. **Docs site:** one page per use case, a playground, a demo gallery, and a before and after page (agent alone vs agent with Doodley, with both check scores).
+6. **Docs site:** one page per use case, a playground, a demo gallery, and a before and after page (agent alone vs agent with Bevl, with both check scores).
 
 Stars don't matter for listing. Good demos bring stars.
 

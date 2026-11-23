@@ -13,9 +13,9 @@ const rule: Rule = {
       .evaluate(() => {
         const brand = (
           window as unknown as {
-            __doodley?: { brand(): { fonts: { heading: string; body: string } } | null };
+            __bevl?: { brand(): { fonts: { heading: string; body: string } } | null };
           }
-        ).__doodley?.brand();
+        ).__bevl?.brand();
         if (!brand) return null;
         const first = (value: string): string =>
           (value.split(",")[0] ?? "")
@@ -47,7 +47,7 @@ const rule: Rule = {
         severity: "warn",
         viewport: ctx.viewport.name,
         message: `Text is not using the brand fonts: ${wrong.join(", ")}.`,
-        fix: "Remove font-family overrides on text so it inherits the brand font that DoodleySite sets, or use var(--doodley-font-heading) and var(--doodley-font-body).",
+        fix: "Remove font-family overrides on text so it inherits the brand font that BevlSite sets, or use var(--bevl-font-heading) and var(--bevl-font-body).",
       },
     ];
   },

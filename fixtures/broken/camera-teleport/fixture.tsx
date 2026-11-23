@@ -1,4 +1,4 @@
-import { registerBehavior } from "@doodley/core";
+import { registerBehavior } from "@bevl/core";
 import type { Fixture } from "../../host/src/fixture.js";
 import { good, withChoreography } from "../../host/src/good.js";
 

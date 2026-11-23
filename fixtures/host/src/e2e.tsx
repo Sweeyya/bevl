@@ -1,6 +1,6 @@
-import { DoodleyA11y } from "@doodley/a11y";
-import type { Choreography, DoodleyConfig, InputKind, Track } from "@doodley/core";
-import { defaultChoreography } from "@doodley/core";
+import { BevlA11y } from "@bevl/a11y";
+import type { BevlConfig, Choreography, InputKind, Track } from "@bevl/core";
+import { defaultChoreography } from "@bevl/core";
 import { useThree } from "@react-three/fiber";
 import type { ReactNode } from "react";
 import type { Fixture } from "./fixture.js";
@@ -17,7 +17,7 @@ export function number(name: string): number | undefined {
   return v === null ? undefined : Number(v);
 }
 
-export function sectionList(count: number): DoodleyConfig["sections"] {
+export function sectionList(count: number): BevlConfig["sections"] {
   return Array.from({ length: count }, (_, i) => ({ id: `s${i + 1}`, title: `Section ${i + 1}` }));
 }
 
@@ -52,21 +52,21 @@ function Probe(): JSX.Element {
 }
 
 export function buildFixture(
-  sections: DoodleyConfig["sections"],
+  sections: BevlConfig["sections"],
   patch: (base: Choreography) => Choreography,
   extra?: ReactNode,
 ): Fixture {
-  const config: DoodleyConfig = {
+  const config: BevlConfig = {
     name: "E2E fixture",
     sections,
     choreography: patch(defaultChoreography(sections.map((s) => s.id))),
   };
   return {
     config,
-    head: { title: "Doodley e2e", description: "Input end-to-end fixture." },
+    head: { title: "Bevl e2e", description: "Input end-to-end fixture." },
     overlay: (
       <>
-        <DoodleyA11y config={{ sections }} />
+        <BevlA11y config={{ sections }} />
         <a
           href="#e2e-link"
           data-testid="link"

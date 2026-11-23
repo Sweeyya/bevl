@@ -14,9 +14,9 @@ const rule: Rule = {
       .evaluate(async () => {
         const bridge = (
           window as unknown as {
-            __doodley?: { ready: Promise<void>; sections(): Array<{ id: string }> };
+            __bevl?: { ready: Promise<void>; sections(): Array<{ id: string }> };
           }
-        ).__doodley;
+        ).__bevl;
         if (!bridge) return null;
         await bridge.ready;
         const problems: Array<{ id: string; problem: string }> = [];
@@ -45,7 +45,7 @@ const rule: Rule = {
           severity: "error" as const,
           viewport: ctx.viewport.name,
           message: `Could not read sections from the test bridge on ${ctx.viewport.name}.`,
-          fix: "Make sure the page renders <DoodleySite> and opens in test mode (?doodley-test).",
+          fix: "Make sure the page renders <BevlSite> and opens in test mode (?bevl-test).",
         },
       ];
     }

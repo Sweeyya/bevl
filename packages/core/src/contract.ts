@@ -1,20 +1,20 @@
 /**
- * Doodley shared contracts.
+ * Bevl shared contracts.
  *
- * Contract A: DoodleyConfig — the doodley.json every project has.
- * Contract B: DoodleyBridge — window.__doodley exposed in test mode.
+ * Contract A: BevlConfig — the bevl.json every project has.
+ * Contract B: BevlBridge — window.__bevl exposed in test mode.
  *
  * If either contract changes, update ARCHITECTURE.md first.
  */
 
 import type { Choreography } from "./choreography/types.js";
 
-// ─── Contract A: doodley.json ────────────────────────────────────────────────
+// ─── Contract A: bevl.json ────────────────────────────────────────────────
 
-/** Where `?doodley-test` is honored: "localhost" (default), "always" (e.g. checking a preview URL), or "never". */
+/** Where `?bevl-test` is honored: "localhost" (default), "always" (e.g. checking a preview URL), or "never". */
 export type TestModeSetting = "localhost" | "always" | "never";
 
-export interface DoodleyConfig {
+export interface BevlConfig {
   /** Project name, used in reports */
   name: string;
   /** Path to the brand/token file (DESIGN.md or design-token JSON) */
@@ -27,9 +27,9 @@ export interface DoodleyConfig {
    * See docs/adr/003-scroll-choreography.md.
    */
   choreography?: Choreography;
-  /** Where the test bridge may be switched on with ?doodley-test. Default "localhost". */
+  /** Where the test bridge may be switched on with ?bevl-test. Default "localhost". */
   testMode?: TestModeSetting;
-  /** Performance budgets. Defaults come from doodley.budgets.json */
+  /** Performance budgets. Defaults come from bevl.budgets.json */
   budgets?: Partial<Budgets>;
   /** Viewports to test. Defaults: desktop + phone */
   viewports?: ViewportConfig[];
@@ -66,7 +66,7 @@ export interface ViewportConfig {
   hasTouch: boolean;
 }
 
-/** Brand tokens passed to DoodleySite. Structurally identical to BrandTokens in @doodley/tokens. */
+/** Brand tokens passed to BevlSite. Structurally identical to BrandTokens in @bevl/tokens. */
 export interface BrandTokens {
   colors: {
     primary: string;
@@ -82,9 +82,9 @@ export interface BrandTokens {
   radiusBase: number;
 }
 
-// ─── Contract B: window.__doodley ────────────────────────────────────────────
+// ─── Contract B: window.__bevl ────────────────────────────────────────────
 
-export interface DoodleyBridge {
+export interface BevlBridge {
   /** Resolves when scene, assets and fonts are loaded */
   ready: Promise<void>;
   /** Advance time by ms. Returns the new time and frame number. */
@@ -110,7 +110,7 @@ export interface DoodleyBridge {
   /** Mascot state if present */
   mascot(): MascotState | null;
   /** Ordered event log */
-  events(): DoodleyEvent[];
+  events(): BevlEvent[];
 }
 
 export interface SectionState {
@@ -158,7 +158,7 @@ export type MaterialState = { name: string; colors: string[] };
 export type TextMeshState = { text: string; charCount: number };
 export type MascotState = { visible: boolean; screenBox: Box2; state: string };
 export type Box2 = { x: number; y: number; width: number; height: number };
-export type DoodleyEvent =
+export type BevlEvent =
   | { type: "section-entered"; sectionId: string; time: number }
   | { type: "nav-clicked"; target: string; time: number }
   | { type: "glide-start"; from: string; to: string; time: number }

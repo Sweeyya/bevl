@@ -3,7 +3,7 @@ import { VERSION } from "../index.js";
 import { parseJson } from "../parse-json.js";
 import { parseMd } from "../parse-md.js";
 
-describe("@doodley/tokens", () => {
+describe("@bevl/tokens", () => {
   it("exports a version string", () => {
     expect(VERSION).toBe("0.1.0");
   });

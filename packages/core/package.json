@@ -1,5 +1,5 @@
 {
-  "name": "@doodley/core",
+  "name": "@bevl/core",
   "version": "0.1.0",
   "description": "3D runtime: sections, scroll camera path, design rules, test mode and test bridge",
   "type": "module",

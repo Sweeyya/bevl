@@ -30,7 +30,7 @@ async function buildGlb(): Promise<Uint8Array> {
 }
 
 beforeAll(async () => {
-  dir = mkdtempSync(join(tmpdir(), "doodley-opt-"));
+  dir = mkdtempSync(join(tmpdir(), "bevl-opt-"));
   input = join(dir, "model.glb");
   writeFileSync(input, await buildGlb());
 });

@@ -1,4 +1,4 @@
-import { registerBehavior } from "@doodley/core";
+import { registerBehavior } from "@bevl/core";
 import { buildFixture, sectionList } from "../../host/src/e2e.js";
 
 registerBehavior("e2e-lift", (progress, ctx) => {

@@ -19,7 +19,7 @@ const rule: Rule = {
   async run(ctx) {
     const data = await ctx.page
       .evaluate(() => {
-        const bridge = (window as unknown as { __doodley?: BrandBridge }).__doodley;
+        const bridge = (window as unknown as { __bevl?: BrandBridge }).__bevl;
         const brand = bridge?.brand();
         return brand && bridge ? { colors: brand.colors, materials: bridge.materials() } : null;
       })

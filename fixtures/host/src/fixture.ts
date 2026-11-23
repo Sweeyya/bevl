@@ -1,4 +1,4 @@
-import type { BrandTokens, DoodleyConfig } from "@doodley/core";
+import type { BevlConfig, BrandTokens } from "@bevl/core";
 import type { ComponentType, ReactNode } from "react";
 
 export interface Head {
@@ -7,7 +7,7 @@ export interface Head {
 }
 
 export interface Fixture {
-  config: DoodleyConfig;
+  config: BevlConfig;
   overlay?: ReactNode;
   Scene?: ComponentType;
   fallback?: ReactNode;

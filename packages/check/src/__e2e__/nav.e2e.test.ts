@@ -12,8 +12,8 @@ describe("nav with many sections", () => {
 
     for (let i = 0; i < count; i++) {
       await links.nth(i).click({ timeout: 3000 });
-      await page.evaluate(() => window.__doodley?.step(2000));
-      const progress = await page.evaluate(() => window.__doodley?.scroll() ?? Number.NaN);
+      await page.evaluate(() => window.__bevl?.step(2000));
+      const progress = await page.evaluate(() => window.__bevl?.scroll() ?? Number.NaN);
       expect(progress).toBeCloseTo(i / (count - 1), 2);
     }
     await context.close();

@@ -1,4 +1,4 @@
-import { DoodleyContext } from "@doodley/core";
+import { BevlContext } from "@bevl/core";
 import { useContext } from "react";
 import { useReducedMotion } from "../hooks/useReducedMotion.js";
 import type { A11yConfig } from "../types.js";
@@ -55,8 +55,8 @@ const STYLES = {
   } as React.CSSProperties,
 };
 
-export function DoodleyA11y({ config }: Props): JSX.Element | null {
-  const ctx = useContext(DoodleyContext);
+export function BevlA11y({ config }: Props): JSX.Element | null {
+  const ctx = useContext(BevlContext);
   const reducedMotion = useReducedMotion();
   const sections = config.sections;
   const skipLabel = config.skipLinkLabel ?? "Skip to content";

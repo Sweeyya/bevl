@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "DoodleyReport",
+  "title": "BevlReport",
   "type": "object",
   "required": ["runId", "tool", "project", "seed", "score", "passed", "groups", "findings"],
   "properties": {

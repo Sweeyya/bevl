@@ -1,5 +1,5 @@
 /**
- * @doodley/effects
+ * @bevl/effects
  *
  * Glass, shader backgrounds and other visual effects.
  */

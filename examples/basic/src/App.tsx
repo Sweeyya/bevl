@@ -1,9 +1,9 @@
-import { DoodleyA11y } from "@doodley/a11y";
-import type { DoodleyConfig } from "@doodley/core";
-import { DoodleySite, Section } from "@doodley/core";
+import { BevlA11y } from "@bevl/a11y";
+import type { BevlConfig } from "@bevl/core";
+import { BevlSite, Section } from "@bevl/core";
 
-const config: DoodleyConfig = {
-  name: "Doodley Basic Example",
+const config: BevlConfig = {
+  name: "Bevl Basic Example",
   sections: [
     { id: "hero", title: "Hero" },
     { id: "features", title: "Features" },
@@ -13,13 +13,13 @@ const config: DoodleyConfig = {
 
 export function App(): JSX.Element {
   return (
-    <DoodleySite config={config} overlay={<DoodleyA11y config={{ sections: config.sections }} />}>
+    <BevlSite config={config} overlay={<BevlA11y config={{ sections: config.sections }} />}>
       <Section
         id="hero"
         title="Hero"
         html={
           <>
-            <h1>Doodley Basic Example</h1>
+            <h1>Bevl Basic Example</h1>
             <p>A scroll-driven 3D site where every word is real HTML.</p>
           </>
         }
@@ -65,6 +65,6 @@ export function App(): JSX.Element {
 
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 10, 5]} intensity={1} />
-    </DoodleySite>
+    </BevlSite>
   );
 }

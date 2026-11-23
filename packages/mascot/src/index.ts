@@ -1,5 +1,5 @@
 /**
- * @doodley/mascot
+ * @bevl/mascot
  *
  * Mascot motion and behaviors (V2).
  * Bend, squash, bob and blink using shader deformers. No bones needed.

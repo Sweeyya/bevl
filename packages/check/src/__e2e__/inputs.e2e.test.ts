@@ -36,7 +36,7 @@ describe("wheel only", () => {
     const { page } = await openTracked("inputs", { fine: "wheel" });
     const length = await scrollLength(page);
     const scroller = await page.evaluate(() => {
-      const el = document.querySelector<HTMLElement>("[data-doodley-scroller]");
+      const el = document.querySelector<HTMLElement>("[data-bevl-scroller]");
       return el ? getComputedStyle(el).overflowY : "";
     });
     expect(scroller).toBe("hidden");
@@ -49,7 +49,7 @@ describe("wheel only", () => {
     await page.mouse.wheel(0, length * 0.3);
     await waitProgress({ page } as Opened, 0.6);
     expect(
-      await page.evaluate(() => document.querySelector("[data-doodley-scroller]")?.scrollTop),
+      await page.evaluate(() => document.querySelector("[data-bevl-scroller]")?.scrollTop),
     ).toBe(0);
 
     await page.mouse.wheel(0, length * 2);
@@ -106,7 +106,7 @@ describe("touch on a phone", () => {
     const length = await scrollLength(page);
     await touchSwipe(context, page, 0, -length * 0.08);
     await waitProgress(o, 0.08);
-    await page.evaluate(() => window.__doodley?.step(600));
+    await page.evaluate(() => window.__bevl?.step(600));
     await waitProgress(o, 0.25);
   });
 });
@@ -155,7 +155,7 @@ describe("horizontal swipe", () => {
     const length = await scrollLength(page);
     expect(
       await page.evaluate(
-        () => document.querySelector<HTMLElement>("[data-doodley-scroller]")?.style.touchAction,
+        () => document.querySelector<HTMLElement>("[data-bevl-scroller]")?.style.touchAction,
       ),
     ).toBe("pan-y pinch-zoom");
     await recordPrevented(page, ["touchmove"]);
@@ -210,7 +210,7 @@ describe("coarse vs fine selection", () => {
   const params = { fine: "wheel", coarse: "swipe-x" };
   const state = (page: Opened["page"]) =>
     page.evaluate(() => {
-      const el = document.querySelector<HTMLElement>("[data-doodley-scroller]");
+      const el = document.querySelector<HTMLElement>("[data-bevl-scroller]");
       return {
         coarse: matchMedia("(pointer: coarse)").matches,
         overflow: el ? getComputedStyle(el).overflowY : "",

@@ -70,13 +70,13 @@ export class FakeSite {
     this.document = {
       title: opts.title ?? "Site",
       querySelector: (sel: string) =>
-        sel === "[data-doodley-scroller]" && opts.scroller !== false ? scroller : null,
+        sel === "[data-bevl-scroller]" && opts.scroller !== false ? scroller : null,
       getElementById: (id: string) => (ids.includes(id.replace("section-", "")) ? {} : null),
       scrollingElement: null,
       documentElement: { scrollTop: 0, scrollHeight: 0, clientHeight: 0 },
     };
-    this.window.__doodleyConsoleErrors = opts.consoleErrors ?? [];
-    if (opts.bridge !== false) this.window.__doodley = this.makeBridge();
+    this.window.__bevlConsoleErrors = opts.consoleErrors ?? [];
+    if (opts.bridge !== false) this.window.__bevl = this.makeBridge();
   }
 
   private makeBridge() {
