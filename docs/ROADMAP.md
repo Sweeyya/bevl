@@ -34,6 +34,8 @@ Taste, intake and quiet agents (the plan for brand-less prompts, house taste, au
 
 Asset pack (generate colours, textures, icons and models into a folder first, with three.js and glTF Transform as the default and Blender optional; sharp corners): `docs/plans/asset-pack.md`.
 
+Between test sites (the prompt to paste, the session record JSON, and what to send back): `docs/plans/session-recap.md`.
+
 ## 4. Publishing to npm
 
 How people would use it once published: the MCP server by adding `npx -y @toros/mcp` to their AI tool's settings, and the CLI with `npx @toros/cli check <url>`. A plain `npx toros` needs an unscoped package named `toros`, which is free on npm today. The skill is separate and is distributed as files from GitHub or skills.sh.
