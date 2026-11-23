@@ -32,6 +32,8 @@ Written 2026-11-23. Status: plan, nothing here is built yet. It records what the
 
 **Bolt.new** (stackblitz, MIT, about 16.6K stars) is fully open source, including its system prompt, and gives the AI control of the whole environment.
 
+**Toros's own taste.** Toros's taste library is original. It deliberately does not follow the look Anthropic's skill tends to produce (the owner's preference).
+
 ## 3. Proposed design
 
 ### 3.1 Intake: what the agent does with what it is given

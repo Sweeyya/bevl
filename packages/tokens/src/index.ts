@@ -14,4 +14,5 @@ export { applyBrand } from "./project/apply-brand.js";
 export { createSite } from "./project/create.js";
 export { resolveInside } from "./project/inside.js";
 export { readTokenFile } from "./read.js";
+export * from "./taste/index.js";
 export type { BrandTokens, TokenSourceFormat } from "./types.js";

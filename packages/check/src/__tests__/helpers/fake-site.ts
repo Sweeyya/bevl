@@ -21,6 +21,8 @@ export interface FakeSiteOptions {
   /** Maps progress after each stepped frame, to model snapping. Default: none. */
   settle?: (progress: number) => number;
   stats?: { triangles: number; drawCalls: number };
+  brand?: { colors: Record<string, string> } | null;
+  materials?: { name: string; colors: string[] }[];
   /** Section DOM anchors that exist. Default: all. */
   domIds?: string[];
   /** Keys the page ignores. */
@@ -108,6 +110,8 @@ export class FakeSite {
         fov: 60,
       }),
       stats: () => this.opts.stats ?? { triangles: 100, drawCalls: 10 },
+      brand: () => this.opts.brand ?? null,
+      materials: () => this.opts.materials ?? [],
     };
   }
 

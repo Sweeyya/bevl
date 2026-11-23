@@ -4,6 +4,7 @@ import { addSection, applyBrand, createSite } from "@toros/tokens";
 import { Command } from "commander";
 import { checkSite } from "./commands/check.js";
 import { optimizeAssets } from "./commands/optimize.js";
+import { registerTasteCommands } from "./commands/taste.js";
 import { VERSION } from "./index.js";
 
 const program = new Command();
@@ -83,6 +84,8 @@ program
       });
     },
   );
+
+registerTasteCommands(program);
 
 program.parseAsync(process.argv).catch((err: unknown) => {
   process.stderr.write(`${err instanceof Error ? err.message : String(err)}\n`);
