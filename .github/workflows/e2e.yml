@@ -6,6 +6,7 @@ name: E2E
 
 on:
   pull_request:
+    types: [labeled, synchronize, reopened]
     paths:
       - "packages/core/**"
       - "packages/check/**"
@@ -22,6 +23,7 @@ on:
       - "packages/check/**"
       - "packages/mcp/**"
       - "fixtures/**"
+  workflow_dispatch:
 
 permissions: {}
 
@@ -32,6 +34,7 @@ concurrency:
 jobs:
   e2e:
     name: Browser and MCP e2e
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'full-ci')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:

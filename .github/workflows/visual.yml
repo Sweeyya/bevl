@@ -11,6 +11,7 @@ name: Visual
 
 on:
   pull_request:
+    types: [labeled, synchronize, reopened]
     paths:
       - "packages/core/**"
       - "packages/effects/**"
@@ -28,6 +29,7 @@ on:
       - "packages/tokens/**"
       - "examples/**"
       - "tools/**"
+  workflow_dispatch:
 
 permissions: {}
 
@@ -38,6 +40,7 @@ concurrency:
 jobs:
   visual:
     name: Screenshot tests
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'full-ci')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:

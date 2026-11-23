@@ -10,6 +10,7 @@ name: Fixtures
 
 on:
   pull_request:
+    types: [labeled, synchronize, reopened]
     paths:
       - "packages/check/**"
       - "fixtures/**"
@@ -20,6 +21,7 @@ on:
     paths:
       - "packages/check/**"
       - "fixtures/**"
+  workflow_dispatch:
 
 permissions: {}
 
@@ -30,6 +32,7 @@ concurrency:
 jobs:
   fixtures:
     name: Broken fixture tests (${{ matrix.shard }})
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'full-ci')
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
