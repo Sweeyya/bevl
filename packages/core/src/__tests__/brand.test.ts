@@ -28,6 +28,12 @@ describe("resolveBrand", () => {
 
   it("adds a system fallback to font stacks", () => {
     expect(fontStack("Inter")).toBe("Inter, system-ui, sans-serif");
+    expect(fontStack("Palatino Linotype, Palatino, serif")).toBe(
+      '"Palatino Linotype", Palatino, serif, system-ui, sans-serif',
+    );
+    expect(fontStack("Source Sans 3, sans-serif")).toBe(
+      '"Source Sans 3", sans-serif, system-ui, sans-serif',
+    );
   });
 });
 

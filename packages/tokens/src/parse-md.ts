@@ -2,10 +2,10 @@
  * Parse a DESIGN.md file into BrandTokens.
  * Looks for color, font, spacing, and radius values in markdown.
  */
+import { DEFAULT_FONT, parseFonts } from "./fonts.js";
 import type { BrandTokens } from "./types.js";
 
 const HEX_RE = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g;
-const FONT_RE = /font(?:-family)?[:\s]+["']?([A-Za-z][\w\s-]{1,40})["']?/gi;
 const SPACING_RE = /spacing[:\s]+(\d+(?:\.\d+)?)\s*px/i;
 const RADIUS_RE = /radius[:\s]+(\d+(?:\.\d+)?)\s*px/i;
 
@@ -29,7 +29,7 @@ export function parseMd(source: string): BrandTokens {
     text: "#111111",
     extra: {},
   };
-  const fonts: BrandTokens["fonts"] = { heading: "sans-serif", body: "sans-serif" };
+  const fonts: BrandTokens["fonts"] = { heading: DEFAULT_FONT, body: DEFAULT_FONT };
   let spacingBase = 8;
   let radiusBase = 4;
 
@@ -56,13 +56,7 @@ export function parseMd(source: string): BrandTokens {
     }
   }
 
-  // Extract fonts
-  const fontMatches = [...source.matchAll(FONT_RE)];
-  const f0 = fontMatches[0]?.[1];
-  const f1 = fontMatches[1]?.[1];
-  if (f0) fonts.heading = f0.trim();
-  if (f1) fonts.body = f1.trim();
-  else if (f0) fonts.body = f0.trim();
+  Object.assign(fonts, parseFonts(source));
 
   // Extract spacing and radius
   const spacingMatch = source.match(SPACING_RE);

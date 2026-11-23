@@ -28,11 +28,13 @@
   },
   "devDependencies": {
     "@types/node": "22.20.5",
+    "@types/pngjs": "6.0.5",
     "typescript": "7.0.2",
     "vite": "6.4.6",
     "vitest": "5.1.0"
   },
   "dependencies": {
-    "playwright": "1.65.1"
+    "playwright": "1.65.1",
+    "pngjs": "7.0.0"
   }
 }

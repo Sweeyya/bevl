@@ -4,6 +4,7 @@ import { addSection, applyBrand, createSite } from "@toros/tokens";
 import { Command } from "commander";
 import { checkSite } from "./commands/check.js";
 import { optimizeAssets } from "./commands/optimize.js";
+import { shots } from "./commands/shots.js";
 import { registerTasteCommands } from "./commands/taste.js";
 import { VERSION } from "./index.js";
 
@@ -15,17 +16,30 @@ program
   .command("create <name>")
   .description("Scaffold a new Toros site")
   .option("-d, --dir <dir>", "Parent directory", process.cwd())
-  .action(async (name: string, opts: { dir: string }) => {
-    await createSite({ name, dir: opts.dir });
-    process.stdout.write(`Created site: ${name}\n`);
+  .option("--sections <titles>", 'Comma separated section titles, e.g. "Welcome,Our Beans,Contact"')
+  .option("--description <text>", "Meta description for index.html")
+  .action(async (name: string, opts: { dir: string; sections?: string; description?: string }) => {
+    const notes = await createSite({
+      name,
+      dir: opts.dir,
+      ...(opts.sections !== undefined && { sections: opts.sections.split(",") }),
+      ...(opts.description !== undefined && { description: opts.description }),
+    });
+    process.stdout.write(`Created site: ${name}\n${notes.map((n) => `${n}\n`).join("")}`);
   });
 
 program
   .command("add-section <id> <title>")
   .description("Add a section to toros.json (and src/App.tsx when it can)")
   .option("-d, --dir <dir>", "Project folder", process.cwd())
-  .action(async (id: string, title: string, opts: { dir: string }) => {
-    const notes = await addSection({ dir: opts.dir, id, title });
+  .option("--after <id>", "Insert after this section id (default: append)")
+  .action(async (id: string, title: string, opts: { dir: string; after?: string }) => {
+    const notes = await addSection({
+      dir: opts.dir,
+      id,
+      title,
+      ...(opts.after !== undefined && { after: opts.after }),
+    });
     process.stdout.write(`${notes.join("\n")}\n`);
   });
 
@@ -60,6 +74,30 @@ program
         ...(opts.json !== undefined && { json: opts.json }),
       });
       process.exit(code);
+    },
+  );
+
+program
+  .command("shots <url>")
+  .description("Save a screenshot of every screen of a running site, so you can look at it")
+  .option("--project-dir <dir>", "Project root", process.cwd())
+  .option("--out <dir>", "Output folder (default: .toros/shots/<run-id>)")
+  .option("--viewport <name>", "desktop, phone or both", "both")
+  .option("--json", "Print the manifest as JSON")
+  .action(
+    async (
+      url: string,
+      opts: { projectDir: string; out?: string; viewport: string; json?: boolean },
+    ) => {
+      process.exit(
+        await shots({
+          url,
+          projectDir: opts.projectDir,
+          viewport: opts.viewport,
+          ...(opts.out !== undefined && { out: opts.out }),
+          ...(opts.json !== undefined && { json: opts.json }),
+        }),
+      );
     },
   );
 

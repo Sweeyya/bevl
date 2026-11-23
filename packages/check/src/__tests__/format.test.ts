@@ -92,4 +92,28 @@ describe("formatReport", () => {
     const output = formatReport(report);
     expect(output).toContain("[error]");
   });
+
+  it("prints message, viewport, evidence and exactly one Fix: prefix", () => {
+    const output = formatReport(
+      makeReport({
+        score: 90,
+        passed: false,
+        findings: [
+          {
+            rule: "a11y/contrast-over-3d",
+            severity: "error",
+            viewport: "phone",
+            message: '"Hello" has contrast 2.7:1.',
+            fix: "Fix: add a backing panel.",
+            evidence: { data: { ratio: 2.7123, progress: 0.5, text: "Hello" } },
+          },
+        ],
+      }),
+    );
+    expect(output).toContain("a11y/contrast-over-3d  [error]  phone");
+    expect(output).toContain('"Hello" has contrast 2.7:1.');
+    expect(output).toContain('ratio=2.71  progress=0.5  text="Hello"');
+    expect(output).not.toContain("Fix: Fix:");
+    expect(output.match(/Fix:/g)).toHaveLength(1);
+  });
 });

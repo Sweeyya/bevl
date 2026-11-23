@@ -50,7 +50,27 @@ export function useBrand(): BrandTokens {
 
 const GENERIC_FALLBACK = "system-ui, sans-serif";
 
-/** CSS font-family value: the token font first, then a system fallback. */
+const GENERIC_FAMILIES = new Set([
+  "serif",
+  "sans-serif",
+  "monospace",
+  "cursive",
+  "fantasy",
+  "system-ui",
+  "ui-serif",
+  "ui-sans-serif",
+  "ui-monospace",
+  "ui-rounded",
+]);
+
+function quoteFamily(family: string): string {
+  const name = family.trim().replace(/^["']|["']$/g, "");
+  return GENERIC_FAMILIES.has(name.toLowerCase()) || /^[A-Za-z_-][A-Za-z0-9_-]*$/.test(name)
+    ? name
+    : `"${name}"`;
+}
+
+/** CSS font-family value: the token fonts (quoted when needed), then a system fallback. */
 export function fontStack(font: string): string {
-  return `${font}, ${GENERIC_FALLBACK}`;
+  return `${font.split(",").map(quoteFamily).join(", ")}, ${GENERIC_FALLBACK}`;
 }

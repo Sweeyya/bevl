@@ -10,7 +10,7 @@ export const VERSION = "0.1.0";
 export { parseJson } from "./parse-json.js";
 export { parseMd } from "./parse-md.js";
 export { addSection } from "./project/add-section.js";
-export { applyBrand } from "./project/apply-brand.js";
+export { applyBrand, brandFileHint } from "./project/apply-brand.js";
 export { createSite } from "./project/create.js";
 export { resolveInside } from "./project/inside.js";
 export { readTokenFile } from "./read.js";

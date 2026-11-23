@@ -33,6 +33,8 @@ const brief = (patch: Partial<Brief> = {}): Brief => ({
   ...patch,
 });
 
+const unquoted = (stack: string): string => stack.replace(/["']/g, "");
+
 describe("taste library", () => {
   it("has six directions with unique ids and font stacks", () => {
     expect(directions).toHaveLength(6);
@@ -137,8 +139,8 @@ describe("applyDirection", () => {
     const tokens = JSON.parse(readFileSync(join(dir, "src/brand.tokens.json"), "utf8"));
     expect(tokens.colors.background).toBe(d.palette.background);
     expect(tokens.colors.primary).toBe(d.palette.primary);
-    expect(tokens.fonts.heading).toBe(d.fonts.heading);
-    expect(tokens.fonts.body).toBe(d.fonts.body);
+    expect(tokens.fonts.heading).toBe(unquoted(d.fonts.heading));
+    expect(tokens.fonts.body).toBe(unquoted(d.fonts.body));
     const saved = await readBrief(dir);
     expect(saved.direction).toBe("stillwater");
     expect(saved.history).toEqual(["afterglow", "stillwater"]);

@@ -2,6 +2,7 @@
  * Parse a W3C Design Tokens (design-tokens-json) or Style Dictionary JSON file.
  * Both formats store tokens as nested objects with a $value or value key.
  */
+import { DEFAULT_FONT, fontStack } from "./fonts.js";
 import type { BrandTokens } from "./types.js";
 
 type TokenNode =
@@ -53,6 +54,9 @@ const FONT_KEYWORDS: Array<[keyof BrandTokens["fonts"], string[]]> = [
   ["body", ["body", "paragraph", "text", "base", "default"]],
 ];
 
+const FONT_KEY = /font|typeface|family/;
+const NOT_FAMILY = /size|weight|height|spacing|style|leading|tracking/;
+
 export function parseJson(source: string): BrandTokens {
   const colors: BrandTokens["colors"] = {
     primary: "#000000",
@@ -63,7 +67,7 @@ export function parseJson(source: string): BrandTokens {
     text: "#111111",
     extra: {},
   };
-  const fonts: BrandTokens["fonts"] = { heading: "sans-serif", body: "sans-serif" };
+  const fonts: BrandTokens["fonts"] = { heading: DEFAULT_FONT, body: DEFAULT_FONT };
   let spacingBase = 8;
   let radiusBase = 4;
 
@@ -97,10 +101,11 @@ export function parseJson(source: string): BrandTokens {
       }
     }
 
-    if (typeof val === "string" && !isHex(val) && lower.includes("font")) {
+    const stack = FONT_KEY.test(lower) && !NOT_FAMILY.test(lower) ? fontStack(val) : null;
+    if (stack && !isHex(val)) {
       for (const [role, keywords] of FONT_KEYWORDS) {
         if (keywords.some((kw) => lower.includes(kw))) {
-          fonts[role] = val;
+          fonts[role] = stack;
           break;
         }
       }
