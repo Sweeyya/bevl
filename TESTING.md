@@ -318,6 +318,7 @@ The test fails if a `mustFail` rule passes, or if any rule not listed fails.
 | `huge-textures`           | `budgets/texture-mb`           |
 | `off-brand-colors`        | `brand/palette`                |
 | `unused-brand-colors`     | `brand/tokens-used`            |
+| `default-grey-look`       | `brand/not-default-look`       |
 | `wrong-font`              | `brand/fonts`                  |
 | `random-without-seed`     | `scroll/deterministic`         |
 | `snap-never-settles`      | `scroll/snap-settles`          |

@@ -4,6 +4,7 @@ import keyboard from "./a11y/keyboard.js";
 import keyboardReachesBeats from "./a11y/keyboard-reaches-beats.js";
 import reducedMotion from "./a11y/reduced-motion.js";
 import fonts from "./brand/fonts.js";
+import notDefaultLook from "./brand/not-default-look.js";
 import palette from "./brand/palette.js";
 import tokensUsed from "./brand/tokens-used.js";
 import drawCalls from "./budgets/draw-calls.js";
@@ -71,6 +72,7 @@ const rules: Rule[] = [
   reducedMotion,
   orderMatches,
   tokensUsed,
+  notDefaultLook,
 ];
 
 export default rules;

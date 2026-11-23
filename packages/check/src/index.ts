@@ -18,3 +18,5 @@ export { formatReport } from "./format.js";
 export type { Finding, GroupResult, Report, Severity } from "./report.js";
 
 export type { Rule, RuleContext } from "./rule.js";
+export type { ShotFile, ShotsManifest, ShotsOptions, ShotViewport } from "./shots.js";
+export { captureShots, formatShots } from "./shots.js";

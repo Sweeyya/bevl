@@ -91,4 +91,6 @@ export { useReducedMotion } from "./motion/preference.js";
 export { makeRand } from "./rand.js";
 // Example choreographies for agents to start from
 export type { Recipe, RecipeName } from "./recipes/index.js";
-export { getRecipe, recipeNames, recipes } from "./recipes/index.js";
+export { getRecipe, recipeChoreography, recipeNames, recipes } from "./recipes/index.js";
+export type { RecipeInput, RecipeKind, RecipeRanking } from "./recipes/recommend.js";
+export { recommendRecipes } from "./recipes/recommend.js";

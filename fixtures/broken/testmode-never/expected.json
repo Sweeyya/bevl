@@ -3,6 +3,7 @@
   "mayAlsoFail": [
     "a11y/keyboard-reaches-beats",
     "a11y/reduced-motion",
+    "brand/not-default-look",
     "budgets/draw-calls",
     "budgets/triangles",
     "html/order-matches",

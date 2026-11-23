@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { Rule } from "../rule.js";
 import keyboardReachesBeats from "../rules/a11y/keyboard-reaches-beats.js";
+import notDefaultLook from "../rules/brand/not-default-look.js";
 import drawCalls from "../rules/budgets/draw-calls.js";
 import triangles from "../rules/budgets/triangles.js";
 import consoleErrors from "../rules/load/console-errors.js";
@@ -161,5 +162,38 @@ describe("load/webgl", () => {
   it("fails without WebGL2", async () => {
     const [f] = await run(webgl, gl({ supported: false, renderer: null }));
     expect(f?.severity).toBe("error");
+  });
+});
+
+describe("brand/not-default-look", () => {
+  const gray = [{ name: "m", colors: ["#ffffff", "#808080"] }];
+  const colored = [{ name: "m", colors: ["#e63946"] }];
+  const defaults = {
+    colors: {
+      primary: "#000000",
+      secondary: "#333333",
+      accent: "#0066ff",
+      background: "#ffffff",
+      surface: "#f5f5f5",
+      text: "#111111",
+    },
+  };
+
+  it("warns when there is no brand and every material is gray or white", async () => {
+    const [f] = await run(notDefaultLook, { materials: gray });
+    expect(f?.severity).toBe("warn");
+    expect(f?.fix).toContain("toros taste deal --brief toros.brief.json --apply");
+  });
+  it("warns when the brand is only the parser defaults", async () => {
+    expect(await run(notDefaultLook, { brand: defaults, materials: gray })).toHaveLength(1);
+  });
+  it("passes with real brand tokens, real colors, or no materials", async () => {
+    const brand = { colors: { ...defaults.colors, primary: "#e63946" } };
+    expect(await run(notDefaultLook, { brand, materials: gray })).toEqual([]);
+    expect(await run(notDefaultLook, { materials: colored })).toEqual([]);
+    expect(await run(notDefaultLook)).toEqual([]);
+  });
+  it("reports an error without a bridge", async () => {
+    expectCouldNotRun(await run(notDefaultLook, { bridge: false }), notDefaultLook.id);
   });
 });
