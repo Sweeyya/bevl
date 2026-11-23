@@ -37,7 +37,7 @@ const rule: Rule = {
           severity: "error",
           viewport: ctx.viewport.name,
           message: `No <nav> element found on ${ctx.viewport.name}.`,
-          fix: "Add <DoodleyA11y config={...} /> from @doodley/a11y. It renders a real <nav> with one link per section.",
+          fix: "Add <BevlA11y config={...} /> from @bevl/a11y. It renders a real <nav> with one link per section.",
         },
       ];
     }

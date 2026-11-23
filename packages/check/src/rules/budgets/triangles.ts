@@ -28,7 +28,7 @@ const rule: Rule = {
           severity: "error",
           viewport: ctx.viewport.name,
           message: `Triangle count ${triangles.toLocaleString()} exceeds budget of ${budget.toLocaleString()} on ${ctx.viewport.name}.`,
-          fix: `Reduce geometry complexity. Use lower-poly models, merge static meshes, or use instancing. Run \`doodley optimize\` on your GLB files.`,
+          fix: `Reduce geometry complexity. Use lower-poly models, merge static meshes, or use instancing. Run \`bevl optimize\` on your GLB files.`,
           evidence: { data: { triangles, budget } },
         },
       ];

@@ -15,7 +15,7 @@ declare module "vitest" {
 }
 
 export default async function setup(project: TestProject): Promise<() => Promise<void>> {
-  const dir = mkdtempSync(join(tmpdir(), "doodley-e2e-"));
+  const dir = mkdtempSync(join(tmpdir(), "bevl-e2e-"));
   const outDir = join(dir, "host-dist");
   const configFile = join(root, "fixtures/host/vite.config.ts");
   await build({ configFile, build: { outDir, emptyOutDir: true }, logLevel: "error" });

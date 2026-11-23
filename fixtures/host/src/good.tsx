@@ -1,9 +1,9 @@
-import { DoodleyA11y } from "@doodley/a11y";
-import type { Choreography, DoodleyConfig } from "@doodley/core";
-import { defaultChoreography, Section } from "@doodley/core";
+import { BevlA11y } from "@bevl/a11y";
+import type { BevlConfig, Choreography } from "@bevl/core";
+import { defaultChoreography, Section } from "@bevl/core";
 import type { Fixture } from "./fixture.js";
 
-export const config: DoodleyConfig = {
+export const config: BevlConfig = {
   name: "Fixture baseline",
   sections: [
     { id: "hero", title: "Hero" },
@@ -12,15 +12,15 @@ export const config: DoodleyConfig = {
   ],
 };
 
-export function withChoreography(patch: Partial<Choreography>): DoodleyConfig {
+export function withChoreography(patch: Partial<Choreography>): BevlConfig {
   const base = defaultChoreography(config.sections.map((s) => s.id));
   return { ...config, choreography: { ...base, ...patch } };
 }
 
-export const overlay = <DoodleyA11y config={{ sections: config.sections }} />;
+export const overlay = <BevlA11y config={{ sections: config.sections }} />;
 
 export const head = {
-  title: "Doodley fixture",
+  title: "Bevl fixture",
   description: "A three-section baseline site used by the broken fixtures.",
 };
 

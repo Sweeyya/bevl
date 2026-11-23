@@ -14,8 +14,8 @@ export interface NavControl {
 export function listNavControls(page: Page): Promise<NavControl[]> {
   return page.evaluate((selector) => {
     const bridge = (
-      window as unknown as { __doodley?: { sections(): Array<{ id: string; domId: string }> } }
-    ).__doodley;
+      window as unknown as { __bevl?: { sections(): Array<{ id: string; domId: string }> } }
+    ).__bevl;
     const sections = bridge?.sections() ?? [];
     return [...document.querySelectorAll<HTMLElement>(selector)].map((el, index) => {
       const rect = el.getBoundingClientRect();

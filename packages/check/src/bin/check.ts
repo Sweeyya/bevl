@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Entry point for `doodley check <url> [options]`
+// Entry point for `bevl check <url> [options]`
 // Parse args, call runCheck, print with formatReport, exit with the right code.
 // Flags: --json (print raw JSON), --viewport <name>, --rule <id>
 import type { CheckOptions } from "../checker.js";
@@ -9,7 +9,7 @@ import type { Report } from "../report.js";
 function printUsage(): void {
   process.stderr.write(
     [
-      "Usage: doodley-check <url> [options]",
+      "Usage: bevl-check <url> [options]",
       "",
       "Options:",
       "  --json               Print the raw report JSON instead of formatted output",

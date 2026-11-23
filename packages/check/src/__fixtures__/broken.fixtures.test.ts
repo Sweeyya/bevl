@@ -42,7 +42,7 @@ function failedRules(report: Report): Set<string> {
 }
 
 beforeAll(async () => {
-  projectDir = mkdtempSync(join(tmpdir(), "doodley-fixtures-"));
+  projectDir = mkdtempSync(join(tmpdir(), "bevl-fixtures-"));
   const outDir = join(projectDir, "host-dist");
   const configFile = join(root, "fixtures/host/vite.config.ts");
   await build({ configFile, build: { outDir, emptyOutDir: true }, logLevel: "error" });

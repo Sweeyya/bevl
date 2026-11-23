@@ -12,8 +12,8 @@ const rule: Rule = {
     const { page, viewport } = ctx;
     if (!(await waitReady(page))) return [];
     const titles = await page.evaluate(() =>
-      [...document.querySelectorAll("[data-doodley-title]")].map(
-        (el) => el.getAttribute("data-doodley-title") ?? "",
+      [...document.querySelectorAll("[data-bevl-title]")].map(
+        (el) => el.getAttribute("data-bevl-title") ?? "",
       ),
     );
 
@@ -31,13 +31,11 @@ const rule: Rule = {
         } as typeof original;
       });
       const url = new URL(ctx.url);
-      url.searchParams.delete("doodley-test");
+      url.searchParams.delete("bevl-test");
       await probe.goto(url.toString(), { waitUntil: "domcontentloaded" });
-      await probe
-        .waitForSelector("[data-doodley-fallback]", { timeout: 5000 })
-        .catch(() => undefined);
+      await probe.waitForSelector("[data-bevl-fallback]", { timeout: 5000 }).catch(() => undefined);
       const text = await probe.evaluate(
-        () => document.querySelector<HTMLElement>("[data-doodley-fallback]")?.textContent ?? null,
+        () => document.querySelector<HTMLElement>("[data-bevl-fallback]")?.textContent ?? null,
       );
       const missing = text === null ? titles : titles.filter((t) => !text.includes(t));
       if (missing.length === 0) return [];
@@ -50,7 +48,7 @@ const rule: Rule = {
             text === null
               ? `With WebGL off there is no static fallback on ${viewport.name}; the page is blank.`
               : `With WebGL off the fallback is missing the titles: ${missing.join(", ")} on ${viewport.name}.`,
-          fix: "Fix: render the static fallback ([data-doodley-fallback]) that DoodleySite shows without WebGL, and keep every section title and text in it.",
+          fix: "Fix: render the static fallback ([data-bevl-fallback]) that BevlSite shows without WebGL, and keep every section title and text in it.",
           evidence: { data: { missing } },
         },
       ];

@@ -3,7 +3,7 @@ import type { Finding } from "./report.js";
 import type { RuleContext } from "./rule.js";
 
 type Win = {
-  __doodley?: {
+  __bevl?: {
     ready: Promise<void>;
     step(ms: number): unknown;
     scroll(): number;
@@ -33,9 +33,9 @@ const neverReady = new WeakSet<Page>();
 export async function waitReady(page: Page, timeoutMs = 15_000): Promise<boolean> {
   if (neverReady.has(page)) return false;
   try {
-    await page.waitForFunction(() => "__doodley" in window, undefined, { timeout: timeoutMs });
+    await page.waitForFunction(() => "__bevl" in window, undefined, { timeout: timeoutMs });
     return await page.evaluate(async () => {
-      await (window as unknown as Win).__doodley?.ready;
+      await (window as unknown as Win).__bevl?.ready;
       return true;
     });
   } catch {
@@ -46,29 +46,27 @@ export async function waitReady(page: Page, timeoutMs = 15_000): Promise<boolean
 
 export function step(page: Page, frames: number): Promise<void> {
   return page.evaluate((n) => {
-    (window as unknown as Win).__doodley?.step((n * 1000) / 60);
+    (window as unknown as Win).__bevl?.step((n * 1000) / 60);
   }, frames);
 }
 
 export function progress(page: Page): Promise<number> {
-  return page.evaluate(() => (window as unknown as Win).__doodley?.scroll() ?? 0);
+  return page.evaluate(() => (window as unknown as Win).__bevl?.scroll() ?? 0);
 }
 
 export async function beatAnchors(page: Page): Promise<number[]> {
-  const sections = await page.evaluate(
-    () => (window as unknown as Win).__doodley?.sections() ?? [],
-  );
+  const sections = await page.evaluate(() => (window as unknown as Win).__bevl?.sections() ?? []);
   return sections.map((s) => s.anchor);
 }
 
 export function choreography(
   page: Page,
-): Promise<ReturnType<NonNullable<Win["__doodley"]>["choreography"]>> {
-  return page.evaluate(() => (window as unknown as Win).__doodley?.choreography() ?? {});
+): Promise<ReturnType<NonNullable<Win["__bevl"]>["choreography"]>> {
+  return page.evaluate(() => (window as unknown as Win).__bevl?.choreography() ?? {});
 }
 
 export function reducedMotionOn(page: Page): Promise<boolean> {
-  return page.evaluate(() => (window as unknown as Win).__doodley?.motion().reducedMotion === true);
+  return page.evaluate(() => (window as unknown as Win).__bevl?.motion().reducedMotion === true);
 }
 
 /** Waits two animation frames so React has applied a changed media query. */
@@ -79,13 +77,13 @@ export function nextFrames(page: Page): Promise<void> {
 }
 
 export function stats(page: Page) {
-  return page.evaluate(() => (window as unknown as Win).__doodley?.stats() ?? null);
+  return page.evaluate(() => (window as unknown as Win).__bevl?.stats() ?? null);
 }
 
 /** Sets the scroller position and waits for the scroll event and a frame. False when there is nothing to scroll. */
 export function scrollTo(page: Page, fraction: number): Promise<boolean> {
   return page.evaluate(async (f) => {
-    const el = (document.querySelector<HTMLElement>("[data-doodley-scroller]") ??
+    const el = (document.querySelector<HTMLElement>("[data-bevl-scroller]") ??
       document.scrollingElement ??
       document.documentElement) as HTMLElement;
     const max = el.scrollHeight - el.clientHeight;
@@ -96,10 +94,10 @@ export function scrollTo(page: Page, fraction: number): Promise<boolean> {
   }, fraction);
 }
 
-export type CameraPose = NonNullable<ReturnType<NonNullable<Win["__doodley"]>["camera"]>>;
+export type CameraPose = NonNullable<ReturnType<NonNullable<Win["__bevl"]>["camera"]>>;
 
 export function cameraPose(page: Page): Promise<CameraPose | null> {
-  return page.evaluate(() => (window as unknown as Win).__doodley?.camera() ?? null);
+  return page.evaluate(() => (window as unknown as Win).__bevl?.camera() ?? null);
 }
 
 export function sectionPoses(page: Page) {
@@ -107,11 +105,11 @@ export function sectionPoses(page: Page) {
     () =>
       (
         window as unknown as {
-          __doodley?: {
+          __bevl?: {
             sections(): Array<{ id: string; anchor: number; cameraPose: CameraPose }>;
           };
         }
-      ).__doodley?.sections() ?? [],
+      ).__bevl?.sections() ?? [],
   );
 }
 
@@ -153,7 +151,7 @@ export function couldNotRun(ctx: RuleContext, rule: string, why: string): Findin
     rule,
     "error",
     `Could not run ${rule} on ${ctx.viewport.name}: ${why}.`,
-    "Fix: make sure the site loads in test mode (window.__doodley exists and ready resolves) and has a [data-doodley-scroller] taller than the viewport.",
+    "Fix: make sure the site loads in test mode (window.__bevl exists and ready resolves) and has a [data-bevl-scroller] taller than the viewport.",
   );
 }
 
@@ -207,7 +205,7 @@ export type Pose = { position: Vec3; quaternion: Quat };
 
 export async function requireCameraPose(page: Page): Promise<Pose> {
   const pose = await cameraPose(page);
-  if (!pose) throw new Error("The doodley bridge is missing");
+  if (!pose) throw new Error("The bevl bridge is missing");
   return { position: pose.position, quaternion: pose.quaternion };
 }
 

@@ -26,10 +26,8 @@ export function resolveInside(
 }
 
 export function projectDirOf(dir: string): string {
-  if (!existsSync(resolve(dir, "doodley.json"))) {
-    throw new Error(
-      `No doodley.json in ${resolve(dir)}. Fix: pass the folder of a Doodley project.`,
-    );
+  if (!existsSync(resolve(dir, "bevl.json"))) {
+    throw new Error(`No bevl.json in ${resolve(dir)}. Fix: pass the folder of a Bevl project.`);
   }
   return realpathSync(resolve(dir));
 }

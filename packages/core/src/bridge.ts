@@ -1,15 +1,15 @@
 /**
- * window.__doodley test bridge.
- * Populated by DoodleySite when ?doodley-test is in the URL.
+ * window.__bevl test bridge.
+ * Populated by BevlSite when ?bevl-test is in the URL.
  * Only active in test mode — never shipped to production users.
  */
 
 import type { Choreography } from "./choreography/types.js";
 import type {
+  BevlBridge,
+  BevlEvent,
   BrandTokens,
   CameraState,
-  DoodleyBridge,
-  DoodleyEvent,
   MascotState,
   MaterialState,
   SceneStats,
@@ -32,14 +32,14 @@ export interface BridgeState {
   getMaterials: () => MaterialState[];
   getTextMeshes: () => TextMeshState[];
   getMascot: () => MascotState | null;
-  getEvents: () => DoodleyEvent[];
-  pushEvent: (e: DoodleyEvent) => void;
+  getEvents: () => BevlEvent[];
+  pushEvent: (e: BevlEvent) => void;
   resolveReady: () => void;
 }
 
 const FRAME_MS = 1000 / 60;
 
-export function installBridge(state: BridgeState): DoodleyBridge {
+export function installBridge(state: BridgeState): BevlBridge {
   let time = 0;
   let frame = 0;
 
@@ -52,7 +52,7 @@ export function installBridge(state: BridgeState): DoodleyBridge {
   // Also set it now so if it's called before the promise body runs (unlikely but safe)
   state.resolveReady = _resolve;
 
-  const bridge: DoodleyBridge = {
+  const bridge: BevlBridge = {
     ready,
     step(ms: number) {
       const steps = Math.max(1, Math.round(ms / FRAME_MS));
@@ -80,10 +80,10 @@ export function installBridge(state: BridgeState): DoodleyBridge {
   return bridge;
 }
 
-export function exposeBridge(bridge: DoodleyBridge): void {
-  (window as unknown as { __doodley: DoodleyBridge }).__doodley = bridge;
+export function exposeBridge(bridge: BevlBridge): void {
+  (window as unknown as { __bevl: BevlBridge }).__bevl = bridge;
 }
 
 export function removeBridge(): void {
-  delete (window as unknown as { __doodley?: unknown }).__doodley;
+  delete (window as unknown as { __bevl?: unknown }).__bevl;
 }

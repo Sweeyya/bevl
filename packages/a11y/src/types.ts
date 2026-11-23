@@ -1,4 +1,4 @@
-import type { SectionConfig } from "@doodley/core";
+import type { SectionConfig } from "@bevl/core";
 
 export interface A11yConfig {
   /** Sections to render nav links for */

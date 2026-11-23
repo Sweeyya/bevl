@@ -1,4 +1,4 @@
-/** Parsed brand token output — what the rest of Doodley consumes */
+/** Parsed brand token output — what the rest of Bevl consumes */
 export interface BrandTokens {
   /** Primary palette — hex strings e.g. "#1A1A2E" */
   colors: {

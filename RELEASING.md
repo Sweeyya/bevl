@@ -20,7 +20,7 @@ The release workflow uses npm trusted publishing with provenance. No npm token i
 
 1. Create an npm account if you don't have one.
 2. Go to npmjs.com → your account → Access Tokens → Generate New Token → Granular Access Token.
-3. Set the token to allow publishing for the `@doodley` scope.
+3. Set the token to allow publishing for the `@bevl` scope.
 4. Add it as a GitHub Actions secret named `NPM_TOKEN` in the repo settings.
 5. Enable provenance on npm: in the publish step, `NPM_CONFIG_PROVENANCE=true` is already set in `release.yml`.
 
@@ -30,7 +30,7 @@ Until this is set up, the release workflow will fail at the publish step. That i
 
 - [ ] npm account created
 - [ ] `NPM_TOKEN` secret added to GitHub repo
-- [ ] `@doodley` scope claimed on npm (publish once manually with `pnpm publish --access public` from each package)
+- [ ] `@bevl` scope claimed on npm (publish once manually with `pnpm publish --access public` from each package)
 - [ ] `server.json` filled in for MCP Registry listing
 - [ ] `README.md` has a GIF and sample check report
 - [ ] All examples score 90+ on `pnpm check:examples`

@@ -4,8 +4,8 @@
 
 ```sh
 # 1. Clone the repo
-git clone https://github.com/Sweeyya/doodley.git
-cd doodley
+git clone https://github.com/Sweeyya/bevl.git
+cd bevl
 
 # 2. Install pnpm (if not already installed)
 npm install -g pnpm@12.20.0
@@ -55,7 +55,7 @@ Run the slow checks before merging anything that touches the checker, the runtim
 | `pnpm test:visual -- --update` | Remake the baselines for your platform (`tools/__screenshots__/<platform>/`)                |
 | `pnpm test:perf`               | Lighthouse CI (phone profile, 3 runs, median) on each built example                         |
 
-These scripts live in `tools/` (`@doodley/tools`, private). They need Chromium: `pnpm --filter @doodley/check exec playwright install chromium`.
+These scripts live in `tools/` (`@bevl/tools`, private). They need Chromium: `pnpm --filter @bevl/check exec playwright install chromium`.
 
 ### Screenshot baselines
 
@@ -89,13 +89,13 @@ See TESTING.md §11.
 
 ## Debugging test mode
 
-Add `?doodley-test` to any site URL. Open the console and inspect `window.__doodley`.
+Add `?bevl-test` to any site URL. Open the console and inspect `window.__bevl`.
 
 ## Debugging the checker
 
 ```sh
 # Run check on a specific site with verbose output
-doodley check --rule load/ready
-doodley check --viewport desktop
-doodley check --json > report.json
+bevl check --rule load/ready
+bevl check --viewport desktop
+bevl check --json > report.json
 ```

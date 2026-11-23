@@ -1,4 +1,4 @@
-import { DoodleyContext, registerBehavior } from "@doodley/core";
+import { BevlContext, registerBehavior } from "@bevl/core";
 import { useContext } from "react";
 import type { Fixture } from "../../host/src/fixture.js";
 import { config, good, withChoreography } from "../../host/src/good.js";
@@ -11,7 +11,7 @@ registerBehavior("link-teleport", (_progress, ctx) => {
 });
 
 function JumpingNav(): JSX.Element {
-  const ctx = useContext(DoodleyContext);
+  const ctx = useContext(BevlContext);
   return (
     <nav aria-label="Site sections">
       <ul style={{ position: "fixed", top: 0, left: 0, zIndex: 10, display: "flex", gap: 8 }}>

@@ -1,10 +1,10 @@
 {
-  "name": "@doodley/cli",
+  "name": "@bevl/cli",
   "version": "0.1.0",
-  "description": "Command line tool: doodley create, add-section, apply-brand, optimize, check.",
+  "description": "Command line tool: bevl create, add-section, apply-brand, optimize, check.",
   "type": "module",
   "bin": {
-    "doodley": "./dist/bin.js"
+    "bevl": "./dist/bin.js"
   },
   "exports": {
     ".": {
@@ -24,9 +24,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@doodley/check": "workspace:*",
-    "@doodley/optimizer": "workspace:*",
-    "@doodley/tokens": "workspace:*",
+    "@bevl/check": "workspace:*",
+    "@bevl/optimizer": "workspace:*",
+    "@bevl/tokens": "workspace:*",
     "commander": "15.1.0"
   },
   "devDependencies": {

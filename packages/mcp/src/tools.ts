@@ -1,6 +1,6 @@
-import { formatReport, runCheck } from "@doodley/check";
-import { optimizeGlb } from "@doodley/optimizer";
-import { addSection, applyBrand, createSite, readTokenFile } from "@doodley/tokens";
+import { formatReport, runCheck } from "@bevl/check";
+import { optimizeGlb } from "@bevl/optimizer";
+import { addSection, applyBrand, createSite, readTokenFile } from "@bevl/tokens";
 import { assertSafeUrl, projectRoot, requireExtension, resolveInside } from "./guard.js";
 
 export interface CheckSiteArgs {

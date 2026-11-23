@@ -1,5 +1,5 @@
 {
-  "name": "doodley-root",
+  "name": "bevl-root",
   "private": true,
   "version": "0.0.0",
   "packageManager": "pnpm@12.20.0",
@@ -31,13 +31,13 @@
     "pkg:types": "attw --profile esm-only --pack packages/core && attw --profile esm-only --pack packages/check && attw --profile esm-only --pack packages/cli && attw --profile esm-only --pack packages/mcp",
     "pkg:size": "size-limit",
     "pkg:unused": "knip",
-    "pkg:pack-check": "pnpm pack --dry-run --filter @doodley/core --filter @doodley/check --filter @doodley/cli --filter @doodley/mcp"
+    "pkg:pack-check": "pnpm pack --dry-run --filter @bevl/core --filter @bevl/check --filter @bevl/cli --filter @bevl/mcp"
   },
   "size-limit": [
     {
       "path": "packages/core/dist/index.js",
       "limit": "400 kB",
-      "name": "@doodley/core (gzip)",
+      "name": "@bevl/core (gzip)",
       "ignore": [
         "react",
         "react-dom",

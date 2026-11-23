@@ -38,7 +38,7 @@ const rule: Rule = {
         this.id,
         "error",
         `Camera has NaN in its pose on ${ctx.viewport.name}.`,
-        "Check your camera path math. A division by zero or an empty path produces NaN. Ensure your DoodleyConfig has at least one section.",
+        "Check your camera path math. A division by zero or an empty path produces NaN. Ensure your BevlConfig has at least one section.",
       ),
     ];
   },

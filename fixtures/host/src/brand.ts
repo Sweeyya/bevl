@@ -1,4 +1,4 @@
-import type { BrandTokens } from "@doodley/core";
+import type { BrandTokens } from "@bevl/core";
 
 export const brand: BrandTokens = {
   colors: {

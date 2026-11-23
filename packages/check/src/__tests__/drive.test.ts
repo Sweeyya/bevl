@@ -54,7 +54,7 @@ describe("waitReady", () => {
     const page = site.page();
     expect(await waitReady(page, 10)).toBe(false);
     site.install();
-    (globalThis as unknown as { window: Record<string, unknown> }).window.__doodley = {
+    (globalThis as unknown as { window: Record<string, unknown> }).window.__bevl = {
       ready: Promise.resolve(),
     };
     expect(await waitReady(page, 10)).toBe(false);

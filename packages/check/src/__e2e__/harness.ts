@@ -37,11 +37,11 @@ export async function open(
   const context = await (await launch()).newContext(options);
   const page = await context.newPage();
   const query = new URLSearchParams({ fixture, ...params });
-  const test = testMode ? "&doodley-test" : "";
+  const test = testMode ? "&bevl-test" : "";
   await page.goto(`${inject("baseUrl")}/?${query}${test}`);
   if (testMode) {
-    await page.waitForFunction(() => "__doodley" in window);
-    await page.evaluate(() => window.__doodley?.ready);
+    await page.waitForFunction(() => "__bevl" in window);
+    await page.evaluate(() => window.__bevl?.ready);
   } else {
     await page.waitForFunction(() => "__e2e" in window);
   }
@@ -50,7 +50,7 @@ export async function open(
 
 declare global {
   interface Window {
-    __doodley?: {
+    __bevl?: {
       ready: Promise<void>;
       step(ms: number): unknown;
       scroll(): number;
@@ -68,15 +68,15 @@ export const displayed = (page: Page): Promise<number> =>
   page.evaluate(() => window.__e2e.displayed());
 
 export const progress = (page: Page): Promise<number> =>
-  page.evaluate(() => window.__doodley?.scroll() ?? Number.NaN);
+  page.evaluate(() => window.__bevl?.scroll() ?? Number.NaN);
 
 export async function step(page: Page, ms: number): Promise<void> {
-  await page.evaluate((t) => window.__doodley?.step(t), ms);
+  await page.evaluate((t) => window.__bevl?.step(t), ms);
 }
 
 export const scrollLength = (page: Page): Promise<number> =>
   page.evaluate(() => {
-    const el = document.querySelector("[data-doodley-scroller]");
+    const el = document.querySelector("[data-bevl-scroller]");
     return el ? el.scrollHeight - el.clientHeight : 0;
   });
 

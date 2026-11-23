@@ -7,7 +7,7 @@ export default defineConfig({
   resolve: {
     alias: {
       // Point directly at source so Vite's React plugin processes the JSX
-      "@doodley/core": resolve(__dirname, "../../packages/core/src/index.ts"),
+      "@bevl/core": resolve(__dirname, "../../packages/core/src/index.ts"),
     },
   },
   server: {

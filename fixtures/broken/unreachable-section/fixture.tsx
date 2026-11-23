@@ -5,7 +5,7 @@ import { good } from "../../host/src/good.js";
 function Scene(): JSX.Element | null {
   useEffect(() => {
     const style = document.createElement("style");
-    style.textContent = "[data-doodley-scroller] { height: 300vh !important; }";
+    style.textContent = "[data-bevl-scroller] { height: 300vh !important; }";
     document.head.append(style);
     return () => style.remove();
   }, []);

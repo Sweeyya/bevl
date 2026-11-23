@@ -1,10 +1,10 @@
 {
-  "name": "@doodley/check",
+  "name": "@bevl/check",
   "version": "0.1.0",
   "description": "The checker. Runs the site in a browser, tests every design rule and budget, and writes a scored report.",
   "type": "module",
   "bin": {
-    "doodley-check": "./dist/bin/check.js"
+    "bevl-check": "./dist/bin/check.js"
   },
   "exports": {
     ".": {

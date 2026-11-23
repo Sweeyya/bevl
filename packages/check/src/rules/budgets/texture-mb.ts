@@ -17,8 +17,8 @@ const rule: Rule = {
     const mb = await ctx.page.evaluate(
       () =>
         (
-          window as unknown as { __doodley?: { stats(): { textureMbEstimate: number } } }
-        ).__doodley?.stats().textureMbEstimate ?? 0,
+          window as unknown as { __bevl?: { stats(): { textureMbEstimate: number } } }
+        ).__bevl?.stats().textureMbEstimate ?? 0,
     );
     if (mb <= budget) return [];
     return [

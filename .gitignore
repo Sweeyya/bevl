@@ -11,7 +11,7 @@ dist/
 
 # Test output
 coverage/
-**/.doodley/reports/
+**/.bevl/reports/
 playwright-report/
 test-results/
 

@@ -1,18 +1,18 @@
 import { useFrame } from "@react-three/fiber";
 import type { ReactNode, RefObject } from "react";
 import { useContext, useLayoutEffect, useRef, useState } from "react";
-import { DoodleyContext } from "../context.js";
+import { BevlContext } from "../context.js";
 import type { SectionConfig } from "../contract.js";
 import { sectionStyle } from "../html/visibility.js";
 
 const HEADING = "h1,h2,h3,h4,h5,h6";
 
 const CSS = `
-[data-doodley-html] [data-doodley-section]{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:8vh 8vw;max-width:100%;font-family:var(--doodley-font-body,system-ui,sans-serif);color:var(--doodley-text,#fff);pointer-events:none;outline:none}
-[data-doodley-html] [data-doodley-section]>div{max-width:40rem}
-[data-doodley-html] [data-doodley-active="true"] :is(a,button,input,select,textarea,summary){pointer-events:auto}
-[data-doodley-html] [data-doodley-section]:focus-within{opacity:1!important}
-[data-doodley-html] [data-doodley-sr]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[data-bevl-html] [data-bevl-section]{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:8vh 8vw;max-width:100%;font-family:var(--bevl-font-body,system-ui,sans-serif);color:var(--bevl-text,#fff);pointer-events:none;outline:none}
+[data-bevl-html] [data-bevl-section]>div{max-width:40rem}
+[data-bevl-html] [data-bevl-active="true"] :is(a,button,input,select,textarea,summary){pointer-events:auto}
+[data-bevl-html] [data-bevl-section]:focus-within{opacity:1!important}
+[data-bevl-html] [data-bevl-sr]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 `;
 
 /** Writes visibility straight to the DOM (no React state per frame). */
@@ -23,17 +23,17 @@ export function applyHtmlLayer(
   reduced: boolean,
 ): void {
   if (!root) return;
-  for (const el of root.querySelectorAll<HTMLElement>("[data-doodley-section]")) {
-    const style = sectionStyle(progress, beats, Number(el.dataset.doodleyIndex), reduced);
+  for (const el of root.querySelectorAll<HTMLElement>("[data-bevl-section]")) {
+    const style = sectionStyle(progress, beats, Number(el.dataset.bevlIndex), reduced);
     el.style.opacity = String(style.opacity);
     el.style.transform = reduced ? "" : `translateY(${style.translateY}px)`;
-    el.dataset.doodleyActive = String(style.active);
+    el.dataset.bevlActive = String(style.active);
   }
 }
 
 /** Lives inside the Canvas so the frame loop keeps the DOM layer in step with progress. */
 export function HtmlLayerDriver({ layer }: { layer: RefObject<HTMLElement> }): null {
-  const ctx = useContext(DoodleyContext);
+  const ctx = useContext(BevlContext);
   useFrame(() => {
     if (ctx)
       applyHtmlLayer(
@@ -66,16 +66,16 @@ function SectionHtml({
   return (
     <section
       id={`section-${section.id}`}
-      data-doodley-section={section.id}
-      data-doodley-title={section.title}
-      data-doodley-index={index}
+      data-bevl-section={section.id}
+      data-bevl-title={section.title}
+      data-bevl-index={index}
       aria-labelledby={ownHeading ? undefined : headingId}
       aria-label={ownHeading ? section.title : undefined}
       tabIndex={-1}
       onFocus={() => onFocusSection(index)}
     >
       {!ownHeading && (
-        <h2 id={headingId} data-doodley-sr>
+        <h2 id={headingId} data-bevl-sr>
           {section.title}
         </h2>
       )}
@@ -91,7 +91,7 @@ interface HtmlLayerProps {
 
 /** One `<main>` with a landmark `<section>` per config section; all text stays in the DOM in reading order. */
 export function HtmlLayer({ layerRef, content }: HtmlLayerProps): JSX.Element | null {
-  const ctx = useContext(DoodleyContext);
+  const ctx = useContext(BevlContext);
   useLayoutEffect(() => {
     if (ctx)
       applyHtmlLayer(
@@ -105,7 +105,7 @@ export function HtmlLayer({ layerRef, content }: HtmlLayerProps): JSX.Element | 
   return (
     <div
       ref={layerRef}
-      data-doodley-html
+      data-bevl-html
       style={{ position: "fixed", inset: 0, zIndex: 2, pointerEvents: "none" }}
     >
       <style>{CSS}</style>
@@ -117,8 +117,8 @@ export function HtmlLayer({ layerRef, content }: HtmlLayerProps): JSX.Element | 
             index={i}
             content={content.get(s.id)}
             onFocusSection={(index) => {
-              const el = layerRef.current?.querySelector(`[data-doodley-index="${index}"]`);
-              if ((el as HTMLElement | null)?.dataset.doodleyActive !== "true")
+              const el = layerRef.current?.querySelector(`[data-bevl-index="${index}"]`);
+              if ((el as HTMLElement | null)?.dataset.bevlActive !== "true")
                 ctx.goToBeat(index, ctx.reducedMotion);
             }}
           />

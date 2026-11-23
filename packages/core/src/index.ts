@@ -1,5 +1,5 @@
 /**
- * @doodley/core
+ * @bevl/core
  *
  * 3D runtime: sections, scroll camera path, design rules, test mode and test bridge.
  * See ARCHITECTURE.md for the full contract between core and check.
@@ -8,13 +8,13 @@
 export const VERSION = "0.1.0";
 
 export type {
+  BevlBridge,
+  BevlConfig,
+  BevlEvent,
   Box2,
   BrandTokens,
   Budgets,
   CameraState,
-  DoodleyBridge,
-  DoodleyConfig,
-  DoodleyEvent,
   MascotState,
   MaterialState,
   Pose,
@@ -74,15 +74,15 @@ export type {
   Track,
   Vec3Tuple,
 } from "./choreography/types.js";
+// React components
+export { BevlSite } from "./components/BevlSite.js";
 export { BrandLights } from "./components/BrandLights.js";
 export { BrandMaterial } from "./components/BrandMaterial.js";
-// React components
-export { DoodleySite } from "./components/DoodleySite.js";
 export { ScrollCamera } from "./components/ScrollCamera.js";
 export { Section } from "./components/Section.js";
 // Context
-export type { DoodleyContextValue } from "./context.js";
-export { DoodleyContext } from "./context.js";
+export type { BevlContextValue } from "./context.js";
+export { BevlContext } from "./context.js";
 // HTML layer visibility (pure helpers)
 export { activeSection, sectionVisibility } from "./html/visibility.js";
 // Reduced-motion preference (live, SSR-safe)
