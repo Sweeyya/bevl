@@ -1,5 +1,5 @@
 /**
- * @bevl/optimizer
+ * @toros/optimizer
  *
  * Shrinks models and textures. Enforces the performance budget.
  */

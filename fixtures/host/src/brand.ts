@@ -1,4 +1,4 @@
-import type { BrandTokens } from "@bevl/core";
+import type { BrandTokens } from "@toros/core";
 
 export const brand: BrandTokens = {
   colors: {

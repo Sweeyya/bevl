@@ -1,5 +1,5 @@
 {
-  "name": "@bevl/mcp",
+  "name": "@toros/mcp",
   "version": "0.1.0",
   "description": "The MCP server that agents call to create, check, and optimize sites.",
   "type": "module",
@@ -10,7 +10,7 @@
     }
   },
   "bin": {
-    "bevl-mcp": "./dist/server.js"
+    "toros-mcp": "./dist/server.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -25,9 +25,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@bevl/check": "workspace:*",
-    "@bevl/optimizer": "workspace:*",
-    "@bevl/tokens": "workspace:*",
+    "@toros/check": "workspace:*",
+    "@toros/optimizer": "workspace:*",
+    "@toros/tokens": "workspace:*",
     "@modelcontextprotocol/sdk": "1.32.2",
     "zod": "4.6.7"
   },

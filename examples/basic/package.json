@@ -1,5 +1,5 @@
 {
-  "name": "@bevl/example-basic",
+  "name": "@toros/example-basic",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bevl/a11y": "workspace:*",
-    "@bevl/core": "workspace:*",
+    "@toros/a11y": "workspace:*",
+    "@toros/core": "workspace:*",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "three": "0.187.0"

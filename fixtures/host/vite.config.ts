@@ -6,7 +6,7 @@ export default defineConfig({
   root: __dirname,
   plugins: [react()],
   resolve: {
-    alias: { "@bevl/core": resolve(__dirname, "../../packages/core/src/index.ts") },
+    alias: { "@toros/core": resolve(__dirname, "../../packages/core/src/index.ts") },
     dedupe: ["react", "react-dom", "three", "@react-three/fiber"],
   },
   server: { fs: { allow: ["../.."] } },

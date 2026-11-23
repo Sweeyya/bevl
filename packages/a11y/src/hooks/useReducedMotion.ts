@@ -1,1 +1,1 @@
-export { useReducedMotion } from "@bevl/core";
+export { useReducedMotion } from "@toros/core";

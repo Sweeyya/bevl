@@ -17,7 +17,7 @@ import { cameraPoseAt } from "../choreography/pose.js";
 import { fadeWeights, keepsFullMotion, reducedChoreography } from "../choreography/reduced.js";
 import { SECTIONS_LAYOUT } from "../choreography/scene.js";
 import type { Choreography } from "../choreography/types.js";
-import { BevlContext } from "../context.js";
+import { TorosContext } from "../context.js";
 import type { Pose } from "../contract.js";
 import { DESIGN_RULES } from "../index.js";
 import { applyStage, restoreStage } from "../motion/stage.js";
@@ -81,7 +81,7 @@ function runBehaviors(
 }
 
 export function ScrollCamera(): null {
-  const ctx = useContext(BevlContext);
+  const ctx = useContext(TorosContext);
   const { camera, scene, invalidate } = useThree();
   const prevPoseRef = useRef<Pose | null>(null);
   const layoutCache = useRef(new Map<string, Placement[]>());

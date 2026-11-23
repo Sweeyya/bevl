@@ -1,4 +1,4 @@
-import type { BevlConfig, BrandTokens } from "@bevl/core";
+import type { BrandTokens, TorosConfig } from "@toros/core";
 import type { ComponentType, ReactNode } from "react";
 
 export interface Head {
@@ -7,7 +7,7 @@ export interface Head {
 }
 
 export interface Fixture {
-  config: BevlConfig;
+  config: TorosConfig;
   overlay?: ReactNode;
   Scene?: ComponentType;
   fallback?: ReactNode;

@@ -7,7 +7,7 @@ export function isLocalHost(hostname: string): boolean {
   return LOCAL.has(h) || h.endsWith(".localhost");
 }
 
-/** Test mode (?bevl-test) is only honored on local hosts unless the config opts in with "always". */
+/** Test mode (?toros-test) is only honored on local hosts unless the config opts in with "always". */
 export function isTestModeAllowed(setting: TestModeSetting | undefined, hostname: string): boolean {
   if (setting === "never") return false;
   if (setting === "always") return true;

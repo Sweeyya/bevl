@@ -11,7 +11,7 @@ dist/
 
 # Test output
 coverage/
-**/.bevl/reports/
+**/.toros/reports/
 playwright-report/
 test-results/
 

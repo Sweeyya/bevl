@@ -16,7 +16,7 @@ A fixed list of camera modes can't cover what users describe. Examples include a
 ## Decision
 
 1. **One progress value.** Every input writes to one progress target from 0 to 1. The scene is a pure function of progress. Positions are never accumulated from scroll events.
-2. **Choreography spec (data first).** `BevlConfig.choreography` holds:
+2. **Choreography spec (data first).** `TorosConfig.choreography` holds:
    - `beats`: named markers (`{ id, at }`), one per section. The HTML layer, nav and checker hook into beats.
    - `camera`: start pose (`position`, `lookAt`, `fov`).
    - `tracks`: keyframes for any property of any named object, including `camera`. Easing is set per segment. Paths can be straight lines or Catmull-Rom curves.

@@ -1,4 +1,4 @@
-import { BevlSite } from "@bevl/core";
+import { TorosSite } from "@toros/core";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import type { Fixture, Head } from "./fixture.js";
@@ -37,13 +37,13 @@ const Scene = fixture.Scene;
 
 createRoot(rootEl).render(
   <StrictMode>
-    <BevlSite
+    <TorosSite
       config={fixture.config}
       brand={fixture.brand}
       overlay={fixture.overlay}
       fallback={fixture.fallback}
     >
       {Scene ? <Scene /> : null}
-    </BevlSite>
+    </TorosSite>
   </StrictMode>,
 );

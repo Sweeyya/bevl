@@ -1,4 +1,4 @@
-import { BevlContext, registerBehavior } from "@bevl/core";
+import { registerBehavior, TorosContext } from "@toros/core";
 import { useContext } from "react";
 import type { Fixture } from "../../host/src/fixture.js";
 import { config, good, withChoreography } from "../../host/src/good.js";
@@ -11,7 +11,7 @@ registerBehavior("link-teleport", (_progress, ctx) => {
 });
 
 function JumpingNav(): JSX.Element {
-  const ctx = useContext(BevlContext);
+  const ctx = useContext(TorosContext);
   return (
     <nav aria-label="Site sections">
       <ul style={{ position: "fixed", top: 0, left: 0, zIndex: 10, display: "flex", gap: 8 }}>

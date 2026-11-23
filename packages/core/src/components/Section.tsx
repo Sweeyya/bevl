@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useContext, useLayoutEffect, useRef } from "react";
 import type { Group } from "three";
-import { BevlContext } from "../context.js";
+import { TorosContext } from "../context.js";
 
 interface SectionProps {
   id: string;
@@ -12,7 +12,7 @@ interface SectionProps {
 }
 
 export function Section({ id, title, html, children }: SectionProps): JSX.Element {
-  const ctx = useContext(BevlContext);
+  const ctx = useContext(TorosContext);
   const ref = useRef<Group>(null);
 
   const index = ctx ? ctx.sections.findIndex((s) => s.id === id) : 0;
@@ -36,7 +36,7 @@ export function Section({ id, title, html, children }: SectionProps): JSX.Elemen
       ref={ref}
       position={[x, y, z]}
       name={`section-${id}`}
-      userData={{ bevlSection: id, bevlTitle: title }}
+      userData={{ torosSection: id, torosTitle: title }}
     >
       {children}
     </group>

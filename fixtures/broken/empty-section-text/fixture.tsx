@@ -1,4 +1,4 @@
-import { Section } from "@bevl/core";
+import { Section } from "@toros/core";
 import type { Fixture } from "../../host/src/fixture.js";
 import { config, good, sectionHtml } from "../../host/src/good.js";
 

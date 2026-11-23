@@ -1,5 +1,5 @@
 # Broken-fixture tests.
-# Runs every broken site through `bevl check` and verifies that
+# Runs every broken site through `toros check` and verifies that
 # the expected rules fail. If a fixture passes when it should fail,
 # the checker has a bug.
 #
@@ -73,7 +73,7 @@ jobs:
           restore-keys: playwright-chromium-${{ runner.os }}-
 
       - name: Install Playwright Chromium
-        run: pnpm --filter @bevl/check exec playwright install chromium --with-deps
+        run: pnpm --filter @toros/check exec playwright install chromium --with-deps
 
       - name: Run broken fixture tests
         env:
@@ -86,6 +86,6 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: fixture-reports-${{ github.run_id }}-${{ strategy.job-index }}
-          path: fixtures/broken/*/.bevl/reports/
+          path: fixtures/broken/*/.toros/reports/
           retention-days: 7
           if-no-files-found: ignore

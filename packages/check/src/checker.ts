@@ -43,10 +43,10 @@ function makeRunId(): string {
   return `${ts}-${suffix}`;
 }
 
-/** Build the test URL by appending bevl-test query params. */
+/** Build the test URL by appending toros-test query params. */
 function testUrl(base: string, seed: number): string {
   const url = new URL(base);
-  url.searchParams.set("bevl-test", "");
+  url.searchParams.set("toros-test", "");
   url.searchParams.set("seed", String(seed));
   return url.toString();
 }
@@ -87,7 +87,7 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
 
       const page = await context.newPage();
 
-      // Collect console errors into window.__bevlConsoleErrors so the
+      // Collect console errors into window.__torosConsoleErrors so the
       // load/console-errors rule can read them.
       const consoleErrors: string[] = [];
       page.on("console", (msg) => {
@@ -134,7 +134,7 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
       for (const rule of activeRules) {
         await page
           .evaluate((errors) => {
-            (window as unknown as { __bevlConsoleErrors: string[] }).__bevlConsoleErrors = errors;
+            (window as unknown as { __torosConsoleErrors: string[] }).__torosConsoleErrors = errors;
           }, consoleErrors)
           .catch(() => undefined);
         const started = performance.now();
@@ -167,7 +167,7 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
 
   const baseReport = {
     runId,
-    tool: { name: "bevl", version: "0.1.0" },
+    tool: { name: "toros", version: "0.1.0" },
     project: options.projectDir.split("/").pop() ?? options.projectDir,
     seed,
     score,
@@ -182,8 +182,8 @@ export async function runCheck(options: CheckOptions): Promise<Report> {
       ? { ...baseReport, renderer: renderers as { desktop?: string; phone?: string } }
       : baseReport;
 
-  // Write report to <projectDir>/.bevl/reports/<runId>/report.json
-  const reportDir = join(options.projectDir, ".bevl", "reports", runId);
+  // Write report to <projectDir>/.toros/reports/<runId>/report.json
+  const reportDir = join(options.projectDir, ".toros", "reports", runId);
   await mkdir(reportDir, { recursive: true });
   await writeFile(join(reportDir, "report.json"), `${JSON.stringify(report, null, 2)}\n`);
 

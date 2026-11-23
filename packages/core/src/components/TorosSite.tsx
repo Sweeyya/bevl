@@ -9,15 +9,15 @@ import { cameraPoseAt } from "../choreography/pose.js";
 import { sectionPositions } from "../choreography/scene.js";
 import { validateChoreography } from "../choreography/schema.js";
 import type { Choreography } from "../choreography/types.js";
-import { BevlContext } from "../context.js";
+import { TorosContext } from "../context.js";
 import type {
-  BevlBridge,
-  BevlConfig,
   BrandTokens,
   CameraState,
   Quat,
   SceneStats,
   SectionState,
+  TorosBridge,
+  TorosConfig,
 } from "../contract.js";
 import { resolveInputs } from "../input/resolve.js";
 import { useProgressInput } from "../input/useProgressInput.js";
@@ -30,29 +30,29 @@ import { Fallback, hasWebGL } from "./Fallback.js";
 import { HtmlLayer, HtmlLayerDriver } from "./HtmlLayer.js";
 import { ScrollCamera } from "./ScrollCamera.js";
 
-interface BevlSiteProps {
-  config: BevlConfig;
+interface TorosSiteProps {
+  config: TorosConfig;
   /** Brand tokens (src/brand.tokens.json). Colors, fonts and the canvas background follow them. */
   brand?: BrandTokens | undefined;
   children?: ReactNode;
-  /** DOM rendered over the canvas (nav, HUD). Gets BevlContext. */
+  /** DOM rendered over the canvas (nav, HUD). Gets TorosContext. */
   overlay?: ReactNode;
   /** Replaces the built-in static page shown when WebGL is unavailable. */
   fallback?: ReactNode;
 }
 
 const BRAND_HEADING_CSS =
-  "[data-bevl-scroller] :is(h1,h2,h3,h4,h5,h6){font-family:var(--bevl-font-heading)}";
+  "[data-toros-scroller] :is(h1,h2,h3,h4,h5,h6){font-family:var(--toros-font-heading)}";
 
 const IDENTITY_QUAT: Quat = { x: 0, y: 0, z: 0, w: 1 };
 /** The config's choreography if valid, otherwise the default (errors go to console.error). */
-function buildChoreography(config: BevlConfig): Choreography {
+function buildChoreography(config: TorosConfig): Choreography {
   const ids = config.sections.map((s) => s.id);
   const fallback = defaultChoreography(ids);
   if (!config.choreography) return fallback;
   const result = validateChoreography(config.choreography, ids);
   if (result.ok) return result.value;
-  for (const error of result.errors) console.error(`[bevl] invalid choreography: ${error}`);
+  for (const error of result.errors) console.error(`[toros] invalid choreography: ${error}`);
   return fallback;
 }
 
@@ -60,11 +60,11 @@ function isCoarsePointer(): boolean {
   return typeof window !== "undefined" && window.matchMedia?.("(pointer: coarse)").matches === true;
 }
 
-function parseTestParams(config: BevlConfig): { testMode: boolean; seed: number } {
+function parseTestParams(config: TorosConfig): { testMode: boolean; seed: number } {
   if (typeof window === "undefined") return { testMode: false, seed: 1 };
   const p = new URLSearchParams(window.location.search);
   const allowed = isTestModeAllowed(config.testMode, window.location.hostname);
-  return { testMode: allowed && p.has("bevl-test"), seed: Number(p.get("seed") ?? "1") || 1 };
+  return { testMode: allowed && p.has("toros-test"), seed: Number(p.get("seed") ?? "1") || 1 };
 }
 
 function makeBridgeState(choreography: Choreography, brand: BrandTokens | null): BridgeState {
@@ -109,7 +109,7 @@ function BridgeInstaller({
   choreography: Choreography;
 }): null {
   const { camera, gl, advance, scene } = useThree();
-  const eventsRef = useRef<import("../contract.js").BevlEvent[]>([]);
+  const eventsRef = useRef<import("../contract.js").TorosEvent[]>([]);
   const initialFrameDone = useRef(false);
 
   // Wire live getters on every render so they always reflect current state
@@ -182,13 +182,13 @@ function BridgeInstaller({
   return null;
 }
 
-export function BevlSite({
+export function TorosSite({
   config,
   brand,
   children,
   overlay,
   fallback,
-}: BevlSiteProps): JSX.Element {
+}: TorosSiteProps): JSX.Element {
   const [webgl] = useState(hasWebGL);
   const { testMode } = parseTestParams(config);
   const [scroller, setScroller] = useState<HTMLDivElement | null>(null);
@@ -198,10 +198,10 @@ export function BevlSite({
     return { choreography: built, positions: sectionPositions(built, ids) };
   });
 
-  // Create bridge state once; install the bridge synchronously so window.__bevl
+  // Create bridge state once; install the bridge synchronously so window.__toros
   // is available as soon as the component mounts (before any useEffect runs).
   const bridgeStateRef = useRef<BridgeState | null>(null);
-  const bridgeRef = useRef<BevlBridge | null>(null);
+  const bridgeRef = useRef<TorosBridge | null>(null);
   if (bridgeStateRef.current === null) {
     bridgeStateRef.current = makeBridgeState(choreography, brand ?? null);
     if (testMode) bridgeRef.current = installBridge(bridgeStateRef.current);
@@ -240,16 +240,16 @@ export function BevlSite({
   const tokens = resolveBrand(brand);
   const brandStyle = brand
     ? ({
-        fontFamily: "var(--bevl-font-body)",
+        fontFamily: "var(--toros-font-body)",
         color: tokens.colors.text,
-        "--bevl-text": tokens.colors.text,
-        "--bevl-font-heading": fontStack(tokens.fonts.heading),
-        "--bevl-font-body": fontStack(tokens.fonts.body),
+        "--toros-text": tokens.colors.text,
+        "--toros-font-heading": fontStack(tokens.fonts.heading),
+        "--toros-font-body": fontStack(tokens.fonts.body),
       } as CSSProperties)
     : {};
 
   return (
-    <BevlContext.Provider
+    <TorosContext.Provider
       value={{
         getProgress,
         tick,
@@ -267,7 +267,7 @@ export function BevlSite({
     >
       <div
         ref={setScroller}
-        data-bevl-scroller
+        data-toros-scroller
         style={{
           width: "100vw",
           height: "100vh",
@@ -314,6 +314,6 @@ export function BevlSite({
         />
         {overlay}
       </div>
-    </BevlContext.Provider>
+    </TorosContext.Provider>
   );
 }

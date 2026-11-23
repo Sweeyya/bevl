@@ -1,9 +1,9 @@
-import { BevlA11y } from "@bevl/a11y";
-import type { BevlConfig } from "@bevl/core";
-import { BevlSite, Section } from "@bevl/core";
+import { TorosA11y } from "@toros/a11y";
+import type { TorosConfig } from "@toros/core";
+import { Section, TorosSite } from "@toros/core";
 
-const config: BevlConfig = {
-  name: "Bevl Basic Example",
+const config: TorosConfig = {
+  name: "Toros Basic Example",
   sections: [
     { id: "hero", title: "Hero" },
     { id: "features", title: "Features" },
@@ -13,13 +13,13 @@ const config: BevlConfig = {
 
 export function App(): JSX.Element {
   return (
-    <BevlSite config={config} overlay={<BevlA11y config={{ sections: config.sections }} />}>
+    <TorosSite config={config} overlay={<TorosA11y config={{ sections: config.sections }} />}>
       <Section
         id="hero"
         title="Hero"
         html={
           <>
-            <h1>Bevl Basic Example</h1>
+            <h1>Toros Basic Example</h1>
             <p>A scroll-driven 3D site where every word is real HTML.</p>
           </>
         }
@@ -65,6 +65,6 @@ export function App(): JSX.Element {
 
       <ambientLight intensity={0.6} />
       <directionalLight position={[5, 10, 5]} intensity={1} />
-    </BevlSite>
+    </TorosSite>
   );
 }

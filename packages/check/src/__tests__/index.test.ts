@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { EXIT_CODES, VERSION } from "../index.js";
 
-describe("@bevl/check", () => {
+describe("@toros/check", () => {
   it("exports a version string", () => {
     expect(VERSION).toBe("0.1.0");
   });

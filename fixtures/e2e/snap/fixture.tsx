@@ -1,4 +1,4 @@
-import type { SnapMode } from "@bevl/core";
+import type { SnapMode } from "@toros/core";
 import { buildFixture, list, number, PROBE_TRACK, sectionList } from "../../host/src/e2e.js";
 
 const params = new URLSearchParams(location.search);

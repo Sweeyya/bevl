@@ -1,6 +1,6 @@
-import { formatReport, runCheck } from "@bevl/check";
-import { optimizeGlb } from "@bevl/optimizer";
-import { addSection, applyBrand, createSite, readTokenFile } from "@bevl/tokens";
+import { formatReport, runCheck } from "@toros/check";
+import { optimizeGlb } from "@toros/optimizer";
+import { addSection, applyBrand, createSite, readTokenFile } from "@toros/tokens";
 import { assertSafeUrl, projectRoot, requireExtension, resolveInside } from "./guard.js";
 
 export interface CheckSiteArgs {

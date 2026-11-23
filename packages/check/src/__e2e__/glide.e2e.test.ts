@@ -21,7 +21,7 @@ async function openGlide(): Promise<Opened> {
   opened.push(o);
   await o.page.evaluate(() => {
     const w = window as unknown as { __samples: Sample[] };
-    const el = document.querySelector("[data-bevl-scroller]") as HTMLElement;
+    const el = document.querySelector("[data-toros-scroller]") as HTMLElement;
     w.__samples = [];
     const loop = (t: number): void => {
       w.__samples.push({

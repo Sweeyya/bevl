@@ -3,7 +3,7 @@
 ## Run it
 
 ```
-bevl check http://localhost:5173 --json
+toros check http://localhost:5173 --json
 ```
 
 Without `--json` you get a readable report. With `--json` (or MCP `check_site`) you get the `Report` object.
@@ -54,13 +54,13 @@ Each finding carries a `Fix:` line written for you to act on. Follow it, but con
 
 ## Common fixes
 
-| Symptom                                           | Likely fix                                                                                                                                                    |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `load/ready` timeout                              | The bridge never set `window.__bevl` or an asset failed to load. Check the console and asset paths. Off-localhost, set `"testMode": "always"` in `bevl.json`. |
-| `load/console-errors` with `invalid choreography` | The schema rejected your choreography and the default was used. Fix the field path named in the message.                                                      |
-| `scroll/reaches-every-section`                    | A section has no beat or no DOM anchor. Add the missing `<Section id="...">` and a beat for every section id.                                                 |
-| `scroll/no-jumps`                                 | Camera moves more than 1.5 m between scroll steps. Add keyframes, use `path: "curve"`, or shrink the distance between beats.                                  |
-| `scroll/no-roll`                                  | Camera tilts sideways. Keep `lookAt` keys from forcing a roll, and avoid camera `rotation.z`.                                                                 |
-| `budgets/*`                                       | Run `optimize_assets` on GLBs, merge meshes, use instancing, drop unused models.                                                                              |
-| `html/section-text`                               | Add real HTML with a heading for each section.                                                                                                                |
-| `a11y/*`                                          | Add the nav overlay and stop swallowing key events.                                                                                                           |
+| Symptom                                           | Likely fix                                                                                                                                                      |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `load/ready` timeout                              | The bridge never set `window.__toros` or an asset failed to load. Check the console and asset paths. Off-localhost, set `"testMode": "always"` in `toros.json`. |
+| `load/console-errors` with `invalid choreography` | The schema rejected your choreography and the default was used. Fix the field path named in the message.                                                        |
+| `scroll/reaches-every-section`                    | A section has no beat or no DOM anchor. Add the missing `<Section id="...">` and a beat for every section id.                                                   |
+| `scroll/no-jumps`                                 | Camera moves more than 1.5 m between scroll steps. Add keyframes, use `path: "curve"`, or shrink the distance between beats.                                    |
+| `scroll/no-roll`                                  | Camera tilts sideways. Keep `lookAt` keys from forcing a roll, and avoid camera `rotation.z`.                                                                   |
+| `budgets/*`                                       | Run `optimize_assets` on GLBs, merge meshes, use instancing, drop unused models.                                                                                |
+| `html/section-text`                               | Add real HTML with a heading for each section.                                                                                                                  |
+| `a11y/*`                                          | Add the nav overlay and stop swallowing key events.                                                                                                             |

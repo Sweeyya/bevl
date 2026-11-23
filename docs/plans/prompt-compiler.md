@@ -11,7 +11,7 @@ For each site built with Claude or another AI, save:
 - Raw prompts, in order, exactly as typed.
 - What the AI asked and what it got wrong.
 - Every correction ("darker", "camera too fast", "use my logo"). Each one is information the first prompt was missing.
-- Outcome: final site, `bevl check` score, number of turns, time, tokens if available.
+- Outcome: final site, `toros check` score, number of turns, time, tokens if available.
 - A 1–5 rating and a screenshot.
 
 Keep transcripts out of the public repo (private or gitignored folder).
@@ -36,7 +36,7 @@ Combine the sessions into a requirements checklist. Anything that only appeared 
 
 - Mostly plain code: answers become a structured brief (JSON), templates turn the brief into a prompt. Use an LLM only for interpretation (for example, turning "dreamy, like floating in space" into a draft choreography).
 - One adapter per target AI (Claude, ChatGPT, Cursor, Lovable). Decide adapter differences from Phase 5 measurements, not guesses.
-- Every prompt includes the finish line: run `bevl check`, fix every `Fix:` item, stop at 90+.
+- Every prompt includes the finish line: run `toros check`, fix every `Fix:` item, stop at 90+.
 
 ## Phase 5: Test the full run-through
 
@@ -50,6 +50,6 @@ Extends the golden tasks in `TESTING.md` §8.
 
 ## Open questions
 
-1. Build the sample sites with Bevl, without it, or both? (Without gives a baseline.)
+1. Build the sample sites with Toros, without it, or both? (Without gives a baseline.)
 2. Which AI to tune for first?
 3. Is the main user a non-technical person in a chat app or a developer in Cursor or Claude Code? This sets how many questions the intake can ask.

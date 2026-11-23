@@ -1,6 +1,6 @@
 {
-  "$schema": "./bevl.budgets.schema.json",
-  "comment": "Default performance budgets. Override per-project in bevl.json. See TESTING.md §6 for how these numbers were chosen.",
+  "$schema": "./toros.budgets.schema.json",
+  "comment": "Default performance budgets. Override per-project in toros.json. See TESTING.md §6 for how these numbers were chosen.",
   "trianglesDesktop": 500000,
   "trianglesPhone": 150000,
   "drawCallsDesktop": 200,

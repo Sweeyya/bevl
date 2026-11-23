@@ -1,0 +1,398 @@
+{
+  "runId": "2026-11-23T16-03-10Z-8d75",
+  "tool": {
+    "name": "bevl",
+    "version": "0.1.0"
+  },
+  "project": "basic",
+  "seed": 1,
+  "score": 100,
+  "passed": true,
+  "groups": {
+    "load+render": {
+      "score": 100,
+      "weight": 15
+    },
+    "scroll": {
+      "score": 100,
+      "weight": 20
+    },
+    "nav": {
+      "score": 100,
+      "weight": 10
+    },
+    "html+seo": {
+      "score": 100,
+      "weight": 15
+    },
+    "a11y": {
+      "score": 100,
+      "weight": 15
+    },
+    "budgets": {
+      "score": 100,
+      "weight": 15
+    },
+    "brand": {
+      "score": 100,
+      "weight": 5
+    },
+    "mascot": {
+      "score": 100,
+      "weight": 5
+    }
+  },
+  "findings": [
+    {
+      "rule": "load/webgl",
+      "severity": "info",
+      "viewport": "desktop",
+      "message": "WebGL2 is running on a software renderer (ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)) on desktop.",
+      "fix": "This is expected in CI. On real devices a GPU renderer will be used."
+    },
+    {
+      "rule": "load/webgl",
+      "severity": "info",
+      "viewport": "phone",
+      "message": "WebGL2 is running on a software renderer (ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)) on phone.",
+      "fix": "This is expected in CI. On real devices a GPU renderer will be used."
+    }
+  ],
+  "timings": [
+    {
+      "rule": "load/ready",
+      "viewport": "desktop",
+      "ms": 187
+    },
+    {
+      "rule": "load/console-errors",
+      "viewport": "desktop",
+      "ms": 0
+    },
+    {
+      "rule": "load/webgl",
+      "viewport": "desktop",
+      "ms": 2
+    },
+    {
+      "rule": "render/not-blank",
+      "viewport": "desktop",
+      "ms": 58
+    },
+    {
+      "rule": "render/no-nan",
+      "viewport": "desktop",
+      "ms": 3
+    },
+    {
+      "rule": "budgets/triangles",
+      "viewport": "desktop",
+      "ms": 2
+    },
+    {
+      "rule": "budgets/draw-calls",
+      "viewport": "desktop",
+      "ms": 2
+    },
+    {
+      "rule": "scroll/reaches-every-section",
+      "viewport": "desktop",
+      "ms": 101
+    },
+    {
+      "rule": "scroll/no-jumps",
+      "viewport": "desktop",
+      "ms": 1364
+    },
+    {
+      "rule": "scroll/no-roll",
+      "viewport": "desktop",
+      "ms": 1366
+    },
+    {
+      "rule": "scroll/snap-settles",
+      "viewport": "desktop",
+      "ms": 132
+    },
+    {
+      "rule": "scroll/snap-no-trap",
+      "viewport": "desktop",
+      "ms": 735
+    },
+    {
+      "rule": "scroll/deterministic",
+      "viewport": "desktop",
+      "ms": 748
+    },
+    {
+      "rule": "scroll/motion-allowances",
+      "viewport": "desktop",
+      "ms": 1
+    },
+    {
+      "rule": "html/section-text",
+      "viewport": "desktop",
+      "ms": 1
+    },
+    {
+      "rule": "html/headings",
+      "viewport": "desktop",
+      "ms": 0
+    },
+    {
+      "rule": "seo/title",
+      "viewport": "desktop",
+      "ms": 1
+    },
+    {
+      "rule": "seo/meta-description",
+      "viewport": "desktop",
+      "ms": 1
+    },
+    {
+      "rule": "a11y/keyboard",
+      "viewport": "desktop",
+      "ms": 1
+    },
+    {
+      "rule": "a11y/keyboard-reaches-beats",
+      "viewport": "desktop",
+      "ms": 18
+    },
+    {
+      "rule": "brand/palette",
+      "viewport": "desktop",
+      "ms": 0
+    },
+    {
+      "rule": "brand/fonts",
+      "viewport": "desktop",
+      "ms": 0
+    },
+    {
+      "rule": "scroll/no-spin",
+      "viewport": "desktop",
+      "ms": 1359
+    },
+    {
+      "rule": "scroll/no-free-roam",
+      "viewport": "desktop",
+      "ms": 251
+    },
+    {
+      "rule": "nav/menu-exists",
+      "viewport": "desktop",
+      "ms": 3
+    },
+    {
+      "rule": "nav/link-glides",
+      "viewport": "desktop",
+      "ms": 930
+    },
+    {
+      "rule": "nav/buttons-work",
+      "viewport": "desktop",
+      "ms": 616
+    },
+    {
+      "rule": "html/no-canvas-copy",
+      "viewport": "desktop",
+      "ms": 1
+    },
+    {
+      "rule": "render/fallback",
+      "viewport": "desktop",
+      "ms": 76
+    },
+    {
+      "rule": "budgets/texture-mb",
+      "viewport": "desktop",
+      "ms": 1
+    },
+    {
+      "rule": "load/failed-requests",
+      "viewport": "desktop",
+      "ms": 1
+    },
+    {
+      "rule": "a11y/contrast-over-3d",
+      "viewport": "desktop",
+      "ms": 247
+    },
+    {
+      "rule": "a11y/reduced-motion",
+      "viewport": "desktop",
+      "ms": 2939
+    },
+    {
+      "rule": "load/ready",
+      "viewport": "phone",
+      "ms": 137
+    },
+    {
+      "rule": "load/console-errors",
+      "viewport": "phone",
+      "ms": 0
+    },
+    {
+      "rule": "load/webgl",
+      "viewport": "phone",
+      "ms": 2
+    },
+    {
+      "rule": "render/not-blank",
+      "viewport": "phone",
+      "ms": 117
+    },
+    {
+      "rule": "render/no-nan",
+      "viewport": "phone",
+      "ms": 2
+    },
+    {
+      "rule": "budgets/triangles",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "budgets/draw-calls",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "scroll/reaches-every-section",
+      "viewport": "phone",
+      "ms": 91
+    },
+    {
+      "rule": "scroll/no-jumps",
+      "viewport": "phone",
+      "ms": 1367
+    },
+    {
+      "rule": "scroll/no-roll",
+      "viewport": "phone",
+      "ms": 1416
+    },
+    {
+      "rule": "scroll/snap-settles",
+      "viewport": "phone",
+      "ms": 133
+    },
+    {
+      "rule": "scroll/snap-no-trap",
+      "viewport": "phone",
+      "ms": 1134
+    },
+    {
+      "rule": "scroll/deterministic",
+      "viewport": "phone",
+      "ms": 749
+    },
+    {
+      "rule": "scroll/motion-allowances",
+      "viewport": "phone",
+      "ms": 2
+    },
+    {
+      "rule": "html/section-text",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "html/headings",
+      "viewport": "phone",
+      "ms": 0
+    },
+    {
+      "rule": "seo/title",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "seo/meta-description",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "a11y/keyboard",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "a11y/keyboard-reaches-beats",
+      "viewport": "phone",
+      "ms": 23
+    },
+    {
+      "rule": "brand/palette",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "brand/fonts",
+      "viewport": "phone",
+      "ms": 0
+    },
+    {
+      "rule": "scroll/no-spin",
+      "viewport": "phone",
+      "ms": 1375
+    },
+    {
+      "rule": "scroll/no-free-roam",
+      "viewport": "phone",
+      "ms": 267
+    },
+    {
+      "rule": "nav/menu-exists",
+      "viewport": "phone",
+      "ms": 2
+    },
+    {
+      "rule": "nav/link-glides",
+      "viewport": "phone",
+      "ms": 1284
+    },
+    {
+      "rule": "nav/buttons-work",
+      "viewport": "phone",
+      "ms": 715
+    },
+    {
+      "rule": "html/no-canvas-copy",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "render/fallback",
+      "viewport": "phone",
+      "ms": 79
+    },
+    {
+      "rule": "budgets/texture-mb",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "load/failed-requests",
+      "viewport": "phone",
+      "ms": 1
+    },
+    {
+      "rule": "a11y/contrast-over-3d",
+      "viewport": "phone",
+      "ms": 386
+    },
+    {
+      "rule": "a11y/reduced-motion",
+      "viewport": "phone",
+      "ms": 2981
+    }
+  ],
+  "artifacts": [],
+  "renderer": {
+    "desktop": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "phone": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)"
+  }
+}

@@ -23,9 +23,9 @@ const rule: Rule = {
       () =>
         (
           window as unknown as {
-            __bevl?: { sections(): Array<{ id: string; anchor: number }> };
+            __toros?: { sections(): Array<{ id: string; anchor: number }> };
           }
-        ).__bevl?.sections() ?? [],
+        ).__toros?.sections() ?? [],
     );
     const problems: string[] = [];
 
@@ -49,13 +49,13 @@ const rule: Rule = {
         ({ frames }) => {
           const bridge = (
             window as unknown as {
-              __bevl: {
+              __toros: {
                 step(ms: number): unknown;
                 scroll(): number;
                 camera(): { position: { x: number; y: number; z: number } };
               };
             }
-          ).__bevl;
+          ).__toros;
           const poses = [bridge.camera().position];
           for (let i = 0; i < frames; i++) {
             bridge.step(1000 / 60);
@@ -86,7 +86,7 @@ const rule: Rule = {
         severity: "error",
         viewport: viewport.name,
         message: `Nav links do not glide on ${viewport.name}: ${problems.join("; ")}.`,
-        fix: "Fix: make nav links call goToBeat(index) from the Bevl context and do not set the camera directly. The camera must move at most 1.5 m per step and end on the section's beat.",
+        fix: "Fix: make nav links call goToBeat(index) from the Toros context and do not set the camera directly. The camera must move at most 1.5 m per step and end on the section's beat.",
         evidence: { data: { problems } },
       },
     ];

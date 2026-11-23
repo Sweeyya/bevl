@@ -1,9 +1,9 @@
 import { realpathSync } from "node:fs";
 import { extname, resolve } from "node:path";
-import { resolveInside as resolveWithin } from "@bevl/tokens";
+import { resolveInside as resolveWithin } from "@toros/tokens";
 
-export const ROOT_ENV = "BEVL_PROJECT_ROOT";
-export const ALLOW_REMOTE_ENV = "BEVL_ALLOW_REMOTE";
+export const ROOT_ENV = "TOROS_PROJECT_ROOT";
+export const ALLOW_REMOTE_ENV = "TOROS_ALLOW_REMOTE";
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
 

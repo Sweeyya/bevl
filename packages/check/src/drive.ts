@@ -3,7 +3,7 @@ import type { Finding } from "./report.js";
 import type { RuleContext } from "./rule.js";
 
 type Win = {
-  __bevl?: {
+  __toros?: {
     ready: Promise<void>;
     step(ms: number): unknown;
     scroll(): number;
@@ -33,9 +33,9 @@ const neverReady = new WeakSet<Page>();
 export async function waitReady(page: Page, timeoutMs = 15_000): Promise<boolean> {
   if (neverReady.has(page)) return false;
   try {
-    await page.waitForFunction(() => "__bevl" in window, undefined, { timeout: timeoutMs });
+    await page.waitForFunction(() => "__toros" in window, undefined, { timeout: timeoutMs });
     return await page.evaluate(async () => {
-      await (window as unknown as Win).__bevl?.ready;
+      await (window as unknown as Win).__toros?.ready;
       return true;
     });
   } catch {
@@ -46,27 +46,27 @@ export async function waitReady(page: Page, timeoutMs = 15_000): Promise<boolean
 
 export function step(page: Page, frames: number): Promise<void> {
   return page.evaluate((n) => {
-    (window as unknown as Win).__bevl?.step((n * 1000) / 60);
+    (window as unknown as Win).__toros?.step((n * 1000) / 60);
   }, frames);
 }
 
 export function progress(page: Page): Promise<number> {
-  return page.evaluate(() => (window as unknown as Win).__bevl?.scroll() ?? 0);
+  return page.evaluate(() => (window as unknown as Win).__toros?.scroll() ?? 0);
 }
 
 export async function beatAnchors(page: Page): Promise<number[]> {
-  const sections = await page.evaluate(() => (window as unknown as Win).__bevl?.sections() ?? []);
+  const sections = await page.evaluate(() => (window as unknown as Win).__toros?.sections() ?? []);
   return sections.map((s) => s.anchor);
 }
 
 export function choreography(
   page: Page,
-): Promise<ReturnType<NonNullable<Win["__bevl"]>["choreography"]>> {
-  return page.evaluate(() => (window as unknown as Win).__bevl?.choreography() ?? {});
+): Promise<ReturnType<NonNullable<Win["__toros"]>["choreography"]>> {
+  return page.evaluate(() => (window as unknown as Win).__toros?.choreography() ?? {});
 }
 
 export function reducedMotionOn(page: Page): Promise<boolean> {
-  return page.evaluate(() => (window as unknown as Win).__bevl?.motion().reducedMotion === true);
+  return page.evaluate(() => (window as unknown as Win).__toros?.motion().reducedMotion === true);
 }
 
 /** Waits two animation frames so React has applied a changed media query. */
@@ -77,13 +77,13 @@ export function nextFrames(page: Page): Promise<void> {
 }
 
 export function stats(page: Page) {
-  return page.evaluate(() => (window as unknown as Win).__bevl?.stats() ?? null);
+  return page.evaluate(() => (window as unknown as Win).__toros?.stats() ?? null);
 }
 
 /** Sets the scroller position and waits for the scroll event and a frame. False when there is nothing to scroll. */
 export function scrollTo(page: Page, fraction: number): Promise<boolean> {
   return page.evaluate(async (f) => {
-    const el = (document.querySelector<HTMLElement>("[data-bevl-scroller]") ??
+    const el = (document.querySelector<HTMLElement>("[data-toros-scroller]") ??
       document.scrollingElement ??
       document.documentElement) as HTMLElement;
     const max = el.scrollHeight - el.clientHeight;
@@ -94,10 +94,10 @@ export function scrollTo(page: Page, fraction: number): Promise<boolean> {
   }, fraction);
 }
 
-export type CameraPose = NonNullable<ReturnType<NonNullable<Win["__bevl"]>["camera"]>>;
+export type CameraPose = NonNullable<ReturnType<NonNullable<Win["__toros"]>["camera"]>>;
 
 export function cameraPose(page: Page): Promise<CameraPose | null> {
-  return page.evaluate(() => (window as unknown as Win).__bevl?.camera() ?? null);
+  return page.evaluate(() => (window as unknown as Win).__toros?.camera() ?? null);
 }
 
 export function sectionPoses(page: Page) {
@@ -105,11 +105,11 @@ export function sectionPoses(page: Page) {
     () =>
       (
         window as unknown as {
-          __bevl?: {
+          __toros?: {
             sections(): Array<{ id: string; anchor: number; cameraPose: CameraPose }>;
           };
         }
-      ).__bevl?.sections() ?? [],
+      ).__toros?.sections() ?? [],
   );
 }
 
@@ -151,7 +151,7 @@ export function couldNotRun(ctx: RuleContext, rule: string, why: string): Findin
     rule,
     "error",
     `Could not run ${rule} on ${ctx.viewport.name}: ${why}.`,
-    "Fix: make sure the site loads in test mode (window.__bevl exists and ready resolves) and has a [data-bevl-scroller] taller than the viewport.",
+    "Fix: make sure the site loads in test mode (window.__toros exists and ready resolves) and has a [data-toros-scroller] taller than the viewport.",
   );
 }
 
@@ -205,7 +205,7 @@ export type Pose = { position: Vec3; quaternion: Quat };
 
 export async function requireCameraPose(page: Page): Promise<Pose> {
   const pose = await cameraPose(page);
-  if (!pose) throw new Error("The bevl bridge is missing");
+  if (!pose) throw new Error("The toros bridge is missing");
   return { position: pose.position, quaternion: pose.quaternion };
 }
 

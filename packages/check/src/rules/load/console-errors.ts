@@ -14,9 +14,9 @@ const rule: Rule = {
     const errors = await ctx.page
       .evaluate(() => {
         const win = window as unknown as {
-          __bevlConsoleErrors?: string[];
+          __torosConsoleErrors?: string[];
         };
-        return win.__bevlConsoleErrors ?? [];
+        return win.__torosConsoleErrors ?? [];
       })
       .catch(() => null);
 

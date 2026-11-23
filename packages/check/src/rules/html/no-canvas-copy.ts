@@ -16,9 +16,9 @@ const rule: Rule = {
       () =>
         (
           window as unknown as {
-            __bevl?: { textMeshes(): Array<{ text: string; charCount: number }> };
+            __toros?: { textMeshes(): Array<{ text: string; charCount: number }> };
           }
-        ).__bevl?.textMeshes() ?? [],
+        ).__toros?.textMeshes() ?? [],
     );
     const long = meshes.filter((m) => m.charCount > MAX_TEXT_MESH_CHARS);
     if (long.length === 0) return [];

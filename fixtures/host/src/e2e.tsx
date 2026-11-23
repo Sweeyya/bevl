@@ -1,7 +1,7 @@
-import { BevlA11y } from "@bevl/a11y";
-import type { BevlConfig, Choreography, InputKind, Track } from "@bevl/core";
-import { defaultChoreography } from "@bevl/core";
 import { useThree } from "@react-three/fiber";
+import { TorosA11y } from "@toros/a11y";
+import type { Choreography, InputKind, TorosConfig, Track } from "@toros/core";
+import { defaultChoreography } from "@toros/core";
 import type { ReactNode } from "react";
 import type { Fixture } from "./fixture.js";
 
@@ -17,7 +17,7 @@ export function number(name: string): number | undefined {
   return v === null ? undefined : Number(v);
 }
 
-export function sectionList(count: number): BevlConfig["sections"] {
+export function sectionList(count: number): TorosConfig["sections"] {
   return Array.from({ length: count }, (_, i) => ({ id: `s${i + 1}`, title: `Section ${i + 1}` }));
 }
 
@@ -52,21 +52,21 @@ function Probe(): JSX.Element {
 }
 
 export function buildFixture(
-  sections: BevlConfig["sections"],
+  sections: TorosConfig["sections"],
   patch: (base: Choreography) => Choreography,
   extra?: ReactNode,
 ): Fixture {
-  const config: BevlConfig = {
+  const config: TorosConfig = {
     name: "E2E fixture",
     sections,
     choreography: patch(defaultChoreography(sections.map((s) => s.id))),
   };
   return {
     config,
-    head: { title: "Bevl e2e", description: "Input end-to-end fixture." },
+    head: { title: "Toros e2e", description: "Input end-to-end fixture." },
     overlay: (
       <>
-        <BevlA11y config={{ sections }} />
+        <TorosA11y config={{ sections }} />
         <a
           href="#e2e-link"
           data-testid="link"

@@ -1,5 +1,5 @@
 {
-  "name": "@bevl/mascot",
+  "name": "@toros/mascot",
   "version": "0.1.0",
   "description": "Mascot motion and behaviors (V2).",
   "type": "module",
@@ -21,7 +21,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@bevl/core": "workspace:*"
+    "@toros/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "7.0.2",

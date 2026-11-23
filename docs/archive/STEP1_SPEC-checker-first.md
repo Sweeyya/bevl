@@ -1,4 +1,4 @@
-# Bevl — Step 1 Build Spec
+# Toros — Step 1 Build Spec
 
 Read `docs/PLAN.md` first for the why. This file is the what and how for Step 1. Build it milestone by milestone (§11). Every milestone ends with its tests passing and a commit.
 
@@ -27,26 +27,26 @@ Read `docs/PLAN.md` first for the why. This file is the what and how for Step 1.
 
 ---
 
-## 2. A Bevl project (the format)
+## 2. A Toros project (the format)
 
 ```
 my-site/
-  bevl.json          manifest (required)
+  toros.json          manifest (required)
   index.html            page shell + overlay UI (required)
   scene.js              the 3D scene (required)
   assets/
     models/  textures/  hdri/  audio/  fonts/
   plays/
     *.play.json         play-through scripts
-  .bevl/             tool output (gitignored): artifacts/, reports/
-  package.json          depends on @bevl/runtime and three
+  .toros/             tool output (gitignored): artifacts/, reports/
+  package.json          depends on @toros/runtime and three
 ```
 
-### 2.1 `bevl.json`
+### 2.1 `toros.json`
 
 ```json
 {
-  "$schema": "./node_modules/@bevl/schema/bevl.schema.json",
+  "$schema": "./node_modules/@toros/schema/toros.schema.json",
   "name": "my-site",
   "entry": "scene.js",
   "seed": 1,
@@ -74,7 +74,7 @@ my-site/
 ### 2.2 `scene.js`
 
 ```js
-import { defineScene } from "@bevl/runtime";
+import { defineScene } from "@toros/runtime";
 import * as THREE from "three";
 
 export default defineScene({
@@ -117,7 +117,7 @@ export default defineScene({
 
 ### 2.3 `index.html`
 
-- Loads `scene.js` through the runtime: `<script type="module">import { mount } from '@bevl/runtime'; import scene from './scene.js'; mount(scene, document.getElementById('stage'));</script>`
+- Loads `scene.js` through the runtime: `<script type="module">import { mount } from '@toros/runtime'; import scene from './scene.js'; mount(scene, document.getElementById('stage'));</script>`
 - Overlay UI is normal HTML/CSS. Interactive elements carry:
   - `data-dy-id="<unique id>"` so checks and plays can find them.
   - `data-dy-action="<interaction id>"` to bind a button to a declared interaction (`on: 'action'`).
@@ -126,7 +126,7 @@ export default defineScene({
 
 ## 3. The contract (rules every project follows)
 
-`bevl lint` and `bevl check` enforce these. Each violation prints a `Fix:` line.
+`toros lint` and `toros check` enforce these. Each violation prints a `Fix:` line.
 
 1. **Named objects.** Every object that matters (interaction targets, anything referenced by plays, budgets, or styles) is added with `ctx.add(id, object)`. Ids are unique, kebab-case.
 2. **Runtime owns time.** Scene code never calls `Date.now`, `performance.now`, `new Date()`, `setTimeout`, `setInterval`, or `requestAnimationFrame`. Use `dt`, `ctx.time`, `ctx.animate`, `ctx.after(ms, fn)`.
@@ -137,13 +137,13 @@ export default defineScene({
 7. **Seekable animation.** Animate with `ctx.animate` / `ctx.tween` (time-driven, owned by the runtime). No third-party animation loop that keeps its own clock.
 8. **Overlay UI is addressable.** Every interactive DOM element has `data-dy-id`; buttons that trigger scene behaviour use `data-dy-action`.
 9. **Style tokens.** Colours, materials, lights and post-effects come from `ctx.style` tokens. An off-palette colour needs `ctx.style.allowOffPalette(id, reason)`.
-10. **Budgets declared.** Budgets live in `bevl.json`; the scene must stay within them.
+10. **Budgets declared.** Budgets live in `toros.json`; the scene must stay within them.
 11. **Resize and reduced motion.** The runtime handles resize; scenes read `ctx.reducedMotion` and reduce or remove large motion when true.
 12. **No hidden globals.** Scene code does not write to `window` (the runtime exposes the test bridge itself).
 
 ---
 
-## 4. `@bevl/runtime` (browser)
+## 4. `@toros/runtime` (browser)
 
 ### 4.1 Public API
 
@@ -152,7 +152,7 @@ export default defineScene({
 - `ctx` (passed to `setup`, `update`, `run`):
   - `add(id, obj)`, `get(id)`, `has(id)`, `remove(id)`, `list()`
   - `time` (ms since start), `frame` (integer)
-  - `random()`, `randomInt(a, b)`, `randomPick(arr)` — seeded (mulberry32 or similar) from `bevl.json.seed`, overridable by `?dy-seed=`
+  - `random()`, `randomInt(a, b)`, `randomPick(arr)` — seeded (mulberry32 or similar) from `toros.json.seed`, overridable by `?dy-seed=`
   - `state.get(k)`, `state.set(k, v)`, `state.all()`
   - `animate(id, props, { duration, ease, delay })`, `tween(from, to, opts, onUpdate)`, `after(ms, fn)`
   - `camera.define(name, { position, target, fov })`, `camera.use(name)`, `camera.current`
@@ -167,7 +167,7 @@ export default defineScene({
 - `test`: the loop is paused. Only `bridge.step(ms)` advances time, in fixed sub-steps of 1000/60 ms, calling `update` and rendering once at the end of the step (or every sub-step if `{ renderEach: true }`).
 - Both modes run the exact same `update` code path.
 
-### 4.3 Test bridge — `window.__bevl` (test mode only)
+### 4.3 Test bridge — `window.__toros` (test mode only)
 
 | Member                         | Returns / does                                                                                                                                        |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -198,26 +198,26 @@ Plays never call `run` directly. They send real input; the runtime maps input �
 
 ---
 
-## 5. `@bevl/engine` (Node)
+## 5. `@toros/engine` (Node)
 
 - `openProject(dir, { viewport, seed, reducedMotion })` → session.
   - Starts a Vite server for the project (random free port).
   - Launches Chromium via Playwright with WebGL enabled. When no GPU is available, use Chromium's software GL (look up the current flags for the installed Chromium version and record them in `docs/decisions.md`; do not guess). Detect and record which renderer is actually used via `WEBGL_debug_renderer_info`.
-  - Opens `index.html?dy-mode=test&dy-seed=<seed>`, waits for `__bevl.ready` with timeout = `budgets.readyMs` × 2.
+  - Opens `index.html?dy-mode=test&dy-seed=<seed>`, waits for `__toros.ready` with timeout = `budgets.readyMs` × 2.
   - Collects console messages, page errors, failed requests, timing of ready.
 - Session methods: `step(ms)`, `state()`, `objects()`, `project(id)`, `stats()`, `materials()`, `events()`, `screenshot({ path, clip? })`, `click({ object | domId | x,y })`, `hover`, `drag(from, by)`, `key(key, holdMs)`, `scroll(to, durationMs)`, `setViewport`, `close()`.
 - Input helpers translate `object` targets with `project(id)`; if `onScreen` is false or `occluded` is true, the action fails with a clear finding instead of clicking blindly.
-- Every input is appended to a recording (`.bevl/reports/<run>/input.jsonl`) so a run can be replayed.
+- Every input is appended to a recording (`.toros/reports/<run>/input.jsonl`) so a run can be replayed.
 
 ---
 
-## 6. `@bevl/lint` (static)
+## 6. `@toros/lint` (static)
 
 Runs without a browser. Rules (ids are stable; each has `severity`, `message`, `fix`):
 
 | Rule id                    | Checks                                                    |
 | -------------------------- | --------------------------------------------------------- |
-| `manifest/schema`          | `bevl.json` matches schema                                |
+| `manifest/schema`          | `toros.json` matches schema                               |
 | `manifest/entry-exists`    | entry file exists                                         |
 | `style/exists`             | named style pack found                                    |
 | `time/no-wallclock`        | `Date.now`, `performance.now`, `new Date()` in scene code |
@@ -236,15 +236,15 @@ Runs without a browser. Rules (ids are stable; each has `severity`, `message`, `
 
 ---
 
-## 7. `@bevl/checks` (runtime checks)
+## 7. `@toros/checks` (runtime checks)
 
 `check` runs lint first; if lint has errors, runtime checks are skipped and the report says so (`skipped: lint-errors`), never "0 problems".
 
-Each check returns findings `{ id, severity: error|warn|info, message, fix, evidence?: { screenshot?, data? }, viewport }`. Run every check on every viewport in `bevl.json`.
+Each check returns findings `{ id, severity: error|warn|info, message, fix, evidence?: { screenshot?, data? }, viewport }`. Run every check on every viewport in `toros.json`.
 
 | Module       | Check id                                                                        | Pass rule                                                                                                          |
 | ------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| load         | `load/ready`                                                                    | `__bevl.ready` resolves within `budgets.readyMs`                                                                   |
+| load         | `load/ready`                                                                    | `__toros.ready` resolves within `budgets.readyMs`                                                                  |
 | load         | `load/console-errors`                                                           | no console errors or page errors                                                                                   |
 | load         | `load/failed-requests`                                                          | no failed requests                                                                                                 |
 | load         | `load/webgl`                                                                    | WebGL2 context created; record renderer string; `info` if software renderer                                        |
@@ -270,7 +270,7 @@ Each check returns findings `{ id, severity: error|warn|info, message, fix, evid
 - Modules and weights: load 15, render 15, motion 5, budgets 10, interactions 25, plays 20, layout+a11y 5, style 5 = 100.
 - Inside a module: score = passed checks / total checks (weighted equally), per viewport, averaged.
 - **Hard gates** (score = 0): lint errors, `load/ready` fails, `render/not-blank` fails on any viewport.
-- Report: `.bevl/reports/<runId>/report.json` matching `report.schema.json`:
+- Report: `.toros/reports/<runId>/report.json` matching `report.schema.json`:
   `{ runId, project, seed, viewports, renderer, score, modules: { name: { score, weight, checks: [...] } }, findings: [...], artifacts: [...], timing }`
 - **Determinism requirement:** two runs with the same seed produce byte-identical `report.json` once `runId`, timestamps and `timing` are removed. A test enforces this.
 
@@ -303,16 +303,16 @@ Each check returns findings `{ id, severity: error|warn|info, message, fix, evid
 - Step types: `wait` (`ready` | ms of real time — avoid), `advance` (ms of runtime clock), `click`, `hover`, `drag`, `key`, `scroll`, `type` (into `data-dy-id` input), `expect`, `snapshot`.
 - `expect` paths: `state.<key>`, `object.<id>.<prop path>`, `camera.current`, `dom.<data-dy-id>.<visible|text|value>`, `events.<name>.count`. Operators: equality, `>`, `>=`, `<`, `<=`, `!=`, `between`, `approx` (with tolerance).
 - A failed step stops the play; the report records the failing step index, a screenshot, and the state at that moment.
-- `bevl play --explore --seed <n> --steps <n>`: seeded bot that repeatedly picks a random available action (click a visible interactive object or DOM element, scroll, a declared key, drag a draggable), advances 300 ms, and records:
+- `toros play --explore --seed <n> --steps <n>`: seeded bot that repeatedly picks a random available action (click a visible interactive object or DOM element, scroll, a declared key, drag a draggable), advances 300 ms, and records:
   - console/page errors → error
   - NaN transforms → error
   - **softlock**: 5 consecutive actions with no state change, no event, and pixel change below threshold → warn
   - render loop frozen when `motion: continuous` → error
-  - It writes the action list as a replayable play file under `.bevl/reports/<runId>/explore.play.json`.
+  - It writes the action list as a replayable play file under `.toros/reports/<runId>/explore.play.json`.
 
 ---
 
-## 9. CLI (`bevl`)
+## 9. CLI (`toros`)
 
 Conventions (all commands):
 
@@ -321,16 +321,16 @@ Conventions (all commands):
 - Exit codes: `0` ok · `1` findings with errors · `2` usage error · `3` environment problem (no browser, port, etc.).
 - `--cwd <dir>` to target a project; default is the current directory.
 
-| Command                                                                                               | Does                                                                                                     |
-| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `bevl init <dir> [--style <name>] [--example <name>]`                                                 | scaffold a project (manifest, index.html, scene.js, one play, package.json), install deps                |
-| `bevl lint [--json]`                                                                                  | §6                                                                                                       |
-| `bevl check [--json] [--viewport <name>] [--seed <n>] [--no-plays]`                                   | lint + §7 + score; writes report                                                                         |
-| `bevl snapshot [--at <ms,...>] [--scroll <p,...>] [--camera <name,...>] [--viewport <name>] [--json]` | PNGs into `.bevl/artifacts/snapshots/`; JSON lists paths                                                 |
-| `bevl play [<file>] [--all] [--explore --seed <n> --steps <n>] [--json]`                              | §8                                                                                                       |
-| `bevl preview [--port <n>] [--background]`                                                            | Vite dev server in live mode; prints URL                                                                 |
-| `bevl doctor [--json]`                                                                                | Node version, Chromium installed, WebGL renderer (GPU or software), ports; always exits 0, JSON has `ok` |
-| `bevl info [--json]`                                                                                  | project summary: objects, interactions, plays, budgets, style                                            |
+| Command                                                                                                | Does                                                                                                     |
+| ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `toros init <dir> [--style <name>] [--example <name>]`                                                 | scaffold a project (manifest, index.html, scene.js, one play, package.json), install deps                |
+| `toros lint [--json]`                                                                                  | §6                                                                                                       |
+| `toros check [--json] [--viewport <name>] [--seed <n>] [--no-plays]`                                   | lint + §7 + score; writes report                                                                         |
+| `toros snapshot [--at <ms,...>] [--scroll <p,...>] [--camera <name,...>] [--viewport <name>] [--json]` | PNGs into `.toros/artifacts/snapshots/`; JSON lists paths                                                |
+| `toros play [<file>] [--all] [--explore --seed <n> --steps <n>] [--json]`                              | §8                                                                                                       |
+| `toros preview [--port <n>] [--background]`                                                            | Vite dev server in live mode; prints URL                                                                 |
+| `toros doctor [--json]`                                                                                | Node version, Chromium installed, WebGL renderer (GPU or software), ports; always exits 0, JSON has `ok` |
+| `toros info [--json]`                                                                                  | project summary: objects, interactions, plays, budgets, style                                            |
 
 ---
 
@@ -357,18 +357,18 @@ Conventions (all commands):
     "type": { "display": "Inter", "body": "Inter" }
   }
   ```
-- `showcase/index.html` — a small Bevl project rendering sample objects in the style (it must pass `bevl check`).
+- `showcase/index.html` — a small Toros project rendering sample objects in the style (it must pass `toros check`).
 - Ship three seed styles (`soft-clay`, `neon-night`, `paper-lowpoly`). They are placeholders: the founder's own styles will replace or join them.
 
 ### 10.2 Registry seeds (copy-in source; `add` command comes in Step 2)
 
 - Blocks (≈8): `hero-orbit-object`, `product-viewer`, `scroll-camera-story`, `globe-markers`, `particle-field`, `gallery-room`, `portal-transition`, `floating-cards`.
 - Components (≈12): `orbit-controls`, `gltf-loader-with-progress`, `loading-overlay`, `hotspot-label`, `tooltip`, `cta-button`, `scroll-progress-bar`, `hdri-environment`, `outline-on-hover`, `fresnel-material`, `bloom-post`, `reduced-motion-switch`.
-- Each item: `meta.json` (name, kind, description, tags, objects it adds, interactions it declares), source files, `demo/` project that passes `bevl check` with score ≥ 90.
+- Each item: `meta.json` (name, kind, description, tags, objects it adds, interactions it declares), source files, `demo/` project that passes `toros check` with score ≥ 90.
 
-### 10.3 MCP server (`@bevl/mcp`, minimal)
+### 10.3 MCP server (`@toros/mcp`, minimal)
 
-- Tools: `bevl_init`, `bevl_lint`, `bevl_check`, `bevl_play`, `bevl_snapshot` (returns image content + paths), `bevl_info`.
+- Tools: `toros_init`, `toros_lint`, `toros_check`, `toros_play`, `toros_snapshot` (returns image content + paths), `toros_info`.
 - Each tool calls the same library functions as the CLI (not a shell-out) and returns the CLI's JSON.
 - README shows how to add it to Claude Code (`.mcp.json`) and other MCP clients.
 
@@ -376,8 +376,8 @@ Conventions (all commands):
 
 Follow the Agent Skills format (`SKILL.md` with `name` and `description` frontmatter, short body, details in `references/`).
 
-- `bevl` — when to use, the contract (short), the work loop: plan → `init` → build → `lint` → `check --json` → fix every error → `snapshot` and look → write/run plays → `preview` and hand to the person.
-- `bevl-cli` — every command, flags, JSON shapes, failure table.
+- `toros` — when to use, the contract (short), the work loop: plan → `init` → build → `lint` → `check --json` → fix every error → `snapshot` and look → write/run plays → `preview` and hand to the person.
+- `toros-cli` — every command, flags, JSON shapes, failure table.
 
 ### 10.5 Examples (`examples/`)
 
@@ -395,11 +395,11 @@ One project per failure, each with `expected.json` listing the finding ids that 
 | #   | Milestone                                                                                                                               | Done when                                                                                                                                   |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | M0  | Repo scaffold: pnpm workspace, tsconfig, vitest, lint/format, CI workflow (GitHub Actions, installs Chromium), `AGENTS.md` kept current | `pnpm install && pnpm test` green on CI                                                                                                     |
-| M1  | `@bevl/schema`: schemas + types for `bevl.json`, play, report, style, registry meta                                                     | schema tests validate good and bad samples                                                                                                  |
-| M2  | `@bevl/runtime`: defineScene, mount, ctx, live/test loop, seeded RNG, state, animate, cameras, style tokens, input mapping, bridge      | unit tests + a browser test stepping a scene shows identical object transforms across two runs                                              |
-| M3  | `@bevl/engine`: session, Vite serve, Chromium launch, ready, step, input helpers, screenshots, recording                                | integration test opens `examples/mini-room`, clicks an object, state changes                                                                |
-| M4  | `@bevl/lint` with all §6 rules                                                                                                          | every lint fixture produces exactly its expected findings                                                                                   |
-| M5  | `@bevl/checks` with all §7 checks + score + report                                                                                      | every runtime fixture produces its expected findings; examples score ≥ 90; determinism test passes                                          |
+| M1  | `@toros/schema`: schemas + types for `toros.json`, play, report, style, registry meta                                                   | schema tests validate good and bad samples                                                                                                  |
+| M2  | `@toros/runtime`: defineScene, mount, ctx, live/test loop, seeded RNG, state, animate, cameras, style tokens, input mapping, bridge     | unit tests + a browser test stepping a scene shows identical object transforms across two runs                                              |
+| M3  | `@toros/engine`: session, Vite serve, Chromium launch, ready, step, input helpers, screenshots, recording                               | integration test opens `examples/mini-room`, clicks an object, state changes                                                                |
+| M4  | `@toros/lint` with all §6 rules                                                                                                         | every lint fixture produces exactly its expected findings                                                                                   |
+| M5  | `@toros/checks` with all §7 checks + score + report                                                                                     | every runtime fixture produces its expected findings; examples score ≥ 90; determinism test passes                                          |
 | M6  | Plays + explore bot                                                                                                                     | example plays pass; `softlock` fixture caught by explore; explore output replays identically                                                |
 | M7  | CLI: all §9 commands, JSON, exit codes, `Fix:` lines                                                                                    | CLI e2e tests for each command                                                                                                              |
 | M8  | Style packs (3) + showcases                                                                                                             | showcases pass `check`                                                                                                                      |
@@ -411,7 +411,7 @@ One project per failure, each with `expected.json` listing the finding ids that 
 
 ## 12. Step 1 acceptance criteria
 
-1. `npx bevl init demo && cd demo && npx bevl check --json` works on macOS and Linux, and returns a valid report.
+1. `npx toros init demo && cd demo && npx toros check --json` works on macOS and Linux, and returns a valid report.
 2. Every broken fixture yields its expected finding ids and no unexpected errors.
 3. All examples, style showcases and registry demos score ≥ 90.
 4. Determinism: `check` twice with the same seed → identical normalised `report.json`; an explore run replays to the same result.

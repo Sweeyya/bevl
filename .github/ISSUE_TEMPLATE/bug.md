@@ -17,7 +17,7 @@ labels: bug
 
 ## Check report
 
-<!-- Paste the output of: bevl check --json -->
+<!-- Paste the output of: toros check --json -->
 
 ```json
 
@@ -27,5 +27,5 @@ labels: bug
 
 - OS:
 - Node version:
-- bevl version:
+- toros version:
 - Browser:

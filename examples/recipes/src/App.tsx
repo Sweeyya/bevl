@@ -1,6 +1,6 @@
-import { BevlA11y } from "@bevl/a11y";
-import type { BevlConfig } from "@bevl/core";
-import { BevlSite, getRecipe, recipeNames, Section } from "@bevl/core";
+import { TorosA11y } from "@toros/a11y";
+import type { TorosConfig } from "@toros/core";
+import { getRecipe, recipeNames, Section, TorosSite } from "@toros/core";
 
 const MAX_SECTIONS = 12;
 const params = new URLSearchParams(window.location.search);
@@ -12,7 +12,7 @@ const sections = Array.from({ length: count }, (_, i) => ({
   id: `s${i + 1}`,
   title: `Section ${i + 1}`,
 }));
-const config: BevlConfig = {
+const config: TorosConfig = {
   name: `Recipe: ${recipe.name}`,
   sections,
   choreography: recipe.create(sections.map((s) => s.id)),
@@ -20,7 +20,7 @@ const config: BevlConfig = {
 
 export function App(): JSX.Element {
   return (
-    <BevlSite config={config} overlay={<BevlA11y config={{ sections }} />}>
+    <TorosSite config={config} overlay={<TorosA11y config={{ sections }} />}>
       {sections.map((s, i) => (
         <Section
           key={s.id}
@@ -47,6 +47,6 @@ export function App(): JSX.Element {
       )}
       <ambientLight intensity={0.8} />
       <directionalLight position={[5, 10, 5]} intensity={1} />
-    </BevlSite>
+    </TorosSite>
   );
 }

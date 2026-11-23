@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { BevlContext } from "./context.js";
+import { TorosContext } from "./context.js";
 import type { BrandTokens } from "./contract.js";
 
 export type BrandRole = "primary" | "secondary" | "surface" | "accent";
@@ -45,7 +45,7 @@ export function resolveBrand(brand?: Partial<BrandTokens> | null): BrandTokens {
 }
 
 export function useBrand(): BrandTokens {
-  return resolveBrand(useContext(BevlContext)?.brand);
+  return resolveBrand(useContext(TorosContext)?.brand);
 }
 
 const GENERIC_FALLBACK = "system-ui, sans-serif";

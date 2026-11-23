@@ -10,7 +10,7 @@ const rule: Rule = {
   async run(ctx) {
     const result = await ctx.page
       .evaluate(async () => {
-        const bridge = (window as unknown as { __bevl?: { ready: Promise<void> } }).__bevl;
+        const bridge = (window as unknown as { __toros?: { ready: Promise<void> } }).__toros;
         if (!bridge) return null;
         await bridge.ready;
         const levels = [...document.querySelectorAll("h1,h2,h3,h4,h5,h6")].map((h) =>

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { BevlConfig } from "../contract.js";
+import type { TorosConfig } from "../contract.js";
 
 export function hasWebGL(): boolean {
   if (typeof document === "undefined") return true;
@@ -12,11 +12,11 @@ export function Fallback({
   config,
   children,
 }: {
-  config: BevlConfig;
+  config: TorosConfig;
   children?: ReactNode;
 }): JSX.Element {
   return (
-    <main data-bevl-fallback>
+    <main data-toros-fallback>
       {children ?? (
         <>
           <h1>{config.name}</h1>
