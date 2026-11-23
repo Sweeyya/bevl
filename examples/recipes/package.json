@@ -13,7 +13,7 @@
     "@doodley/core": "workspace:*",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "three": "0.169.0"
+    "three": "0.187.0"
   },
   "devDependencies": {
     "@types/react": "18.3.12",
