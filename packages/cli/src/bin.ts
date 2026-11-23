@@ -15,17 +15,30 @@ program
   .command("create <name>")
   .description("Scaffold a new Toros site")
   .option("-d, --dir <dir>", "Parent directory", process.cwd())
-  .action(async (name: string, opts: { dir: string }) => {
-    await createSite({ name, dir: opts.dir });
-    process.stdout.write(`Created site: ${name}\n`);
+  .option("--sections <titles>", 'Comma separated section titles, e.g. "Welcome,Our Beans,Contact"')
+  .option("--description <text>", "Meta description for index.html")
+  .action(async (name: string, opts: { dir: string; sections?: string; description?: string }) => {
+    const notes = await createSite({
+      name,
+      dir: opts.dir,
+      ...(opts.sections !== undefined && { sections: opts.sections.split(",") }),
+      ...(opts.description !== undefined && { description: opts.description }),
+    });
+    process.stdout.write(`Created site: ${name}\n${notes.map((n) => `${n}\n`).join("")}`);
   });
 
 program
   .command("add-section <id> <title>")
   .description("Add a section to toros.json (and src/App.tsx when it can)")
   .option("-d, --dir <dir>", "Project folder", process.cwd())
-  .action(async (id: string, title: string, opts: { dir: string }) => {
-    const notes = await addSection({ dir: opts.dir, id, title });
+  .option("--after <id>", "Insert after this section id (default: append)")
+  .action(async (id: string, title: string, opts: { dir: string; after?: string }) => {
+    const notes = await addSection({
+      dir: opts.dir,
+      id,
+      title,
+      ...(opts.after !== undefined && { after: opts.after }),
+    });
     process.stdout.write(`${notes.join("\n")}\n`);
   });
 

@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
@@ -75,5 +75,92 @@ describe("createSite scaffold", () => {
     const dir = tmp();
     await createSite({ name: "demo", dir });
     await expect(createSite({ name: "demo", dir })).rejects.toThrow(/already exists/);
+  });
+});
+
+describe("createSite sections, description and install", () => {
+  const sectionsOf = (site: string) =>
+    JSON.parse(readFileSync(join(site, "toros.json"), "utf8")).sections;
+  it("writes exactly the given sections in order and no template leftovers", async () => {
+    const dir = tmp();
+    const notes = await createSite({
+      name: "cafe",
+      dir,
+      sections: ["Welcome", "Our Beans", "Visit Us", "Contact"],
+    });
+    expect(sectionsOf(join(dir, "cafe")).map((s: { id: string }) => s.id)).toEqual([
+      "welcome",
+      "our-beans",
+      "visit-us",
+      "contact",
+    ]);
+    const app = readFileSync(join(dir, "cafe", "src", "App.tsx"), "utf8");
+    expect([...app.matchAll(/<Section id="([^"]+)"/g)].map((m) => m[1])).toEqual([
+      "welcome",
+      "our-beans",
+      "visit-us",
+      "contact",
+    ]);
+    for (const old of ["hero", "features", "#e94560", "#0f3460"]) expect(app).not.toContain(old);
+    expect(app).toContain("<ambientLight");
+    expect(notes.join(" ")).toMatch(/not published/);
+  });
+  it("makes ids unique and valid", async () => {
+    const dir = tmp();
+    await createSite({ name: "u", dir, sections: ["About", "about", "2024 Menu"] });
+    expect(sectionsOf(join(dir, "u")).map((s: { id: string }) => s.id)).toEqual([
+      "about",
+      "about-2",
+      "s-2024-menu",
+    ]);
+    await expect(createSite({ name: "bad", dir, sections: ["!!!"] })).rejects.toThrow(/Fix:/);
+    await expect(createSite({ name: "none", dir, sections: [] })).rejects.toThrow(/Fix:/);
+  });
+  it("defaults to hero, features, contact", async () => {
+    const dir = tmp();
+    await createSite({ name: "d", dir });
+    expect(sectionsOf(join(dir, "d")).map((s: { id: string }) => s.id)).toEqual([
+      "hero",
+      "features",
+      "contact",
+    ]);
+  });
+  it("writes a title and a real description, escaped", async () => {
+    const dir = tmp();
+    await createSite({ name: "Fern", dir });
+    await createSite({ name: "Fern2", dir, description: 'Small "batch" <coffee>' });
+    const a = readFileSync(join(dir, "Fern", "index.html"), "utf8");
+    expect(a).toContain("<title>Fern</title>");
+    expect(a).toContain('content="Fern: an interactive 3D scroll experience."');
+    expect(a).not.toContain("built with Toros");
+    expect(readFileSync(join(dir, "Fern2", "index.html"), "utf8")).toContain(
+      'content="Small &quot;batch&quot; &lt;coffee&gt;"',
+    );
+    await expect(createSite({ name: "x", dir, description: "a\nb" })).rejects.toThrow(/Fix:/);
+  });
+  it("uses workspace:* inside a matching pnpm workspace and says nothing", async () => {
+    const root = tmp();
+    writeFileSync(
+      join(root, "pnpm-workspace.yaml"),
+      'packages:\n  - "packages/*"\n  - examples/*\n',
+    );
+    mkdirSync(join(root, "examples"));
+    const notes = await createSite({ name: "w", dir: join(root, "examples") });
+    const pkg = JSON.parse(readFileSync(join(root, "examples", "w", "package.json"), "utf8"));
+    expect(pkg.dependencies["@toros/core"]).toBe("workspace:*");
+    expect(pkg.dependencies["@toros/a11y"]).toBe("workspace:*");
+    expect(notes).toEqual([]);
+  });
+  it("uses the version and prints a note when the workspace globs do not match", async () => {
+    const root = tmp();
+    writeFileSync(
+      join(root, "pnpm-workspace.yaml"),
+      "packages:\n  - packages/*\n  - '!examples/*'\n",
+    );
+    mkdirSync(join(root, "examples"));
+    const notes = await createSite({ name: "w", dir: join(root, "examples") });
+    const pkg = JSON.parse(readFileSync(join(root, "examples", "w", "package.json"), "utf8"));
+    expect(pkg.dependencies["@toros/core"]).toBe("0.1.0");
+    expect(notes[0]).toMatch(/link:/);
   });
 });

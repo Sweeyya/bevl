@@ -96,6 +96,14 @@ server.tool(
       .max(1024)
       .optional()
       .describe("Parent folder, relative to the project root (default: the root)"),
+    sections: z
+      .array(z.string().min(1).max(80))
+      .min(1)
+      .max(20)
+      .optional()
+      .describe(
+        "Section titles in order; ids are made from them (default: Hero, Features, Contact)",
+      ),
   },
   async (args) => text(await createSiteTool(args)),
 );
@@ -110,6 +118,12 @@ server.tool(
       .regex(/^[a-z][a-z0-9-]*$/)
       .describe("Section id: lowercase letters, numbers, dashes, starting with a letter"),
     title: z.string().min(1).max(80).describe("Section title shown in navigation"),
+    after: z
+      .string()
+      .max(40)
+      .regex(/^[a-z][a-z0-9-]*$/)
+      .optional()
+      .describe("Insert after this section id (default: append at the end)"),
     projectDir,
   },
   async (args) => text(await addSectionTool(args)),
