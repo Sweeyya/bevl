@@ -7,6 +7,7 @@ name: Examples
 
 on:
   pull_request:
+    types: [labeled, synchronize, reopened]
     paths:
       - "packages/**"
       - "examples/**"
@@ -19,6 +20,7 @@ on:
       - "packages/**"
       - "examples/**"
       - "tools/**"
+  workflow_dispatch:
 
 permissions: {}
 
@@ -29,6 +31,7 @@ concurrency:
 jobs:
   examples:
     name: Example scores
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'full-ci')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:

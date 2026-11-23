@@ -19,15 +19,30 @@ pnpm build
 
 ## Daily commands
 
-| Command          | What it does                         |
-| ---------------- | ------------------------------------ |
-| `pnpm build`     | Build all packages                   |
-| `pnpm test`      | Run all unit tests                   |
-| `pnpm lint`      | Lint and auto-fix                    |
-| `pnpm lint:ci`   | Lint without fixing (used in CI)     |
-| `pnpm typecheck` | TypeScript check across all packages |
-| `pnpm clean`     | Delete all dist/ folders             |
-| `pnpm changeset` | Add a changeset for your PR          |
+| Command            | What it does                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| `pnpm build`       | Build all packages                                                                       |
+| `pnpm test`        | Run all unit tests                                                                       |
+| `pnpm lint`        | Lint and auto-fix                                                                        |
+| `pnpm lint:ci`     | Lint without fixing (used in CI)                                                         |
+| `pnpm typecheck`   | TypeScript check across all packages                                                     |
+| `pnpm clean`       | Delete all dist/ folders                                                                 |
+| `pnpm changeset`   | Add a changeset for your PR                                                              |
+| `pnpm verify`      | Lint, typecheck and unit tests (about 1 minute)                                          |
+| `pnpm verify:full` | `verify` plus fixtures, browser e2e and example scores (about 5 minutes, needs Chromium) |
+| `pnpm hooks`       | Turn on the pre-push hook that runs `lint:ci`, `typecheck` and `test` before each push   |
+
+## What runs on GitHub
+
+Every pull request runs the fast checks: lint, typecheck, unit tests, build, the dependency audit and the workflow audit (about 2 minutes).
+
+The slow checks (broken fixtures, browser e2e, example scores, Lighthouse, screenshots) do **not** run on a pull request by default. They run on every push to `main`, nightly, and on demand:
+
+- Add the **`full-ci`** label to a pull request to run them on it (and on every later push to it).
+- Or open the Actions tab, pick the workflow and press **Run workflow**.
+- Or run `pnpm verify:full` on your own machine before merging.
+
+Run the slow checks before merging anything that touches the checker, the runtime, the fixtures or the inputs.
 
 ## Testing commands
 

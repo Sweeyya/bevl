@@ -39,6 +39,7 @@ Read these first, in order:
 - Install: `pnpm install`
 - Build: `pnpm build`
 - Unit tests: `pnpm test`
+- Fast check before pushing: `pnpm verify`. Full check: `pnpm verify:full`
 - Fixtures: `pnpm test:fixtures`
 - Examples score 90+: `pnpm check:examples`
 - Screenshots: `pnpm test:visual`

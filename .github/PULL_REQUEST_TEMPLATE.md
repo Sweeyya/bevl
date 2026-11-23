@@ -25,4 +25,4 @@
 - [ ] Typecheck passes: `pnpm typecheck`
 - [ ] Build passes: `pnpm build`
 - [ ] I added a changeset: `pnpm changeset`
-- [ ] CI is green
+- [ ] CI is green (slow checks: add the `full-ci` label, or ran `pnpm verify:full` locally, if this touches the checker, runtime, fixtures or inputs)
