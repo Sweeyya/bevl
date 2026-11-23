@@ -4,6 +4,7 @@ import { addSection, applyBrand, createSite } from "@toros/tokens";
 import { Command } from "commander";
 import { checkSite } from "./commands/check.js";
 import { optimizeAssets } from "./commands/optimize.js";
+import { registerRecipeCommands } from "./commands/recipe.js";
 import { shots } from "./commands/shots.js";
 import { registerTasteCommands } from "./commands/taste.js";
 import { VERSION } from "./index.js";
@@ -123,6 +124,7 @@ program
     },
   );
 
+registerRecipeCommands(program);
 registerTasteCommands(program);
 
 program.parseAsync(process.argv).catch((err: unknown) => {

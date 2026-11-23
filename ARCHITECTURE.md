@@ -226,5 +226,5 @@ Section text is real HTML. `<Section id title html={...}>` registers its html wi
 - `a11y`, `effects`, `mascot` depend on `core` only.
 - `check` has no `@toros/*` dependencies (it talks to the site through the browser).
 - `optimizer` has no `@toros/*` dependencies.
-- `mcp` and `cli` may depend on `check`, `tokens`, and `optimizer`.
+- `mcp` and `cli` may depend on `check`, `core`, `tokens`, and `optimizer` (core only for recipes, see `docs/adr/009-recipe-apply.md`).
 - No circular dependencies.

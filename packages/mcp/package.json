@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@toros/check": "workspace:*",
+    "@toros/core": "workspace:*",
     "@toros/optimizer": "workspace:*",
     "@toros/tokens": "workspace:*",
     "@modelcontextprotocol/sdk": "1.32.2",

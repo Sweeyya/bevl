@@ -366,6 +366,9 @@ importers:
       '@toros/check':
         specifier: workspace:*
         version: link:../check
+      '@toros/core':
+        specifier: workspace:*
+        version: link:../core
       '@toros/optimizer':
         specifier: workspace:*
         version: link:../optimizer
@@ -478,6 +481,9 @@ importers:
       '@toros/check':
         specifier: workspace:*
         version: link:../check
+      '@toros/core':
+        specifier: workspace:*
+        version: link:../core
       '@toros/optimizer':
         specifier: workspace:*
         version: link:../optimizer
