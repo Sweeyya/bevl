@@ -5,6 +5,7 @@ import { Command } from "commander";
 import { checkSite } from "./commands/check.js";
 import { optimizeAssets } from "./commands/optimize.js";
 import { registerRecipeCommands } from "./commands/recipe.js";
+import { registerReferenceCommands } from "./commands/reference.js";
 import { shots } from "./commands/shots.js";
 import { registerTasteCommands } from "./commands/taste.js";
 import { VERSION } from "./index.js";
@@ -125,6 +126,7 @@ program
   );
 
 registerRecipeCommands(program);
+registerReferenceCommands(program);
 registerTasteCommands(program);
 
 program.parseAsync(process.argv).catch((err: unknown) => {

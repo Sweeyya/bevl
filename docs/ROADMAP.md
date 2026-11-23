@@ -36,6 +36,8 @@ Asset pack (generate colours, textures, icons and models into a folder first, wi
 
 Between test sites (the prompt to paste, the session record JSON, and what to send back): `docs/plans/session-recap.md`.
 
+Reference library (the reel looks Toros should be able to build, what each needs, and how they are searched): `docs/plans/reference-library.md`.
+
 ## 4. Publishing to npm
 
 How people would use it once published: the MCP server by adding `npx -y @toros/mcp` to their AI tool's settings, and the CLI with `npx @toros/cli check <url>`. A plain `npx toros` needs an unscoped package named `toros`, which is free on npm today. The skill is separate and is distributed as files from GitHub or skills.sh.

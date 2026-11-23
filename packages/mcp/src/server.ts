@@ -4,6 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { VERSION } from "./index.js";
 import { applyRecipeTool, recommendRecipeTool } from "./recipe.js";
+import { searchReferencesTool } from "./references.js";
 import { captureShotsTool } from "./shots.js";
 import { dealArtDirectionTool, validateBriefTool } from "./taste.js";
 import {
@@ -212,6 +213,35 @@ server.tool(
     viewport: z.enum(["desktop", "phone", "both"]).optional().describe("Default: both"),
   },
   async (args) => text(await captureShotsTool(args)),
+);
+
+server.tool(
+  "search_references",
+  "Find the reference sites (looks Toros can build) closest to a kind of site, mood words or free text. Read-only. Use the top result's specs (archetype, render style, camera, palette, assets, needs) as the starting point for the design.",
+  {
+    kind: z
+      .enum([
+        "landing",
+        "product",
+        "portfolio",
+        "gallery",
+        "story",
+        "venue",
+        "saas",
+        "event",
+        "other",
+      ])
+      .optional(),
+    tone: z
+      .array(z.string().max(40))
+      .max(10)
+      .optional()
+      .describe("Mood words, e.g. dark, atmospheric"),
+    archetype: z.string().max(40).optional(),
+    text: z.string().max(200).optional().describe("Free text matched against the descriptions"),
+    limit: z.number().int().min(1).max(20).optional(),
+  },
+  async (args) => text(searchReferencesTool(args)),
 );
 
 await server.connect(new StdioServerTransport());

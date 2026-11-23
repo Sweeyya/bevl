@@ -15,5 +15,6 @@ export { applyChoreography } from "./project/apply-choreography.js";
 export { createSite } from "./project/create.js";
 export { resolveInside } from "./project/inside.js";
 export { readTokenFile } from "./read.js";
+export * from "./references/index.js";
 export * from "./taste/index.js";
 export type { BrandTokens, TokenSourceFormat } from "./types.js";
