@@ -1,9 +1,18 @@
+import { ease } from "../choreography/ease.js";
 import type { InputKind } from "../choreography/types.js";
-import { type ResolvedSnap, resolveSnapIndex } from "./snap.js";
+import { glideDuration, type ResolvedSnap, resolveSnapIndex } from "./snap.js";
 
 export type InputSource = InputKind | "keyboard" | "nav" | "api" | "snap";
 
 export type TargetListener = (target: number, source: InputSource) => void;
+export type ValueListener = (value: number) => void;
+
+interface Glide {
+  from: number;
+  to: number;
+  duration: number;
+  elapsed: number;
+}
 
 const CONTINUOUS: ReadonlySet<InputSource> = new Set([
   "scroll",
@@ -12,6 +21,7 @@ const CONTINUOUS: ReadonlySet<InputSource> = new Set([
   "drag",
   "swipe-x",
 ]);
+const GLIDED: ReadonlySet<InputSource> = new Set(["keyboard", "nav", "snap"]);
 const SETTLE_EPSILON = 1e-5;
 const BEAT_EPSILON = 1e-4;
 
@@ -36,7 +46,9 @@ export class ProgressController {
   private gestureStart = 0;
   private pending = false;
   private idle = 0;
+  private glide: Glide | null = null;
   private listeners = new Set<TargetListener>();
+  private valueListeners = new Set<ValueListener>();
 
   constructor(beats: number[] = []) {
     this.setBeats(beats);
@@ -61,10 +73,29 @@ export class ProgressController {
     };
   }
 
+  /** Called whenever the displayed value changes. */
+  listenValue(fn: ValueListener): () => void {
+    this.valueListeners.add(fn);
+    return () => {
+      this.valueListeners.delete(fn);
+    };
+  }
+
+  private setValue(v: number): void {
+    if (v === this.value) return;
+    this.value = v;
+    for (const fn of this.valueListeners) fn(v);
+  }
+
   setTarget(p: number, source: InputSource = "api"): void {
     const next = clamp01(p);
-    if (this.instant) this.value = next;
+    if (CONTINUOUS.has(source)) this.glide = null;
+    if (this.instant) {
+      this.glide = null;
+      this.setValue(next);
+    }
     if (next === this.target) return;
+    if (!this.instant && GLIDED.has(source)) this.startGlide(next);
     if (CONTINUOUS.has(source)) {
       if (!this.pending) this.gestureStart = this.settled;
       this.pending = true;
@@ -77,20 +108,44 @@ export class ProgressController {
     for (const fn of this.listeners) fn(next, source);
   }
 
+  /** Continuous input during a glide continues from the displayed value, not the destination. */
   nudge(delta: number, source: InputSource = "api"): void {
-    this.setTarget(this.target + delta, source);
+    this.setTarget((this.glide ? this.value : this.target) + delta, source);
   }
 
-  /** Frame-rate independent exponential smoothing. Returns true while still moving. */
+  private startGlide(to: number): void {
+    const duration = glideDuration(to - this.value, this.snapConfig?.duration);
+    this.glide = duration > 0 ? { from: this.value, to, duration, elapsed: 0 } : null;
+    if (!this.glide) this.setValue(to);
+  }
+
+  /**
+   * Advances the displayed value by dt seconds. Continuous input is followed with frame-rate
+   * independent exponential smoothing; snaps, nav and keyboard moves glide over a fixed duration
+   * with ease-in-out. Returns true while still moving.
+   */
   tick(dtSeconds: number, k: number): boolean {
     this.settleGesture(dtSeconds);
     if (this.instant || k <= 0 || !Number.isFinite(k)) {
-      this.value = this.target;
+      this.glide = null;
+      this.setValue(this.target);
       return false;
     }
     const dt = Math.max(0, dtSeconds);
-    this.value += (this.target - this.value) * (1 - Math.exp(-dt * k));
-    if (Math.abs(this.target - this.value) < SETTLE_EPSILON) this.value = this.target;
+    const g = this.glide;
+    if (g) {
+      g.elapsed += dt;
+      if (g.elapsed >= g.duration) {
+        this.glide = null;
+        this.setValue(g.to);
+      } else {
+        this.setValue(g.from + (g.to - g.from) * ease("easeInOut", g.elapsed / g.duration));
+      }
+      return this.value !== this.target;
+    }
+    let next = this.value + (this.target - this.value) * (1 - Math.exp(-dt * k));
+    if (Math.abs(this.target - next) < SETTLE_EPSILON) next = this.target;
+    this.setValue(next);
     return this.value !== this.target;
   }
 
@@ -115,11 +170,15 @@ export class ProgressController {
     }
     this.setTarget(dest, "snap");
     this.settled = dest;
-    if (this.snapInstantly) this.value = dest;
+    if (this.snapInstantly) {
+      this.glide = null;
+      this.setValue(dest);
+    }
   }
 
   snap(): void {
-    this.value = this.target;
+    this.glide = null;
+    this.setValue(this.target);
   }
 
   goToBeat(i: number, source: InputSource = "api"): void {

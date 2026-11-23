@@ -35,3 +35,14 @@ A fixed list of camera modes can't cover what users describe. Examples include a
 - The behavior escape hatch removes the expressiveness limit, but costs more tokens and brings known LLM Three.js bugs (removed APIs, per-frame allocation). It needs a determinism check.
 - Changing native scroll disorients users (NN/g; Voinea & Murano). Native scroll stays the default, and keyboard access can't be disabled.
 - No Theatre.js dependency (studio is AGPL, `@theatre/r3f` is pre-release) and no GSAP in the runtime. We use a small timeline of our own.
+
+## Addendum: glide, then snap
+
+Snapping feels like two phases: the picture follows the user, then settles.
+
+- **Follow.** Continuous input (scroll, wheel, touch, drag, swipe) moves the target. The displayed value chases it with frame-rate independent exponential smoothing (`input.smoothing`, default 6).
+- **Free glide.** Snapping starts after `snap.delay` seconds without input. The default is 0.25 s (was 0.12 s), so a small nudge keeps gliding before it is pulled to a screen.
+- **Settle.** Snaps, nav clicks and keyboard moves glide from the displayed value to the destination over a fixed duration with ease-in-out (`easeInOut`): `clamp(0.35 + 0.9 * |distance|, 0.35, 1.2)` seconds, where distance is a fraction of the full length. `snap.duration` (seconds, 0 to 5, also under `snap.coarse`) sets a fixed duration instead; 0 jumps. The glide starts at zero speed, never moves backwards and lands exactly on the beat.
+- **Scrollbar.** The native scroll position follows the displayed value on every frame instead of jumping to the destination. Programmatic scroll events are recognised by an expected-position guard and not read back as input.
+- **Interruption.** User input cancels a glide at once and continues from the displayed value (no jump). Wheel and drag deltas are added to the displayed value, not to the destination.
+- **Unchanged.** Reduced motion jumps straight to the beat. Test mode ignores smoothing and glides, and is driven only by stepped frame time.

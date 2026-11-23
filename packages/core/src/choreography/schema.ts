@@ -14,6 +14,7 @@ const snapSettings = z.strictObject({
   mode: z.enum(["directional", "nearest", "strong", "none"]).exactOptional(),
   delay: z.number().min(0).max(5).exactOptional(),
   commit: z.number().min(0).max(1).exactOptional(),
+  duration: z.number().min(0).max(5).exactOptional(),
 });
 const inputKind = z.enum(["scroll", "wheel", "touch", "drag", "swipe-x", "tap-advance"]);
 

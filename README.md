@@ -104,7 +104,7 @@ The pieces:
 - **layouts**: helpers that place children in a line, grid, ring, on a sphere or along a path.
 - **behaviors**: your own small TypeScript functions for anything data can't express. They must be pure functions of progress (no clocks, no `Math.random`).
 - **input**: which inputs move progress, chosen separately for mouse and touch.
-- **snap**: after you stop, settle onto a screen. Directional (default), nearest, strong or none, with per-screen opt-out.
+- **snap**: after you stop, settle onto a screen. Directional (default), nearest, strong or none, with per-screen opt-out. The picture glides first and snaps 0.25 s after you stop (`snap.delay`), easing over `snap.duration` seconds (default scales with distance, 0.35 to 1.2 s).
 - **allow**: explicit opt-outs from the gentle-motion rules (`roll`, `spin`, `fastMoves`). The checker reports each one.
 
 Bad specs are rejected with the field path and a fix, for example `beats[2].id "pricng" does not match any section. Fix: use one of hero, work, contact.` The design is in [ADR 003](docs/adr/003-scroll-choreography.md).
