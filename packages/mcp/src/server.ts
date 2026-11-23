@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { VERSION } from "./index.js";
+import { captureShotsTool } from "./shots.js";
 import {
   addSectionTool,
   applyBrandTool,
@@ -139,6 +140,22 @@ server.tool(
     projectDir,
   },
   async (args) => text(await applyBrandTool(args)),
+);
+
+server.tool(
+  "capture_shots",
+  "Open a local dev server URL (localhost by default) in a headless browser in test mode and save a PNG of every screen (one per beat) for desktop and/or phone, plus contact sheets and manifest.json, under <projectDir>/.toros/shots/<run-id>. Read the PNGs to look at the site. Never writes outside the project root.",
+  {
+    url: z.string().max(2048).describe("URL of the running site, e.g. http://localhost:3000"),
+    projectDir,
+    outDir: z
+      .string()
+      .max(1024)
+      .optional()
+      .describe("Output folder inside the project root (default: .toros/shots/<run-id>)"),
+    viewport: z.enum(["desktop", "phone", "both"]).optional().describe("Default: both"),
+  },
+  async (args) => text(await captureShotsTool(args)),
 );
 
 await server.connect(new StdioServerTransport());

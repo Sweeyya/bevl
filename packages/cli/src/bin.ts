@@ -4,6 +4,7 @@ import { addSection, applyBrand, createSite } from "@toros/tokens";
 import { Command } from "commander";
 import { checkSite } from "./commands/check.js";
 import { optimizeAssets } from "./commands/optimize.js";
+import { shots } from "./commands/shots.js";
 import { VERSION } from "./index.js";
 
 const program = new Command();
@@ -72,6 +73,30 @@ program
         ...(opts.json !== undefined && { json: opts.json }),
       });
       process.exit(code);
+    },
+  );
+
+program
+  .command("shots <url>")
+  .description("Save a screenshot of every screen of a running site, so you can look at it")
+  .option("--project-dir <dir>", "Project root", process.cwd())
+  .option("--out <dir>", "Output folder (default: .toros/shots/<run-id>)")
+  .option("--viewport <name>", "desktop, phone or both", "both")
+  .option("--json", "Print the manifest as JSON")
+  .action(
+    async (
+      url: string,
+      opts: { projectDir: string; out?: string; viewport: string; json?: boolean },
+    ) => {
+      process.exit(
+        await shots({
+          url,
+          projectDir: opts.projectDir,
+          viewport: opts.viewport,
+          ...(opts.out !== undefined && { out: opts.out }),
+          ...(opts.json !== undefined && { json: opts.json }),
+        }),
+      );
     },
   );
 

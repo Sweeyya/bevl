@@ -134,6 +134,14 @@ toros check <url> [--viewport desktop|phone] [--rule <id>] [--json]
 
 Every rule and its severity is listed in [TESTING.md](TESTING.md).
 
+### Looking at the site
+
+```sh
+toros shots <url> [--out <dir>] [--viewport desktop|phone|both] [--json]
+```
+
+Opens the site in test mode, scrolls to every beat, waits for the camera to stop and saves one PNG per screen and viewport (`desktop-01-welcome.png`), a contact sheet per viewport (`desktop-contact-sheet.png`) and `manifest.json`. Files go to `.toros/shots/<run-id>` by default. An agent can read the PNGs to see what it built. The MCP tool is `capture_shots`.
+
 ## Using it from an agent (MCP)
 
 The MCP server is not on npm yet. From a source checkout, point your agent at the built server:
