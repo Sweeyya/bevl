@@ -6,7 +6,7 @@
   "dependencies": {
     "@doodley/a11y": "workspace:*",
     "@doodley/core": "workspace:*",
-    "@react-three/fiber": "8.17.10",
+    "@react-three/fiber": "8.18.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "three": "0.169.0"
