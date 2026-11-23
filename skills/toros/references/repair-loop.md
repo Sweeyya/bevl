@@ -6,7 +6,7 @@
 toros check http://localhost:5173 --json
 ```
 
-Without `--json` you get a readable report. With `--json` (or MCP `check_site`) you get the `Report` object.
+Use `--json` whenever you need the message and evidence. Without it the report is short. With `--json` (or MCP `check_site`) you get the `Report` object.
 
 ## Report fields
 
@@ -42,14 +42,14 @@ Each finding carries a `Fix:` line written for you to act on. Follow it, but con
 ## Repair loop
 
 1. Run the full check. Record the score.
-2. If `passed` is true, stop. Report the score.
+2. If `passed` is true, stop repairing. Go on to look at the screenshots.
 3. Fix in this order: hard gates, then other errors, then warnings that cost points, until score >= 90.
    - Group findings by rule id and fix the root cause, since one cause often triggers several rules.
    - Start with `load/*`: a console error or missing bridge makes later rules unreliable.
 4. Change source only (config, components, `index.html`, assets). Never edit reports or fixtures to make a rule pass.
 5. Re-run only the changed rule with `--rule <id>` to iterate fast. Then re-run the **full** check.
 6. If the score rises but errors remain, keep going. Score 100 with one error is still a fail.
-7. If the same finding survives three honest attempts, stop and tell the user what is failing and what you tried. Do not disable the rule.
+7. Stop after 6 rounds in total, or earlier if one finding survives three honest attempts. Report what still fails once in the final message. Do not disable the rule.
 8. Never set an `allow` flag to silence a motion finding unless the user asked for that motion.
 
 ## Common fixes
