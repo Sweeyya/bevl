@@ -32,6 +32,8 @@ export interface FakeSiteOptions {
   /** Replaces evaluate entirely, for code that needs a real browser. */
   evaluate?: (fn: unknown, arg: unknown) => unknown;
   screenshot?: Buffer | Error;
+  /** False when the page has no canvas. Default: true. */
+  canvas?: boolean;
   browser?: { newContext(): Promise<unknown> } | null;
   viewport?: { name?: string; isMobile?: boolean };
 }
@@ -165,6 +167,13 @@ export class FakeSite {
         if (this.opts.screenshot instanceof Error) throw this.opts.screenshot;
         return this.opts.screenshot ?? Buffer.from("png");
       },
+      locator: () => ({
+        first: () => ({
+          boundingBox: async () =>
+            this.opts.canvas === false ? null : { x: 0, y: 0, width: 1000, height: 800 },
+        }),
+      }),
+      addStyleTag: async () => ({ evaluate: async () => undefined }),
       goto: async () => undefined,
       keyboard: { press: async (key: string) => this.press(key) },
       mouse: { move: async () => undefined, wheel: async (_x: number, y: number) => this.wheel(y) },

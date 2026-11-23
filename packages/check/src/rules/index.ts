@@ -5,11 +5,13 @@ import keyboardReachesBeats from "./a11y/keyboard-reaches-beats.js";
 import reducedMotion from "./a11y/reduced-motion.js";
 import fonts from "./brand/fonts.js";
 import palette from "./brand/palette.js";
+import tokensUsed from "./brand/tokens-used.js";
 import drawCalls from "./budgets/draw-calls.js";
 import textureMb from "./budgets/texture-mb.js";
 import triangles from "./budgets/triangles.js";
 import headings from "./html/headings.js";
 import noCanvasCopy from "./html/no-canvas-copy.js";
+import orderMatches from "./html/order-matches.js";
 import sectionText from "./html/section-text.js";
 import consoleErrors from "./load/console-errors.js";
 import failedRequests from "./load/failed-requests.js";
@@ -67,6 +69,8 @@ const rules: Rule[] = [
   failedRequests,
   contrastOver3d,
   reducedMotion,
+  orderMatches,
+  tokensUsed,
 ];
 
 export default rules;

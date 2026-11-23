@@ -98,9 +98,6 @@ The glass material and shader background are scaffolds. The palette waits on you
 
 ## 9. Other backlog
 
-- Rules: `html/order-matches` and `brand/tokens-used` are not built.
-- `render/not-blank` counts the nav bar as page content, so its broken fixture passes only because the nav is just under the 5% threshold. It should measure the canvas alone.
-- `pnpm pkg:unused` flags `react-dom` and `@types/react-dom` in `a11y`.
 - Enforce the 7-day dependency age in pnpm (`minimumReleaseAge`); 60 lockfile entries are currently newer.
 - Run a security review of the MCP server and CLI with a strong model, using scanners first and the model to verify.
 - Golden tasks (`TESTING.md` section 8) once the skill has been re-tried.

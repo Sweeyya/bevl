@@ -1,0 +1,4 @@
+{
+  "mustFail": ["html/order-matches"],
+  "mayAlsoFail": ["html/headings"]
+}

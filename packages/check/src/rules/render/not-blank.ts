@@ -1,11 +1,17 @@
 // Rule: render/not-blank
-// Pass: screenshot is not one flat color (not all black, not all white, not all
-//       magenta). At least 5% of pixels must differ from the most common color.
+// Pass: the 3D canvas, alone, is not one flat color (not all black, not all white,
+//       not all magenta). At least 1% of its pixels must differ from the most common
+//       color. Nav, the HTML layer and the fallback are hidden while measuring, so
+//       page chrome never counts as content. The canvas is measured alone, so the old
+//       5% bar (tuned to ignore the nav) is lowered: a small subject on an empty
+//       first beat (examples/recipes: 4.4%) is real content, a blank canvas is 0%.
 import { couldNotRun, NOT_READY, step, waitReady } from "../../drive.js";
 import type { Rule } from "../../rule.js";
 
+const ONLY_CANVAS = "*{visibility:hidden!important}canvas{visibility:visible!important}";
+
 /** Minimum fraction of pixels that must differ from the dominant color. */
-const MIN_VARIED_FRACTION = 0.05;
+const MIN_VARIED_FRACTION = 0.01;
 
 const rule: Rule = {
   id: "render/not-blank",
@@ -15,7 +21,19 @@ const rule: Rule = {
   async run(ctx) {
     if (!(await waitReady(ctx.page))) return [couldNotRun(ctx, this.id, NOT_READY)];
     await step(ctx.page, 2);
-    const screenshotBuffer = await ctx.page.screenshot({ type: "png" }).catch(() => null);
+    const box = await ctx.page
+      .locator("canvas")
+      .first()
+      .boundingBox()
+      .catch(() => null);
+    if (!box || box.width < 1 || box.height < 1) {
+      return [couldNotRun(ctx, this.id, "the page has no visible canvas")];
+    }
+    const style = await ctx.page.addStyleTag({ content: ONLY_CANVAS });
+    const screenshotBuffer = await ctx.page
+      .screenshot({ type: "png", clip: box })
+      .catch(() => null);
+    await style.evaluate((el) => (el as Element).remove()).catch(() => undefined);
 
     if (!screenshotBuffer) {
       return [
@@ -29,12 +47,6 @@ const rule: Rule = {
       ];
     }
 
-    // Decode PNG pixels using the raw buffer. Each pixel is 4 bytes (RGBA).
-    // We only have the compressed PNG bytes here; use a lightweight check:
-    // sample every Nth byte from the raw buffer to detect flat-color screens.
-    // For the skeleton we decode using a minimal inline parser approach:
-    // read raw pixels via page.evaluate on a canvas element drawn from the
-    // screenshot DataURL.
     const isBlank = await ctx.page
       .evaluate(
         async ({ dataUrl, minVariedFraction }) => {
