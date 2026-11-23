@@ -26,7 +26,7 @@ Section `html` is an overlay on the page, not an object in the 3D scene. It fill
 To keep text readable over bright or busy 3D, wrap it in a backing panel with a solid brand colour:
 
 ```tsx
-html={<div style={{ background: "#1b1410", color: "#fff", padding: "1.5rem", borderRadius: 12, maxWidth: "28rem" }}><h2>Title</h2><p>Short copy.</p></div>}
+html={<div style={{ background: "#1b1410", color: "#fff", padding: "1.5rem", maxWidth: "28rem" }}><h2>Title</h2><p>Short copy.</p></div>}
 ```
 
 Do not fix contrast by turning text black if that breaks the brand; use the panel. On phones the panel should still fit the width.

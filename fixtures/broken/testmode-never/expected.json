@@ -4,6 +4,7 @@
     "a11y/keyboard-reaches-beats",
     "a11y/reduced-motion",
     "brand/not-default-look",
+    "brand/sharp-corners",
     "budgets/draw-calls",
     "budgets/triangles",
     "html/order-matches",

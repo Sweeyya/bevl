@@ -34,7 +34,7 @@ describe("parseMd", () => {
     expect(tokens.colors.primary).toBe("#000000");
     expect(tokens.fonts.heading).toBe("sans-serif");
     expect(tokens.spacingBase).toBe(8);
-    expect(tokens.radiusBase).toBe(4);
+    expect(tokens.radiusBase).toBe(0);
   });
 });
 

@@ -163,11 +163,12 @@ Load speed on a phone is tested with Lighthouse CI in `perf.yml` (§6), not insi
 
 ### 4.7 Brand
 
-| Rule id             | Pass rule                                                                                                          | Severity |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------ | -------- |
-| `brand/palette`     | Every non-neutral material color is within CIE76 ΔE of 10 or less from a brand token color (skipped with no brand) | warn     |
-| `brand/fonts`       | Visible nav links, h1-h3 and paragraphs start with a brand font (skipped with no brand)                            | warn     |
-| `brand/tokens-used` | The brand primary, secondary and accent colors each appear in a material or in the page's computed CSS colors      | warn     |
+| Rule id               | Pass rule                                                                                                          | Severity |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ | -------- |
+| `brand/palette`       | Every non-neutral material color is within CIE76 ΔE of 10 or less from a brand token color (skipped with no brand) | warn     |
+| `brand/fonts`         | Visible nav links, h1-h3 and paragraphs start with a brand font (skipped with no brand)                            | warn     |
+| `brand/tokens-used`   | The brand primary, secondary and accent colors each appear in a material or in the page's computed CSS colors      | warn     |
+| `brand/sharp-corners` | No visible element has a rounded corner, unless the brand file sets a corner radius above 0                        | warn     |
 
 Decision for `brand/tokens-used`: only `primary`, `secondary` and `accent` are required (background, surface and text are chrome). A color counts as used when a material color, or a computed `color`, `background-color` or border color of any element, is within ΔE 10 of it. Severity is `warn`, not `info`, so unused brand colors lower the score. Skipped with no brand.
 
@@ -319,6 +320,7 @@ The test fails if a `mustFail` rule passes, or if any rule not listed fails.
 | `off-brand-colors`        | `brand/palette`                |
 | `unused-brand-colors`     | `brand/tokens-used`            |
 | `default-grey-look`       | `brand/not-default-look`       |
+| `rounded-corners`         | `brand/sharp-corners`          |
 | `wrong-font`              | `brand/fonts`                  |
 | `random-without-seed`     | `scroll/deterministic`         |
 | `snap-never-settles`      | `scroll/snap-settles`          |

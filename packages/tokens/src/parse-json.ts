@@ -69,7 +69,7 @@ export function parseJson(source: string): BrandTokens {
   };
   const fonts: BrandTokens["fonts"] = { heading: DEFAULT_FONT, body: DEFAULT_FONT };
   let spacingBase = 8;
-  let radiusBase = 4;
+  let radiusBase = 0;
 
   let parsed: Record<string, unknown>;
   try {

@@ -19,24 +19,20 @@ interface ScreenFrameProps {
 const DEPTH = 0.14;
 const EDGE = 0.045;
 
-function roundedRect<T extends Path>(target: T, w: number, h: number, r: number): T {
+function rect<T extends Path>(target: T, w: number, h: number): T {
   const x = -w / 2;
   const y = -h / 2;
-  target.moveTo(x + r, y);
-  target.lineTo(x + w - r, y);
-  target.quadraticCurveTo(x + w, y, x + w, y + r);
-  target.lineTo(x + w, y + h - r);
-  target.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  target.lineTo(x + r, y + h);
-  target.quadraticCurveTo(x, y + h, x, y + h - r);
-  target.lineTo(x, y + r);
-  target.quadraticCurveTo(x, y, x + r, y);
+  target.moveTo(x, y);
+  target.lineTo(x + w, y);
+  target.lineTo(x + w, y + h);
+  target.lineTo(x, y + h);
+  target.lineTo(x, y);
   return target;
 }
 
 /**
  * The surface a section lives on. Put it inside `<Section>`: the section group already faces the
- * camera's stop, and this fills it with a rounded brand-surface panel, and an accent edge that glows. Children sit just in front of the face.
+ * camera's stop, and this fills it with a square brand-surface panel and an accent edge that glows. Children sit just in front of the face.
  */
 export function ScreenFrame({
   width,
@@ -45,28 +41,22 @@ export function ScreenFrame({
   recipe,
   children,
 }: ScreenFrameProps): JSX.Element {
-  const { colors, radiusBase } = useBrand();
+  const { colors } = useBrand();
   const plan = useWorldPlan(recipe);
   const w = width ?? plan.frame.width;
   const h = height ?? plan.frame.height;
   const alpha = opacity ?? plan.frame.opacity;
-  const corner = Math.min(0.1 + radiusBase * 0.02, h / 4);
   const { face, edge } = useMemo(() => {
-    const ring = roundedRect(new Shape(), w, h, corner);
-    ring.holes.push(
-      roundedRect(new Path(), w - EDGE * 2, h - EDGE * 2, Math.max(corner - EDGE, 0.02)),
-    );
+    const ring = rect(new Shape(), w, h);
+    ring.holes.push(rect(new Path(), w - EDGE * 2, h - EDGE * 2));
     const inner = EDGE * 2 - 0.02;
-    return {
-      face: roundedRect(new Shape(), w - inner, h - inner, Math.max(corner - EDGE, 0.02)),
-      edge: ring,
-    };
-  }, [w, h, corner]);
+    return { face: rect(new Shape(), w - inner, h - inner), edge: ring };
+  }, [w, h]);
   const see = alpha < 1;
   return (
     <group>
       <mesh position={[0, 0, -DEPTH]}>
-        <extrudeGeometry args={[face, { depth: DEPTH, bevelEnabled: false, curveSegments: 6 }]} />
+        <extrudeGeometry args={[face, { depth: DEPTH, bevelEnabled: false, curveSegments: 1 }]} />
         <meshStandardMaterial
           name="brand-surface"
           color={colors.surface}
@@ -81,7 +71,7 @@ export function ScreenFrame({
       </mesh>
       <mesh position={[0, 0, -DEPTH]}>
         <extrudeGeometry
-          args={[edge, { depth: DEPTH + 0.03, bevelEnabled: false, curveSegments: 6 }]}
+          args={[edge, { depth: DEPTH + 0.03, bevelEnabled: false, curveSegments: 1 }]}
         />
         <meshStandardMaterial
           name="brand-accent"

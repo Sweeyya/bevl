@@ -21,6 +21,7 @@ Read these first, in order:
 - Work on a branch only: `feat/<name>` or `fix/<name>`.
 - Never commit to `main`. Never push to `main`.
 - After every commit on a `feat/` or `fix/` branch, push it to `origin` right away (`git push -u origin <branch>`). Do not wait to be asked.
+- Work in larger chunks. One PR per real piece of work; fold small docs and fixes into the next PR instead of opening their own. Merge with `gh pr merge --squash` so each PR is one commit on `main`.
 - No AI co-author lines or AI attribution in commits or commit messages.
 - Every PR description must disclose AI tool use: state which tool was used and how much of the work it did. This belongs in the PR description, not the commit.
 - Every PR has a changeset, a plain-language summary, screenshots if visuals changed, and the `check` score before and after if output changed.

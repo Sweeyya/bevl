@@ -49,7 +49,6 @@ const STYLES = {
     color: "#fff",
     textDecoration: "none",
     padding: "4px 12px",
-    borderRadius: 4,
     fontSize: 14,
     fontWeight: 600,
   } as React.CSSProperties,

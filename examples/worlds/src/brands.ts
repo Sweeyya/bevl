@@ -13,7 +13,7 @@ export const brands: Record<string, BrandTokens> = {
     },
     fonts: { heading: "Futura", body: "Gill Sans" },
     spacingBase: 8,
-    radiusBase: 6,
+    radiusBase: 0,
   },
   light: {
     colors: {
@@ -27,6 +27,6 @@ export const brands: Record<string, BrandTokens> = {
     },
     fonts: { heading: "Rockwell", body: "Verdana" },
     spacingBase: 8,
-    radiusBase: 10,
+    radiusBase: 0,
   },
 };

@@ -14,7 +14,7 @@ export function directionToTokens(d: ArtDirection): BrandTokens {
     colors: { ...d.palette, extra: {} },
     fonts: { ...d.fonts },
     spacingBase: 8,
-    radiusBase: 4,
+    radiusBase: 0,
   };
 }
 
