@@ -25,5 +25,13 @@ export interface Report {
   passed: boolean; // score >= 90 AND no errors
   groups: Record<string, GroupResult>;
   findings: Finding[];
+  /** How long each rule took, per viewport, in milliseconds */
+  timings?: RuleTiming[];
   artifacts: string[];
+}
+
+export interface RuleTiming {
+  rule: string;
+  viewport: string;
+  ms: number;
 }

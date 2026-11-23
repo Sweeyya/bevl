@@ -20,7 +20,8 @@ import type {
 /** Mutable refs updated by BridgeInstaller after the canvas mounts */
 export interface BridgeState {
   /** Render one frame at the given absolute time in ms (R3F's frameloop="never" takes timestamps). */
-  advance: (timeMs: number) => void;
+  /** Run one frame at the given time. With render false the scene updates but is not drawn. */
+  advance: (timeMs: number, render?: boolean) => void;
   getSections: () => SectionState[];
   getCamera: () => CameraState;
   getChoreography: () => Choreography;
@@ -56,7 +57,7 @@ export function installBridge(state: BridgeState): DoodleyBridge {
       const steps = Math.max(1, Math.round(ms / FRAME_MS));
       for (let i = 0; i < steps; i++) {
         time += FRAME_MS;
-        state.advance(time);
+        state.advance(time, i === steps - 1);
         frame += 1;
       }
       return { time, frame };
