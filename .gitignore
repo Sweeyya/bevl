@@ -27,3 +27,6 @@ test-results/
 
 # Visual test output
 tools/__screenshots__/_results/
+
+# Private test-session recaps (conversations may contain personal details)
+/sessions/
