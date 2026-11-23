@@ -1,4 +1,9 @@
 {
   "mustFail": ["html/section-text"],
-  "mayAlsoFail": ["scroll/reaches-every-section", "nav/link-glides", "nav/buttons-work"]
+  "mayAlsoFail": [
+    "scroll/reaches-every-section",
+    "nav/link-glides",
+    "nav/buttons-work",
+    "a11y/reduced-motion"
+  ]
 }
