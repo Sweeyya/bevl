@@ -24,6 +24,8 @@ export interface DoodleyContextValue {
   sectionPositions: Placement[];
   /** Brand tokens given to DoodleySite, if any */
   brand: BrandTokens | null;
+  /** True while the user's reduced-motion preference is on (live) */
+  reducedMotion: boolean;
   /** Section registers (or with null clears) its HTML content, which DoodleySite renders in the DOM layer */
   registerHtml: (id: string, node: ReactNode | null) => void;
 }

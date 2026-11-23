@@ -4,14 +4,10 @@ import {
   beatAnchors,
   couldNotRun,
   NOT_READY,
-  onBeat,
-  progress,
-  step,
   waitReady,
+  walkBeatsByKeyboard,
 } from "../../drive.js";
 import type { Rule } from "../../rule.js";
-
-const SETTLE_FRAMES = 20;
 
 const rule: Rule = {
   id: "a11y/keyboard-reaches-beats",
@@ -23,22 +19,7 @@ const rule: Rule = {
     const { page } = ctx;
     const beats = [...(await beatAnchors(page))].sort((a, b) => a - b);
     if (beats.length === 0) return [couldNotRun(ctx, this.id, "the bridge reports no sections")];
-    const last = beats.length - 1;
-    const problems: string[] = [];
-
-    const press = async (key: string, index: number, label: string): Promise<void> => {
-      await page.keyboard.press(key);
-      await step(page, SETTLE_FRAMES);
-      const p = await progress(page);
-      if (!onBeat(beats, p) || !onBeat([beats[index] ?? 0], p))
-        problems.push(`${label}: expected beat ${index}, progress is ${p.toFixed(3)}`);
-    };
-
-    await press("Home", 0, "Home");
-    for (let i = 1; i <= last; i++) await press("ArrowDown", i, `ArrowDown to beat ${i}`);
-    for (let i = last - 1; i >= 0; i--) await press("ArrowUp", i, `ArrowUp to beat ${i}`);
-    await press("End", last, "End");
-    await press("Home", 0, "Home");
+    const problems = await walkBeatsByKeyboard(page, beats);
 
     if (problems.length === 0) return [];
     return [

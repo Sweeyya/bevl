@@ -2,6 +2,7 @@ import type { Rule } from "../rule.js";
 import contrastOver3d from "./a11y/contrast-over-3d.js";
 import keyboard from "./a11y/keyboard.js";
 import keyboardReachesBeats from "./a11y/keyboard-reaches-beats.js";
+import reducedMotion from "./a11y/reduced-motion.js";
 import fonts from "./brand/fonts.js";
 import palette from "./brand/palette.js";
 import drawCalls from "./budgets/draw-calls.js";
@@ -65,6 +66,7 @@ const rules: Rule[] = [
   textureMb,
   failedRequests,
   contrastOver3d,
+  reducedMotion,
 ];
 
 export default rules;

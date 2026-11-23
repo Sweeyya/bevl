@@ -16,6 +16,20 @@ const snapSettings = z.strictObject({
   commit: z.number().min(0).max(1).exactOptional(),
   duration: z.number().min(0).max(5).exactOptional(),
 });
+const track = z.strictObject({
+  target: z.string().min(1),
+  prop: z.string().min(1),
+  keys: z
+    .array(
+      z.strictObject({
+        at: progress,
+        value: z.union([z.number(), vec3, z.string().regex(HEX)]),
+        ease: ease.exactOptional(),
+      }),
+    )
+    .min(1),
+  path: z.enum(["linear", "curve"]).exactOptional(),
+});
 const inputKind = z.enum(["scroll", "wheel", "touch", "drag", "swipe-x", "tap-advance"]);
 
 export const choreographySchema: z.ZodType<Choreography> = z.strictObject({
@@ -43,24 +57,7 @@ export const choreographySchema: z.ZodType<Choreography> = z.strictObject({
       }),
     )
     .exactOptional(),
-  tracks: z
-    .array(
-      z.strictObject({
-        target: z.string().min(1),
-        prop: z.string().min(1),
-        keys: z
-          .array(
-            z.strictObject({
-              at: progress,
-              value: z.union([z.number(), vec3, z.string().regex(HEX)]),
-              ease: ease.exactOptional(),
-            }),
-          )
-          .min(1),
-        path: z.enum(["linear", "curve"]).exactOptional(),
-      }),
-    )
-    .exactOptional(),
+  tracks: z.array(track).exactOptional(),
   behaviors: z.array(z.string().min(1)).exactOptional(),
   input: z
     .strictObject({
@@ -77,6 +74,14 @@ export const choreographySchema: z.ZodType<Choreography> = z.strictObject({
       roll: z.boolean().exactOptional(),
       spin: z.boolean().exactOptional(),
       fastMoves: z.boolean().exactOptional(),
+      reducedMotion: z.boolean().exactOptional(),
+    })
+    .exactOptional(),
+  reducedMotion: z
+    .strictObject({
+      mode: z.enum(["fade", "none"]).exactOptional(),
+      tracks: z.array(track).exactOptional(),
+      behaviors: z.array(z.string().min(1)).exactOptional(),
     })
     .exactOptional(),
 });
@@ -118,8 +123,7 @@ function kindOf(v: KeyValue): "number" | "vec3" | "color" {
   return Array.isArray(v) ? "vec3" : "color";
 }
 
-function checkTrack(track: Track, i: number, errors: string[]): void {
-  const at = `tracks[${i}]`;
+function checkTrack(track: Track, at: string, errors: string[]): void {
   const last = track.prop.split(".").pop() ?? track.prop;
   if (track.target === "camera" && !CAMERA_PROPS.includes(track.prop)) {
     errors.push(
@@ -205,19 +209,26 @@ export function validateChoreography(input: unknown, sectionIds: string[]): Vali
   }
 
   (choreo.tracks ?? []).forEach((track, i) => {
-    checkTrack(track, i, errors);
+    checkTrack(track, `tracks[${i}]`, errors);
+  });
+  (choreo.reducedMotion?.tracks ?? []).forEach((track, i) => {
+    checkTrack(track, `reducedMotion.tracks[${i}]`, errors);
   });
 
-  (choreo.behaviors ?? []).forEach((name, i) => {
-    if (!getBehavior(name)) {
+  const behaviorLists = [
+    ["behaviors", choreo.behaviors ?? []],
+    ["reducedMotion.behaviors", choreo.reducedMotion?.behaviors ?? []],
+  ] as const;
+  for (const [field, list] of behaviorLists)
+    list.forEach((name, i) => {
+      if (getBehavior(name)) return;
       const names = behaviorNames();
       errors.push(
-        `behaviors[${i}] "${name}" is not registered. Fix: call registerBehavior("${name}", fn) before rendering${
+        `${field}[${i}] "${name}" is not registered. Fix: call registerBehavior("${name}", fn) before rendering${
           names.length ? `, or use one of ${names.join(", ")}` : ""
         }.`,
       );
-    }
-  });
+    });
 
   return errors.length ? { ok: false, errors } : { ok: true, value: choreo };
 }

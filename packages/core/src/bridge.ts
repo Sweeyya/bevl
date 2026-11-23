@@ -25,6 +25,7 @@ export interface BridgeState {
   getSections: () => SectionState[];
   getCamera: () => CameraState;
   getChoreography: () => Choreography;
+  getReducedMotion: () => boolean;
   getScroll: () => number;
   getStats: () => SceneStats;
   getBrand: () => BrandTokens | null;
@@ -65,6 +66,7 @@ export function installBridge(state: BridgeState): DoodleyBridge {
     sections: () => state.getSections(),
     camera: () => state.getCamera(),
     choreography: () => state.getChoreography(),
+    motion: () => ({ reducedMotion: state.getReducedMotion() }),
     scroll: () => state.getScroll(),
     stats: () => state.getStats(),
     brand: () => state.getBrand(),

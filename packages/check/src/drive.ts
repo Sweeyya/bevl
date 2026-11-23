@@ -9,11 +9,13 @@ type Win = {
     scroll(): number;
     sections(): Array<{ id: string; anchor: number }>;
     choreography(): {
-      allow?: { roll?: boolean; spin?: boolean; fastMoves?: boolean };
+      allow?: { roll?: boolean; spin?: boolean; fastMoves?: boolean; reducedMotion?: boolean };
+      reducedMotion?: { mode?: "fade" | "none" };
       snap?: { mode?: string; coarse?: { mode?: string } };
       beats?: Array<{ snap?: boolean }>;
       behaviors?: string[];
     };
+    motion(): { reducedMotion: boolean };
     stats(): { drawCalls: number; triangles: number };
     camera(): {
       position: { x: number; y: number; z: number };
@@ -63,6 +65,17 @@ export function choreography(
   page: Page,
 ): Promise<ReturnType<NonNullable<Win["__doodley"]>["choreography"]>> {
   return page.evaluate(() => (window as unknown as Win).__doodley?.choreography() ?? {});
+}
+
+export function reducedMotionOn(page: Page): Promise<boolean> {
+  return page.evaluate(() => (window as unknown as Win).__doodley?.motion().reducedMotion === true);
+}
+
+/** Waits two animation frames so React has applied a changed media query. */
+export function nextFrames(page: Page): Promise<void> {
+  return page.evaluate(
+    () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
+  );
 }
 
 export function stats(page: Page) {
@@ -124,6 +137,25 @@ export function couldNotRun(ctx: RuleContext, rule: string, why: string): Findin
     `Could not run ${rule} on ${ctx.viewport.name}: ${why}.`,
     "Fix: make sure the site loads in test mode (window.__doodley exists and ready resolves) and has a [data-doodley-scroller] taller than the viewport.",
   );
+}
+
+/** Presses Home, then ArrowDown to each beat, ArrowUp back, End and Home. Returns what went wrong. */
+export async function walkBeatsByKeyboard(page: Page, beats: number[]): Promise<string[]> {
+  const last = beats.length - 1;
+  const problems: string[] = [];
+  const press = async (key: string, index: number, label: string): Promise<void> => {
+    await page.keyboard.press(key);
+    await step(page, 20);
+    const p = await progress(page);
+    if (!onBeat(beats, p) || !onBeat([beats[index] ?? 0], p))
+      problems.push(`${label}: expected beat ${index}, progress is ${p.toFixed(3)}`);
+  };
+  await press("Home", 0, "Home");
+  for (let i = 1; i <= last; i++) await press("ArrowDown", i, `ArrowDown to beat ${i}`);
+  for (let i = last - 1; i >= 0; i--) await press("ArrowUp", i, `ArrowUp to beat ${i}`);
+  await press("End", last, "End");
+  await press("Home", 0, "Home");
+  return problems;
 }
 
 export const NOT_READY = "the test bridge did not become ready";

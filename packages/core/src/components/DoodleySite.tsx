@@ -22,6 +22,7 @@ import type {
 import { resolveInputs } from "../input/resolve.js";
 import { useProgressInput } from "../input/useProgressInput.js";
 import { collectMaterials } from "../materials.js";
+import { prefersReducedMotion, useReducedMotion } from "../motion/preference.js";
 import { isTestModeAllowed } from "../testmode.js";
 import { collectTextMeshes } from "../textMeshes.js";
 import { estimateTextureMb } from "../textureMemory.js";
@@ -79,6 +80,7 @@ function makeBridgeState(choreography: Choreography, brand: BrandTokens | null):
       sectionId: null,
     }),
     getChoreography: () => choreography,
+    getReducedMotion: prefersReducedMotion,
     getScroll: () => 0,
     getStats: () => ({
       triangles: 0,
@@ -229,6 +231,7 @@ export function DoodleySite({
       return next;
     });
   }, []);
+  const reducedMotion = useReducedMotion();
   const nativeScroll = resolveInputs(choreography.input, isCoarsePointer()).includes("scroll");
 
   if (!webgl) return <Fallback config={config}>{fallback}</Fallback>;
@@ -257,6 +260,7 @@ export function DoodleySite({
         sections: config.sections,
         choreography,
         sectionPositions: positions,
+        reducedMotion,
         brand: brand ?? null,
         registerHtml,
       }}

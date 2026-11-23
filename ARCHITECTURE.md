@@ -117,6 +117,8 @@ export interface DoodleyBridge {
   camera(): CameraState;
   /** The validated choreography in effect: beats, snap settings and motion allowances (read-only) */
   choreography(): Choreography;
+  /** Live prefers-reduced-motion preference of the page */
+  motion(): { reducedMotion: boolean };
   /** Current scroll progress 0-1 */
   scroll(): number;
   /** Scene stats (triangles, draw calls, texture MB, etc.) */

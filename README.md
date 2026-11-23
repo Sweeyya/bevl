@@ -27,7 +27,7 @@ Doodley is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and oth
 | Effects (`@doodley/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                                                                                                                                                                               |
 | Mascot (`@doodley/mascot`)            | Empty. Planned for V2.                                                                                                                                                                                                                                                                                                                 |
 
-Not done yet: the `a11y/reduced-motion` and `html/order-matches` rules, Linux screenshot baselines for the visual tests, the Spectr demo, golden agent tasks, and publishing to npm.
+Not done yet: the `html/order-matches` rule, Linux screenshot baselines for the visual tests, the Spectr demo, golden agent tasks, and publishing to npm.
 
 Both examples (`examples/basic` and `examples/recipes`) score 100/100.
 
@@ -105,7 +105,8 @@ The pieces:
 - **behaviors**: your own small TypeScript functions for anything data can't express. They must be pure functions of progress (no clocks, no `Math.random`).
 - **input**: which inputs move progress, chosen separately for mouse and touch.
 - **snap**: after you stop, settle onto a screen. Directional (default), nearest, strong or none, with per-screen opt-out. The picture glides first and snaps 0.25 s after you stop (`snap.delay`), easing over `snap.duration` seconds (default scales with distance, 0.35 to 1.2 s).
-- **allow**: explicit opt-outs from the gentle-motion rules (`roll`, `spin`, `fastMoves`). The checker reports each one.
+- **allow**: explicit opt-outs from the gentle-motion rules (`roll`, `spin`, `fastMoves`, `reducedMotion`). The checker reports each one.
+- **reducedMotion**: optional. With reduced motion on, the camera already stays still, sections stand on one spot and cross-fade, and object tracks and behaviors pause. You do not need to write anything for that. `{ mode?, tracks?, behaviors? }` is for authors who want a gentler alternative (extra tracks, safe behaviors) or `mode: "none"` to keep full motion on purpose (needs `allow.reducedMotion`). See [ADR 005](docs/adr/005-reduced-motion.md).
 
 Bad specs are rejected with the field path and a fix, for example `beats[2].id "pricng" does not match any section. Fix: use one of hero, work, contact.` The design is in [ADR 003](docs/adr/003-scroll-choreography.md).
 
