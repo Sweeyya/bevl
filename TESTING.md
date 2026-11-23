@@ -78,16 +78,16 @@ Each rule has a stable id, a default severity (`error`, `warn`, `info`), a pass 
 
 ### 4.1 Load and render
 
-| Rule id                | Pass rule                                                                                      | Severity |
-| ---------------------- | ---------------------------------------------------------------------------------------------- | -------- |
-| `load/ready`           | `ready` resolves within the `readyMs` budget                                                   | error    |
-| `load/console-errors`  | No console errors or page errors                                                               | error    |
-| `load/failed-requests` | No failed network requests                                                                     | error    |
-| `load/webgl`           | WebGL2 works. Record the renderer. Software renderer is `info`.                                | error    |
-| `render/not-blank`     | Picture is not one flat color, not all black, not magenta                                      | error    |
-| `render/resolution`    | Canvas pixel size equals CSS size × dpr (±1 px)                                                | warn     |
-| `render/no-nan`        | No object has NaN position, rotation or scale                                                  | error    |
-| `render/fallback`      | With WebGL turned off, the static fallback (`[data-toros-fallback]`) shows every section title | error    |
+| Rule id                | Pass rule                                                                                                             | Severity |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- | -------- |
+| `load/ready`           | `ready` resolves within the `readyMs` budget                                                                          | error    |
+| `load/console-errors`  | No console errors or page errors                                                                                      | error    |
+| `load/failed-requests` | No failed network requests                                                                                            | error    |
+| `load/webgl`           | WebGL2 works. Record the renderer. Software renderer is `info`.                                                       | error    |
+| `render/not-blank`     | The 3D canvas alone is not one flat color, not all black, not magenta (nav and HTML layer are hidden while measuring) | error    |
+| `render/resolution`    | Canvas pixel size equals CSS size × dpr (±1 px)                                                                       | warn     |
+| `render/no-nan`        | No object has NaN position, rotation or scale                                                                         | error    |
+| `render/fallback`      | With WebGL turned off, the static fallback (`[data-toros-fallback]`) shows every section title                        | error    |
 
 ### 4.2 Scroll (design rules 1, 3, 4)
 
@@ -167,7 +167,9 @@ Load speed on a phone is tested with Lighthouse CI in `perf.yml` (§6), not insi
 | ------------------- | ------------------------------------------------------------------------------------------------------------------ | -------- |
 | `brand/palette`     | Every non-neutral material color is within CIE76 ΔE of 10 or less from a brand token color (skipped with no brand) | warn     |
 | `brand/fonts`       | Visible nav links, h1-h3 and paragraphs start with a brand font (skipped with no brand)                            | warn     |
-| `brand/tokens-used` | Lists brand colors that never appear                                                                               | info     |
+| `brand/tokens-used` | The brand primary, secondary and accent colors each appear in a material or in the page's computed CSS colors      | warn     |
+
+Decision for `brand/tokens-used`: only `primary`, `secondary` and `accent` are required (background, surface and text are chrome). A color counts as used when a material color, or a computed `color`, `background-color` or border color of any element, is within ΔE 10 of it. Severity is `warn`, not `info`, so unused brand colors lower the score. Skipped with no brand.
 
 ### 4.8 Optimizer
 
@@ -308,13 +310,14 @@ The test fails if a `mustFail` rule passes, or if any rule not listed fails.
 | `dead-button`             | `nav/buttons-work`             |
 | `text-in-canvas`          | `html/no-canvas-copy`          |
 | `missing-section-text`    | `html/section-text`            |
-| `wrong-order`             | `html/order-matches`           |
+| `section-order-mismatch`  | `html/order-matches`           |
 | `low-contrast-over-glass` | `a11y/contrast-over-3d`        |
 | `no-keyboard`             | `a11y/keyboard`                |
 | `ignores-reduced-motion`  | `a11y/reduced-motion`          |
 | `too-many-triangles`      | `budgets/triangles`            |
 | `huge-textures`           | `budgets/texture-mb`           |
 | `off-brand-colors`        | `brand/palette`                |
+| `unused-brand-colors`     | `brand/tokens-used`            |
 | `default-grey-look`       | `brand/not-default-look`       |
 | `wrong-font`              | `brand/fonts`                  |
 | `random-without-seed`     | `scroll/deterministic`         |

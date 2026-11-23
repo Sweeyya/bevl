@@ -112,6 +112,9 @@ describe("render/not-blank", () => {
   it("reports an error without a bridge", async () => {
     expectCouldNotRun(await run(notBlank, { bridge: false }), notBlank.id);
   });
+  it("reports an error when the page has no canvas", async () => {
+    expectCouldNotRun(await run(notBlank, { canvas: false }), notBlank.id);
+  });
 });
 
 describe("load/ready", () => {
