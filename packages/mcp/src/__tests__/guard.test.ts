@@ -2,6 +2,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readFileSync,
   realpathSync,
   rmSync,
   symlinkSync,
@@ -141,6 +142,18 @@ describe("tool handlers refuse unsafe input before doing any work", () => {
     await expect(createSiteTool({ name: "made", dir: "sites" }, env())).rejects.toThrow(
       /already exists/,
     );
+  });
+  it("create_site takes sections and add_section takes after", async () => {
+    await createSiteTool({ name: "sec", sections: ["One", "Two"] }, env());
+    await addSectionTool({ id: "mid", title: "Mid", after: "one", projectDir: "sec" }, env());
+    const cfg = JSON.parse(readFileSync(join(root, "sec", "toros.json"), "utf8"));
+    expect(cfg.sections.map((s: { id: string }) => s.id)).toEqual(["one", "mid", "two"]);
+  });
+  it("apply_brand outside the root says how to fix it", async () => {
+    await createSiteTool({ name: "ab" }, env());
+    await expect(
+      applyBrandTool({ file: "../outside/DESIGN.md", projectDir: "ab" }, env()),
+    ).rejects.toThrow(/cp /);
   });
   it("add_section and apply_brand reject traversal, symlinks, bad ids and titles", async () => {
     await createSiteTool({ name: "p" }, env());
