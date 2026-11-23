@@ -124,6 +124,10 @@ export function ScrollCamera(): null {
 
     applyLayouts(choreo, scene, camera, layoutCache.current);
     if (reduced) {
+      if (!staged.current) {
+        const pins = (full.tracks ?? []).filter((t) => t.target.startsWith("section-"));
+        applyTracks({ ...full, tracks: pins }, scene, 0);
+      }
       const weights = fadeWeights(
         progress,
         full.beats.map((b) => b.at),

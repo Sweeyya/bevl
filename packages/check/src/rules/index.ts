@@ -6,6 +6,7 @@ import reducedMotion from "./a11y/reduced-motion.js";
 import fonts from "./brand/fonts.js";
 import notDefaultLook from "./brand/not-default-look.js";
 import palette from "./brand/palette.js";
+import sharpCorners from "./brand/sharp-corners.js";
 import tokensUsed from "./brand/tokens-used.js";
 import drawCalls from "./budgets/draw-calls.js";
 import textureMb from "./budgets/texture-mb.js";
@@ -73,6 +74,7 @@ const rules: Rule[] = [
   orderMatches,
   tokensUsed,
   notDefaultLook,
+  sharpCorners,
 ];
 
 export default rules;

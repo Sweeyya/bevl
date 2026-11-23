@@ -153,7 +153,7 @@ const rule: Rule = {
           severity: "error",
           viewport: viewport.name,
           message: `"${b.text}" has contrast ${ratio.toFixed(1)}:1 over the 3D scene at progress ${anchor.toFixed(2)} on ${viewport.name} (needs ${required}:1).`,
-          fix: `Fix: keep the brand and put a backing panel behind the text: background: ${backingPanelColor(b.color, surfaces, worst)}; padding: 1rem; border-radius: 0.5rem. If it still fails, raise the opacity, or as a second option change the text color to ${suggestedColor(worst)}.`,
+          fix: `Fix: keep the brand and put a backing panel behind the text: background: ${backingPanelColor(b.color, surfaces, worst)}; padding: 1rem. If it still fails, raise the opacity, or as a second option change the text color to ${suggestedColor(worst)}.`,
           evidence: {
             data: { ratio, required, suggestedColor: suggestedColor(worst), progress: anchor },
           },

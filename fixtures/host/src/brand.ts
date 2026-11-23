@@ -12,5 +12,5 @@ export const brand: BrandTokens = {
   },
   fonts: { heading: "Georgia", body: "Verdana" },
   spacingBase: 8,
-  radiusBase: 4,
+  radiusBase: 0,
 };

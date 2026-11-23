@@ -8,8 +8,8 @@ import { sectionStyle } from "../html/visibility.js";
 const HEADING = "h1,h2,h3,h4,h5,h6";
 
 const CSS = `
-[data-toros-html] [data-toros-section]{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:8vh 8vw;max-width:100%;font-family:var(--toros-font-body,system-ui,sans-serif);color:var(--toros-text,#fff);pointer-events:none;outline:none}
-[data-toros-html] [data-toros-section]>div{max-width:40rem}
+[data-toros-html] [data-toros-section]{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box;padding:8vh 8vw;max-width:100%;font-family:var(--toros-font-body,system-ui,sans-serif);color:var(--toros-text,#fff);pointer-events:none;outline:none;align-items:var(--toros-panel-align,stretch)}
+[data-toros-html] [data-toros-section]>div{max-width:var(--toros-panel-width,40rem);background:var(--toros-panel-bg,transparent);color:var(--toros-panel-text,inherit);border:var(--toros-panel-border,0);border-radius:var(--toros-panel-radius,0);padding:var(--toros-panel-padding,0);box-shadow:var(--toros-panel-shadow,none);box-sizing:border-box;max-height:100%;overflow:auto}
 [data-toros-html] [data-toros-active="true"] :is(a,button,input,select,textarea,summary){pointer-events:auto}
 [data-toros-html] [data-toros-section]:focus-within{opacity:1!important}
 [data-toros-html] [data-toros-sr]{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}

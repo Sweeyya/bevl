@@ -1,6 +1,6 @@
 # Authoring choreography
 
-`config.choreography` is data: the scene is a pure function of one `progress` value from 0 to 1. Background: `docs/adr/003-scroll-choreography.md`. Types: `packages/core/src/choreography/types.ts`. Validation: `packages/core/src/choreography/schema.ts`.
+`config.choreography` is data: the scene is a pure function of one `progress` value from 0 to 1. It lives in `toros.json` under `choreography`. `toros recipe apply <name>` writes a ready one; edit it from there. An invalid one is rejected on load, so run `check` after every edit.
 
 ## From description to data
 

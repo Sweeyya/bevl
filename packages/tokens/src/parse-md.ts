@@ -31,7 +31,7 @@ export function parseMd(source: string): BrandTokens {
   };
   const fonts: BrandTokens["fonts"] = { heading: DEFAULT_FONT, body: DEFAULT_FONT };
   let spacingBase = 8;
-  let radiusBase = 4;
+  let radiusBase = 0;
 
   // Extract colors — scan each line for hex values, use surrounding text as role hint
   for (const line of source.split("\n")) {

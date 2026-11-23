@@ -16,7 +16,7 @@ export const DEFAULT_BRAND: BrandTokens = {
   },
   fonts: { heading: "system-ui", body: "system-ui" },
   spacingBase: 8,
-  radiusBase: 4,
+  radiusBase: 0,
 };
 
 /** Fills every missing or empty token with its default so callers never branch on undefined. */
