@@ -14,14 +14,14 @@ First real trial (an agent building a coffee roaster site from only the skill): 
 
 ## 2. Decisions waiting on you
 
-| Decision | Options | Why it matters |
-| --- | --- | --- |
-| How the runtime reaches a site | A: publish `@bevl/*` to npm. B: copy the runtime into each site. Mix: publish the tools, copy the runtime | A fresh site cannot install today, because nothing is on npm |
-| The `@bevl` npm scope | Create the organization on npmjs.com | Scope ownership cannot be checked without logging in |
-| License | MIT, Apache-2.0, or other | There is no LICENSE file, so nobody may legally reuse the code |
-| Spectr | Keep or remove | It came from the original plan and is not being built (see section 9) |
-| Dependabot | Keep or turn off | Its commits show `dependabot[bot]` as an author |
-| GitHub repo description and topics | Write them | Both are empty today |
+| Decision                           | Options                                                                                                   | Why it matters                                                        |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| How the runtime reaches a site     | A: publish `@bevl/*` to npm. B: copy the runtime into each site. Mix: publish the tools, copy the runtime | A fresh site cannot install today, because nothing is on npm          |
+| The `@bevl` npm scope              | Create the organization on npmjs.com                                                                      | Scope ownership cannot be checked without logging in                  |
+| License                            | MIT, Apache-2.0, or other                                                                                 | There is no LICENSE file, so nobody may legally reuse the code        |
+| Spectr                             | Keep or remove                                                                                            | It came from the original plan and is not being built (see section 9) |
+| Dependabot                         | Keep or turn off                                                                                          | Its commits show `dependabot[bot]` as an author                       |
+| GitHub repo description and topics | Write them                                                                                                | Both are empty today                                                  |
 
 ## 3. Next up, in order
 
@@ -75,6 +75,7 @@ Today: `packages/mascot` is empty, the test bridge's `mascot()` returns nothing,
 **Level 1, characters with no limbs (the plan's V2).** Bend, squash, bob and blink with shader deformers, no bones. Nothing to rig, so the only thing to test is behavior.
 
 **Level 2, characters with limbs.** They need a skeleton and skin weights. Options found on 2026-11-23:
+
 - Mixamo is free with an Adobe ID but handles two-legged humanoids only, and accepts FBX or OBJ, not GLB.
 - Blender's Rigify gives a full control rig but you fit the skeleton to the mesh by hand.
 - Meshy and Tripo auto-rig humanoids and four-legged characters inside their generators. Meshy's "Smart Rig" handles other shapes but exports GLB only and cannot use its animation library.
@@ -82,6 +83,7 @@ Today: `packages/mascot` is empty, the test bridge's `mascot()` returns nothing,
 - AI is getting good at placing bones. Skin weights still need a person to check, because bad weights show only when the model moves.
 
 How to test a rig (proposal):
+
 1. **Spec check.** Run the Khronos glTF-Validator on every character file. It catches skin joints that do not exist, broken accessors, and animation timing that does not increase.
 2. **Content check.** Open-source tools exist that go beyond the spec: `animsmith` checks loop seams, NaN values and rotation errors in clips, and `rigcheck` plays every animation in a browser and measures torn or smeared meshes and missing heads. I have not tried either.
 3. **Our own `mascot/*` rules** from `TESTING.md`: visible when it should be, idle motion changes the picture over 2 seconds, never covers text, barely moves under reduced motion. Each needs a broken fixture.
