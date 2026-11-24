@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { addSection, applyBrand, createSite } from "@toros/tokens";
 import { Command } from "commander";
 import { checkSite } from "./commands/check.js";
+import { registerKnowledgeCommands } from "./commands/knowledge.js";
 import { optimizeAssets } from "./commands/optimize.js";
 import { registerRecipeCommands } from "./commands/recipe.js";
 import { registerReferenceCommands } from "./commands/reference.js";
@@ -127,6 +128,7 @@ program
 
 registerRecipeCommands(program);
 registerReferenceCommands(program);
+registerKnowledgeCommands(program);
 registerTasteCommands(program);
 
 program.parseAsync(process.argv).catch((err: unknown) => {

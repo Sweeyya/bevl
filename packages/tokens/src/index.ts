@@ -7,6 +7,7 @@
 
 export const VERSION = "0.1.0";
 
+export * from "./knowledge/index.js";
 export { parseJson } from "./parse-json.js";
 export { parseMd } from "./parse-md.js";
 export { addSection } from "./project/add-section.js";

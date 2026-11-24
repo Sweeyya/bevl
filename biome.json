@@ -38,7 +38,9 @@
       "!**/.turbo",
       "!**/.changeset",
       "!**/*.d.ts",
-      "!**/.lighthouseci"
+      "!**/.lighthouseci",
+      "!**/SKILL.md",
+      "!packages/tokens/knowledge"
     ]
   }
 }

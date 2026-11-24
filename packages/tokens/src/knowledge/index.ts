@@ -1,0 +1,10 @@
+export type { LessonInput, LessonResult } from "./lessons.js";
+export { recordLesson } from "./lessons.js";
+export { lintKnowledge } from "./lint.js";
+export type { LoadResult } from "./load.js";
+export { bundledKnowledgeDir, loadKnowledge, projectKnowledgeDir } from "./load.js";
+export { formatKnowledge, parseKnowledge } from "./parse.js";
+export type { Knowledge } from "./schema.js";
+export { KNOWLEDGE_KINDS, knowledgeSchema } from "./schema.js";
+export type { KnowledgeMatch, KnowledgeQuery } from "./search.js";
+export { getKnowledge, searchKnowledge } from "./search.js";

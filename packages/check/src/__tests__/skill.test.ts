@@ -26,6 +26,18 @@ describe("toros agent skill", () => {
     expect(skill.split("\n").length).toBeLessThanOrEqual(400);
   });
 
+  it("has no leftover shell lines and a nested metadata block", () => {
+    expect(skill).not.toMatch(/^(EOF|cat )/m);
+    expect(skill).toMatch(/^metadata:\n {2}version:/m);
+    expect(skill.match(/^# Toros$/gm)).toHaveLength(1);
+  });
+
+  it("tells the agent to search and record knowledge", () => {
+    for (const tool of ["search_knowledge", "get_knowledge", "add_lesson"]) {
+      expect(skill).toContain(tool);
+    }
+  });
+
   it("only links to files that exist", () => {
     const links = [...skill.matchAll(/\]\((references\/[^)#]+)\)/g)].map((m) => m[1] ?? "");
     expect(links.length).toBeGreaterThan(0);
