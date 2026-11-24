@@ -18,7 +18,7 @@ First real trial (an agent building a coffee roaster site from only the skill): 
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | How the runtime reaches a site     | A: publish `@toros/*` to npm. B: copy the runtime into each site. Mix: publish the tools, copy the runtime | A fresh site cannot install today, because nothing is on npm   |
 | The `@toros` npm scope             | Create the organization on npmjs.com                                                                       | Scope ownership cannot be checked without logging in           |
-| License                            | MIT, Apache-2.0, or other                                                                                  | There is no LICENSE file, so nobody may legally reuse the code |
+| License                            | Decided: Apache-2.0 (LICENSE, NOTICE and LEGAL.md added)                                                   | There is no LICENSE file, so nobody may legally reuse the code |
 | Dependabot                         | Keep or turn off                                                                                           | Its commits show `dependabot[bot]` as an author                |
 | GitHub repo description and topics | Write them                                                                                                 | Both are empty today                                           |
 
@@ -36,6 +36,8 @@ Asset pack (generate colours, textures, icons and models into a folder first, wi
 
 Between test sites (the prompt to paste, the session record JSON, and what to send back): `docs/plans/session-recap.md`.
 
+Reference library (the reel looks Toros should be able to build, what each needs, and how they are searched): `docs/plans/reference-library.md`.
+
 ## 4. Publishing to npm
 
 How people would use it once published: the MCP server by adding `npx -y @toros/mcp` to their AI tool's settings, and the CLI with `npx @toros/cli check <url>`. A plain `npx toros` needs an unscoped package named `toros`, which is free on npm today. The skill is separate and is distributed as files from GitHub or skills.sh.
@@ -46,7 +48,7 @@ Steps (proposal, based on npm's documentation, read 2026-11-23):
 2. Create the `toros` organization on npmjs.com. If the name is taken, pick another scope before anything is published.
 3. Finish the prerequisites: a license, `repository`, `files` and `publishConfig` in each package, and the distribution decision above.
 4. **Publish each package once by hand** with `npm login` and `npm publish --access public`. npm's trusted publishing only works for packages that already exist, so the first version of every package must be published manually.
-5. On npmjs.com, for each package, add a trusted publisher: GitHub Actions, repo `Sweeyya/bevl`, workflow `release.yml`. After that the Release workflow publishes with no stored token, with provenance.
+5. On npmjs.com, for each package, add a trusted publisher: GitHub Actions, repo `Sweeyya/toros`, workflow `release.yml`. After that the Release workflow publishes with no stored token, with provenance.
 6. Fix `RELEASING.md`. It currently describes both trusted publishing and a stored `NPM_TOKEN`, and those conflict.
 7. Fill in `server.json` for the MCP Registry and list the skill on skills.sh.
 
@@ -107,3 +109,4 @@ The glass material and shader background are scaffolds. The palette waits on you
 - Golden tasks (`TESTING.md` section 8) once the skill has been re-tried.
 - The scrollbar follows the camera only in `scroll` input mode, not in wheel-only mode.
 - Docs site, README GIF and sample report, MCP Registry and skills.sh listings, launch posts.
+- Render on demand: the `worlds` example blocks the main thread for about 911 ms under Lighthouse's phone simulation (budget 300 ms). It is gated at 1200 ms for now (`tools/perf.mjs`); drawing only when the scene changes is the planned fix.

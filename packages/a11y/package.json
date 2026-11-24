@@ -12,13 +12,15 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "NOTICE"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "test": "vitest run",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepack": "node ../../scripts/copy-legal.mjs"
   },
   "dependencies": {
     "@toros/core": "workspace:*",
@@ -28,5 +30,15 @@
     "@types/react": "18.3.12",
     "typescript": "7.0.2",
     "vitest": "5.1.0"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sweeyya/toros.git",
+    "directory": "packages/a11y"
+  },
+  "homepage": "https://github.com/Sweeyya/toros#readme",
+  "bugs": {
+    "url": "https://github.com/Sweeyya/toros/issues"
   }
 }

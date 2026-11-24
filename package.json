@@ -62,5 +62,6 @@
     "size-limit": "14.3.0",
     "turbo": "2.11.11",
     "typescript": "7.0.2"
-  }
+  },
+  "license": "Apache-2.0"
 }

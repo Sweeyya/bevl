@@ -21,8 +21,8 @@ Toros is a toolkit for coding agents (Claude, ChatGPT, Cursor, Lovable and other
 | Accessibility layer (`@toros/a11y`) | Works. Nav bar, skip link and keyboard. Nav links glide to screens.                                                                                                                                                                                                                                                                  |
 | Token reader (`@toros/tokens`)      | Works. Reads `DESIGN.md` and design-token JSON, holds the shared project commands (create, add-section, apply-brand), the brief file (`toros.brief.json`) and Toros's own taste library of six original art directions.                                                                                                              |
 | Optimizer (`@toros/optimizer`)      | Works for dedup, prune, weld, resample, instance and sparse with no extra packages. Draco (`--draco`) and WebP textures (`--textures`) are opt-in and need `draco3dgltf` or `sharp` installed. Not yet tested on models with textures.                                                                                               |
-| CLI (`@toros/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`, `brief validate`, `taste list`, `taste deal`, `recipe list`, `recipe recommend`, `recipe apply`.                                                                                                                                                                        |
-| MCP server (`@toros/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`, `validate_brief`, `deal_art_direction`, `recommend_recipe`, `apply_recipe`. Confined to the project folder and to localhost.                                                                                                      |
+| CLI (`@toros/cli`)                  | `create`, `add-section`, `apply-brand`, `check`, `optimize`, `brief validate`, `taste list`, `taste deal`, `recipe list`, `recipe recommend`, `recipe apply`, `reference list`, `reference show`, `reference search`.                                                                                                                |
+| MCP server (`@toros/mcp`)           | `check_site`, `optimize_assets`, `read_brand_tokens`, `create_site`, `add_section`, `apply_brand`, `validate_brief`, `deal_art_direction`, `recommend_recipe`, `apply_recipe`, `search_references`. Confined to the project folder and to localhost.                                                                                 |
 | Agent skill (`skills/toros`)        | Written, with a test that keeps its rule table in sync with the checker. Not yet tried with a real agent.                                                                                                                                                                                                                            |
 | Effects (`@toros/effects`)          | Scaffold only: a glass material and a shader background.                                                                                                                                                                                                                                                                             |
 | Mascot (`@toros/mascot`)            | Empty. Planned for V2.                                                                                                                                                                                                                                                                                                               |
@@ -36,7 +36,7 @@ Both examples (`examples/basic` and `examples/recipes`) score 100/100.
 You need Node 22+ and pnpm 12.
 
 ```sh
-git clone https://github.com/Sweeyya/bevl.git
+git clone https://github.com/Sweeyya/toros.git
 cd toros
 pnpm install
 pnpm build
@@ -212,3 +212,7 @@ Run `pnpm audit` and see `.github/workflows/security.yml` for the automated chec
 ## License
 
 No license has been chosen yet, so all rights are reserved for now.
+
+## License and legal
+
+Toros is released under the [Apache License 2.0](LICENSE). Sites you build are yours, and so is the responsibility for the assets you put in them. See [LEGAL.md](LEGAL.md) for the plain-language notes, including how references are used for inspiration only.

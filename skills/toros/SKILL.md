@@ -51,6 +51,9 @@ Save the brief as `toros.brief.json` in the project and run `toros brief validat
 ## Look and scroll style
 
 - **No brand given:** run `toros taste deal --brief toros.brief.json --apply` (MCP `deal_art_direction`). It picks an art direction, writes it into the brief and writes `src/brand.tokens.json`. Use it as dealt. Do not invent a palette or fall back to default grey and white. `toros taste list` shows the options.
+- **Look to aim for:** run `toros reference search --kind <kind> --tone dark,atmospheric` (MCP `search_references`) and adopt the top match's archetype, render style, palette, camera, assets and needs as the starting point. It lists what Toros can build from code and what needs outside assets (photos, illustration), so you do not promise what it cannot make.
+- **Inspiration, not copying.** References are for the look and the plan only. Never reproduce a reference site's specific layout, artwork, text, logos or branding; make original work or use assets the user gave you.
+- **User assets and rights.** If the user supplies images, fonts, models, video or other files, ask once: "Do you have the right to use these in a published site?" Record the answer and where each asset came from (see `LEGAL.md`). If they say no or are unsure, use generated assets instead.
 - **Scroll style:** run `toros recipe recommend --kind <kind> --sections <n> [--tone calm,warm]` (MCP `recommend_recipe`), then `toros recipe apply <name>` (MCP `apply_recipe`). The user never needs to know the style names; describe the result in plain words ("the camera glides forward through the sections").
 - **Close call:** build two candidates, take `toros shots` of each, keep the one that looks better against the brief.
 - If the user described a scroll feel themselves, write that choreography by hand instead: [references/choreography.md](references/choreography.md).
@@ -67,6 +70,7 @@ CLI (MCP tool in brackets). Run `toros <command> --help` for flags.
 | `toros brief validate <file>` (`validate_brief`)                                                     | Check the brief                                   |
 | `toros taste list` / `toros taste deal --brief <file> [--seed <n>] [--apply]` (`deal_art_direction`) | Art directions                                    |
 | `toros recipe list` / `recommend` / `apply <name>` (`recommend_recipe`, `apply_recipe`)              | Scroll styles                                     |
+| `toros reference list` / `show <id>` / `search` (`search_references`)                                | Reference looks and what each needs               |
 | `toros check <url> [--project-dir <dir>] [--json] [--rule <id>]` (`check_site`)                      | Score a running site                              |
 | `toros shots <url> [--out <dir>] [--viewport desktop\|phone\|both]` (`capture_shots`)                | Screenshots of every screen                       |
 | `toros optimize <file.glb>` (`optimize_assets`)                                                      | Shrink a GLB                                      |
