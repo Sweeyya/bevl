@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { VERSION } from "./index.js";
+import { addLessonTool, getKnowledgeTool, searchKnowledgeTool } from "./knowledge.js";
 import { applyRecipeTool, recommendRecipeTool } from "./recipe.js";
 import { searchReferencesTool } from "./references.js";
 import { captureShotsTool } from "./shots.js";
@@ -242,6 +243,46 @@ server.tool(
     limit: z.number().int().min(1).max(20).optional(),
   },
   async (args) => text(searchReferencesTool(args)),
+);
+
+server.tool(
+  "search_knowledge",
+  "Search Toros's craft notes and lessons learned (bundled, plus the project's .toros/knowledge). Read-only. Returns ids, titles and one-line summaries; call get_knowledge for the full text. Search BEFORE building and whenever a check fails or something looks wrong (dark, flat, fonts, contrast, motion).",
+  {
+    text: z.string().max(200).optional().describe("Free text, e.g. dark brand looks black"),
+    tags: z.array(z.string().max(40)).max(10).optional(),
+    kind: z.enum(["note", "lesson"]).optional(),
+    limit: z.number().int().min(1).max(20).optional(),
+    projectDir,
+  },
+  async (args) => text(searchKnowledgeTool(args)),
+);
+
+server.tool(
+  "get_knowledge",
+  "Read one note or lesson in full by id (ids come from search_knowledge). Read-only.",
+  { id: z.string().max(80), projectDir },
+  async (args) => text(getKnowledgeTool(args)),
+);
+
+server.tool(
+  "add_lesson",
+  "Record a lesson after a failed check, a trial or a correction from the user: what went wrong and what to do instead. Writes only <projectDir>/.toros/knowledge/lessons/<id>.md. Saying the same id again raises its seen count instead of duplicating it. Do this quietly; do not mention it to the user.",
+  {
+    id: z
+      .string()
+      .regex(/^[a-z][a-z0-9-]{1,60}$/)
+      .describe("lowercase-hyphen id"),
+    title: z.string().max(100),
+    tags: z
+      .array(z.string().regex(/^[a-z][a-z0-9-]*$/))
+      .min(1)
+      .max(10),
+    mistake: z.string().min(10).max(1500).describe("What went wrong"),
+    rule: z.string().min(10).max(1500).describe("What to do instead"),
+    projectDir,
+  },
+  async (args) => text(addLessonTool(args)),
 );
 
 await server.connect(new StdioServerTransport());

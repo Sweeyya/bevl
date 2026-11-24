@@ -8,7 +8,7 @@ Anything marked **proposal** has not been agreed or built.
 
 Built and merged: the scroll engine and recipes, inputs and snapping, the HTML text layer, brand tokens, reduced motion, 33 check rules with 29 broken fixtures, the CLI, the MCP server, the agent skill, the optimizer, and a CI that runs only the fast checks per PR (slow checks run on `main` and with the `full-ci` label).
 
-Not built: the mascot package (empty), the effects palette (a scaffold only), RAG, the prompt compiler, any npm publishing, and a scaffold that makes a site look like a real room.
+Not built: the mascot package (empty), the effects palette (a scaffold only), embedding-based RAG, the prompt compiler, any npm publishing, and a scaffold that makes a site look like a real room.
 
 First real trial (an agent building a coffee roaster site from only the skill): it scored 100/100 but the scene looked flat, and six things slowed or blocked the agent (see section 3).
 
@@ -62,7 +62,9 @@ You can start recording now. The recording phase does not depend on Toros being 
 
 Per session, keep: the first prompt, every follow-up and correction, the final result, the check score if Toros was used, time and token use, a 1 to 5 rating, and screenshots. Keep the transcripts private.
 
-## 6. RAG for style and brand interpretation (proposal, not built)
+## 6. RAG for style and brand interpretation (reference library and knowledge layer built; embeddings not)
+
+Built since this section was written: `toros reference ...` and `toros knowledge ...` (`docs/plans/knowledge-layer.md`). The rest of this section is still the proposal.
 
 The idea: the agent should do exactly what you describe, in the style you want, without fine-tuning a model. Fine-tuning changes model weights and is the wrong tool for "match this look". RAG (retrieval-augmented generation) fits better: keep a library of reference designs and look them up at generation time.
 

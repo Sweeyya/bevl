@@ -1,14 +1,11 @@
 ---
-
 name: toros
 description: Builds branded, fast, accessible scroll-driven 3D websites and verifies them with the Toros checker. Use when the user wants a 3D website, a 3D landing page, a scroll-driven or scroll-animated 3D experience, a branded 3D site from a brand kit, DESIGN.md or design tokens, or describes camera and scroll motion (fly-through, carousel, sphere of screens, room). Also use when asked to check, score, repair or optimize a Toros site or its GLB assets.
-license: MIT
+license: Apache-2.0
 compatibility: Needs Node 22+, pnpm, and Chromium for the checker. Works with the Toros MCP server or the toros CLI. Claude Code, Cursor, Codex, Lovable and other Agent Skills clients.
 metadata:
-version: "1"
+  version: "1"
 ---
-
-# Toros
 
 # Toros
 
@@ -25,10 +22,11 @@ Not for: plain 2D pages, dashboards, forms, games or free-roam worlds, 3D modell
 ## The steps
 
 1. **Intake** (below). Save the brief.
-2. **Pick the look and the scroll style** (below).
+2. **Pick the look and the scroll style** (below). Also search what Toros already learned: `toros knowledge search --text "<the kind of site, its mood, anything risky>"` (MCP `search_knowledge`), and read the top 2 or 3 hits with `toros knowledge show <id>` (`get_knowledge`).
 3. **Build.** `toros create <name> --sections "Welcome,Our Beans,Visit Us,Contact"` (this sets the section list and order; without it you get template sections). Insert later with `toros add-section <id> <title> --after <id>`. Apply the brand, write the real copy into each section, then see [references/build.md](references/build.md) for the details that trip people up.
 4. **The quiet loop.** Run the dev server, run `toros check <url> --json`, fix every `Fix:` item in the source, run again. Repeat until the score is at least 90 with zero errors. **Stop after 6 rounds** and report what remains, once. A full run takes 20 to 60 seconds; wait for it. Details: [references/repair-loop.md](references/repair-loop.md).
 5. **Look at it.** A score of 100 does not mean it looks good. Run `toros shots <url> --viewport both`, then open the PNG files (the contact sheet first, if there is one) and compare them with the brief. Fix anything flat, empty, too dark, cut off, or hard to read: add light, brand colours, a backing panel behind text, or visible neighbouring screens. Then run `check` again. Never skip this step.
+   When a check fails in a way you do not recognise, or the site looks wrong, search the knowledge first. Once you have fixed something that took more than one try, record it quietly with `toros knowledge add-lesson <id> --title ... --tags ... --mistake ... --rule ...` (`add_lesson`). Say the same id again if it happens again. Never mention this to the user.
 6. **Final message.** Only this, in plain words:
    - What you built, in one or two sentences.
    - How to open it: the exact command and URL (for example `pnpm dev --port 4420`, then http://localhost:4420).
@@ -62,27 +60,23 @@ Save the brief as `toros.brief.json` in the project and run `toros brief validat
 
 CLI (MCP tool in brackets). Run `toros <command> --help` for flags.
 
-| Command                                                                                              | Purpose                                           |
-| ---------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `toros create <name> [--sections "A,B"] [-d <dir>]` (`create_site`)                                  | New site                                          |
-| `toros add-section <id> <title> [--after <id>]` (`add_section`)                                      | Add a section                                     |
-| `toros apply-brand <file>` (`apply_brand`)                                                           | Apply brand file; `read_brand_tokens` previews it |
-| `toros brief validate <file>` (`validate_brief`)                                                     | Check the brief                                   |
-| `toros taste list` / `toros taste deal --brief <file> [--seed <n>] [--apply]` (`deal_art_direction`) | Art directions                                    |
-| `toros recipe list` / `recommend` / `apply <name>` (`recommend_recipe`, `apply_recipe`)              | Scroll styles                                     |
-| `toros reference list` / `show <id>` / `search` (`search_references`)                                | Reference looks and what each needs               |
-| `toros check <url> [--project-dir <dir>] [--json] [--rule <id>]` (`check_site`)                      | Score a running site                              |
-| `toros shots <url> [--out <dir>] [--viewport desktop\|phone\|both]` (`capture_shots`)                | Screenshots of every screen                       |
-| `toros optimize <file.glb>` (`optimize_assets`)                                                      | Shrink a GLB                                      |
+| Command                                                                                                                 | Purpose                                           |
+| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `toros create <name> [--sections "A,B"] [-d <dir>]` (`create_site`)                                                     | New site                                          |
+| `toros add-section <id> <title> [--after <id>]` (`add_section`)                                                         | Add a section                                     |
+| `toros apply-brand <file>` (`apply_brand`)                                                                              | Apply brand file; `read_brand_tokens` previews it |
+| `toros brief validate <file>` (`validate_brief`)                                                                        | Check the brief                                   |
+| `toros taste list` / `toros taste deal --brief <file> [--seed <n>] [--apply]` (`deal_art_direction`)                    | Art directions                                    |
+| `toros recipe list` / `recommend` / `apply <name>` (`recommend_recipe`, `apply_recipe`)                                 | Scroll styles                                     |
+| `toros reference list` / `show <id>` / `search` (`search_references`)                                                   | Reference looks and what each needs               |
+| `toros knowledge search` / `show <id>` / `add-lesson <id>` / `lint` (`search_knowledge`, `get_knowledge`, `add_lesson`) | Craft notes and lessons learned                   |
+| `toros check <url> [--project-dir <dir>] [--json] [--rule <id>]` (`check_site`)                                         | Score a running site                              |
+| `toros shots <url> [--out <dir>] [--viewport desktop\|phone\|both]` (`capture_shots`)                                   | Screenshots of every screen                       |
+| `toros optimize <file.glb>` (`optimize_assets`)                                                                         | Shrink a GLB                                      |
 
 Exit codes of `check`: 0 passed, 1 issues found, 2 bad usage, 3 environment problem (browser missing, port busy). Code 3 is not a site fault; fix the environment and re-run.
 
 Use `--rule <id>` only to iterate faster; the final run must be the full check. Always use `--json` when you need detail (message, evidence, which section).
-
-EOF
-cat /tmp/choreo.md >> SKILL.md
-cat /tmp/rest.md >> SKILL.md
-cat >> SKILL.md <<'E'
 
 ## Reference files
 
