@@ -36,7 +36,7 @@ Both examples (`examples/basic` and `examples/recipes`) score 100/100.
 You need Node 22+ and pnpm 12.
 
 ```sh
-git clone https://github.com/Sweeyya/bevl.git
+git clone https://github.com/Sweeyya/toros.git
 cd toros
 pnpm install
 pnpm build
@@ -212,3 +212,7 @@ Run `pnpm audit` and see `.github/workflows/security.yml` for the automated chec
 ## License
 
 No license has been chosen yet, so all rights are reserved for now.
+
+## License and legal
+
+Toros is released under the [Apache License 2.0](LICENSE). Sites you build are yours, and so is the responsibility for the assets you put in them. See [LEGAL.md](LEGAL.md) for the plain-language notes, including how references are used for inspiration only.

@@ -4,7 +4,7 @@
 
 ```sh
 # 1. Clone the repo
-git clone https://github.com/Sweeyya/bevl.git
+git clone https://github.com/Sweeyya/toros.git
 cd toros
 
 # 2. Install pnpm (if not already installed)

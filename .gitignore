@@ -22,6 +22,10 @@ test-results/
 .env
 .env.local
 
+# License files copied into each package when it is packed
+packages/*/LICENSE
+packages/*/NOTICE
+
 # Lighthouse CI
 .lighthouseci/
 

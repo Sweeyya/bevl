@@ -6,6 +6,10 @@ Written 2026-11-23. Status: the library and its search are built (`toros referen
 
 The owner collects reels of 3D websites and wants Toros to build sites like them without Claude working out the look alone. For that, Claude has to be able to turn "dark, atmospheric, a shrine" into a concrete plan: which assets to make, which effects to use, how the camera moves, how the text looks. Each reference is a worked example of that plan. This is also the data the later retrieval (RAG) step searches.
 
+## Inspiration, not copying
+
+References describe a look in our own words. They are never copied: no code, images, screenshots, video, text or logos from the original sites are stored, and an agent must make original work (or use assets the user supplies and has the rights to) instead of reproducing a specific site's layout, artwork, wording or branding. Toros is not affiliated with the creators credited. See `LEGAL.md`.
+
 ## 2. What Claude needs to know to build one of these
 
 1. **A vocabulary.** Each reference is described the same way: archetype, render style, camera pattern, mood words, palette, typography, motion, interaction.

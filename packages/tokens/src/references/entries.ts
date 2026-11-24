@@ -122,7 +122,7 @@ export const references: Reference[] = [
   {
     id: "dark-japanese-shrine",
     title: "Dark Japanese shrine",
-    source: { kind: "reel", credit: "kryntixstudio (Instagram reel, KAGE)" },
+    source: { kind: "reel", credit: "kryntixstudio (Instagram reel)" },
     summary:
       "A dark shrine scene with a red moon, drifting cherry blossoms, grass, huge cropped lettering, vertical Japanese text and a 01 to 04 chapter index.",
     archetype: "stylized-3d-scene",
