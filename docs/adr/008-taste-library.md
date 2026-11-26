@@ -6,7 +6,7 @@ When a user has no brand, Toros deals one of its own art directions instead of l
 
 ## Original, not copied
 
-The directions are written for Toros. We read what other tools do (see `docs/plans/taste-and-intake.md`) but copy no text or palettes from them. We also steer away from the look those tools call an AI default (cream, serif, terracotta; purple or blue gradients; Inter or Arial alone), and from the look Anthropic's skill tends to produce, which the owner does not like.
+The directions are written for Toros. We copy no text or palettes from other tools. We also steer away from the look those tools call an AI default (cream, serif, terracotta; purple or blue gradients; Inter or Arial alone), and from the look Anthropic's skill tends to produce, which the owner does not like.
 
 ## Deterministic dealing
 
